@@ -1,0 +1,1326 @@
+fileFormatVersion: 2
+guid: c9158b5016c922349be0ec8081f66944
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: HexCenter
+  - first:
+      213: 21300002
+    second: SmallScope
+  - first:
+      213: 21300004
+    second: BigScope
+  - first:
+      213: 21300006
+    second: BigAmmo
+  - first:
+      213: 21300008
+    second: DefaultAmmo
+  - first:
+      213: 21300010
+    second: LaserLath
+  - first:
+      213: 21300012
+    second: LaserSelf
+  - first:
+      213: 21300014
+    second: HexSlot
+  - first:
+      213: 21300016
+    second: HexSelected
+  - first:
+      213: 21300018
+    second: MuzzleBrake
+  - first:
+      213: 21300020
+    second: Muffler
+  - first:
+      213: 21300022
+    second: MuzzleAccelerator
+  - first:
+      213: 21300024
+    second: None
+  - first:
+      213: 21300026
+    second: Picatini
+  - first:
+      213: 21300028
+    second: NoGloves
+  - first:
+      213: 21300030
+    second: LongSleeves
+  - first:
+      213: 21300032
+    second: ShortSleeves
+  - first:
+      213: 21300034
+    second: GlovesCut
+  - first:
+      213: 21300036
+    second: GlovesFull
+  - first:
+      213: 21300038
+    second: ColorHex
+  - first:
+      213: 21300040
+    second: Night
+  - first:
+      213: 21300042
+    second: Sand
+  - first:
+      213: 21300044
+    second: Forest
+  - first:
+      213: 21300046
+    second: SGPicatini
+  - first:
+      213: 21300048
+    second: SGFlashlight
+  - first:
+      213: 21300050
+    second: SGPicatiniMiddle
+  - first:
+      213: 21300052
+    second: SGButt
+  - first:
+      213: 21300054
+    second: SGMuzzleBrake
+  - first:
+      213: 21300056
+    second: SGAim
+  - first:
+      213: 21300058
+    second: SGAmmo
+  - first:
+      213: 21300060
+    second: SkinWhite
+  - first:
+      213: 21300062
+    second: SkinBlack
+  - first:
+      213: 21300064
+    second: SkinYellow
+  - first:
+      213: 21300066
+    second: RifleAim
+  - first:
+      213: 21300068
+    second: RifleAim4X
+  - first:
+      213: 21300070
+    second: RifleAim12X
+  - first:
+      213: 21300072
+    second: Default
+  - first:
+      213: 21300074
+    second: UpgradeUI_0
+  - first:
+      213: 21300076
+    second: Moss
+  - first:
+      213: 21300078
+    second: White
+  - first:
+      213: 21300080
+    second: Muffler2
+  - first:
+      213: 21300082
+    second: SkinTattoo
+  - first:
+      213: 21300084
+    second: Oliva1
+  - first:
+      213: 21300086
+    second: Sand1
+  - first:
+      213: 21300088
+    second: Black1
+  - first:
+      213: 21300090
+    second: White1
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
+  swizzle: 50462976
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 1
+    textureFormat: 4
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: HexCenter
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 1836
+        width: 143
+        height: 125
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da81b580689a5fd4d9c3d22932e93cd9
+      internalID: 21300000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SmallScope
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 1863
+        width: 117
+        height: 87
+      alignment: 9
+      pivot: {x: 0.45801407, y: 0.5232495}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1554faf9c3d197b43a328b3099f53522
+      internalID: 21300002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigScope
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 1856
+        width: 118
+        height: 101
+      alignment: 9
+      pivot: {x: 0.44122806, y: 0.482834}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51b74805d4d804747bd5811bac17723a
+      internalID: 21300004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigAmmo
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 1839
+        width: 90
+        height: 119
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8df34b16ed75cd447894386d80a65ad1
+      internalID: 21300006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DefaultAmmo
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 1708
+        width: 89
+        height: 110
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0a1e88cb01110a4d8b918d040b2d62e
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaserLath
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 1720
+        width: 130
+        height: 85
+      alignment: 9
+      pivot: {x: 0.50184065, y: 0.525336}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecab4201601f82546879d4eca3f310f0
+      internalID: 21300010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LaserSelf
+      rect:
+        serializedVersion: 2
+        x: 263
+        y: 1711
+        width: 114
+        height: 87
+      alignment: 9
+      pivot: {x: 0.4958017, y: 0.54675853}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f4da997144df44478df34ec33528b5a
+      internalID: 21300012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HexSlot
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 1684
+        width: 143
+        height: 125
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c8275fd3ec95df4282ebe1d17280388
+      internalID: 21300014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HexSelected
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 1534
+        width: 143
+        height: 125
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a769e68a7351ef498a35613c3fcdc12
+      internalID: 21300016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MuzzleBrake
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1565
+        width: 109
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5620414, y: 0.5502987}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5cf00858378132488dd6330b21a8e74
+      internalID: 21300018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Muffler
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 1583
+        width: 130
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5312918, y: 0.58928806}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 148b2e485f1b1ed46bd6b88624c8aef7
+      internalID: 21300020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MuzzleAccelerator
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 1573
+        width: 115
+        height: 77
+      alignment: 9
+      pivot: {x: 0.51664615, y: 0.55283105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6141592167bb2940a27ce8761ec6412
+      internalID: 21300022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: None
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 1422
+        width: 58
+        height: 58
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7921b50dba7d62d4c9f0bde80a804b02
+      internalID: 21300024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Picatini
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 1421
+        width: 119
+        height: 88
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b23a54c0a6c92b24c9d809d393e0fb00
+      internalID: 21300026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NoGloves
+      rect:
+        serializedVersion: 2
+        x: 762
+        y: 1855
+        width: 145
+        height: 99
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4358849}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d8cbf600f792c84fbad2ff441e7f9b0
+      internalID: 21300028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LongSleeves
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 1595
+        width: 99
+        height: 136
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84a8865eb0a2f3242971943f6c859449
+      internalID: 21300030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShortSleeves
+      rect:
+        serializedVersion: 2
+        x: 779
+        y: 1420
+        width: 95
+        height: 139
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5158068}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f5eff8332587784f90b127736b5c0e9
+      internalID: 21300032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlovesCut
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 1417
+        width: 145
+        height: 101
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4358849}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c238beb62fb777e4993e77fdb5d10e7f
+      internalID: 21300034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlovesFull
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 1419
+        width: 149
+        height: 104
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43588492}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ca6b7c14989a364eb9edb2d82e873fe
+      internalID: 21300036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ColorHex
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 1844
+        width: 143
+        height: 127
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03dce5a3ab4b4e345aecb74aa87dcf77
+      internalID: 21300038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Night
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 1698
+        width: 143
+        height: 126
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed7bc9d86c07a6c4fae17d3d48927539
+      internalID: 21300040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sand
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 1550
+        width: 143
+        height: 126
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b67e6af1d6c5f7543a8cf7882cafbc0c
+      internalID: 21300042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Forest
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 1402
+        width: 143
+        height: 126
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d4e438ba18715146bcf18f275c7a9f2
+      internalID: 21300044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SGPicatini
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 1251
+        width: 110
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e0eaea5703c7aa4eb046f5981470bdf
+      internalID: 21300046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SGFlashlight
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 1261
+        width: 113
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a40dc93ba75cb524b83baa3318c6040d
+      internalID: 21300048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SGPicatiniMiddle
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 1262
+        width: 118
+        height: 69
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 490e81c6b147cd247be39c765a57c3e2
+      internalID: 21300050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SGButt
+      rect:
+        serializedVersion: 2
+        x: 738
+        y: 1227
+        width: 101
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8ac4ad0e626bc340bf5dabb83327fdf
+      internalID: 21300052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SGMuzzleBrake
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 1108
+        width: 99
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2a8fe929803b2a45bdada4789877827
+      internalID: 21300054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SGAim
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 1098
+        width: 96
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81a86c69c2c1d2445a15bccf5b3334dc
+      internalID: 21300056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SGAmmo
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 1098
+        width: 94
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8a109d48fff20449902e4e594a5c38f
+      internalID: 21300058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinWhite
+      rect:
+        serializedVersion: 2
+        x: 936
+        y: 1250
+        width: 149
+        height: 135
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 735340625df7b8d4bb6138be2869bd2d
+      internalID: 21300060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinBlack
+      rect:
+        serializedVersion: 2
+        x: 936
+        y: 1088
+        width: 149
+        height: 135
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bc3ffc8068651d44bbab72c7cdce4a9
+      internalID: 21300062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinYellow
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 1834
+        width: 149
+        height: 135
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58eb3168e64a738489d1715c3b1e8665
+      internalID: 21300064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RifleAim
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 1094
+        width: 99
+        height: 104
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20bb1c5d9f330fe4ebad8d4e40f16aab
+      internalID: 21300066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RifleAim4X
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 1240
+        width: 121
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a71322cfcfd388246bcd9f1a26b38c85
+      internalID: 21300068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RifleAim12X
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 1101
+        width: 122
+        height: 59
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ede8cff3d901f641bc63524d6a03e52
+      internalID: 21300070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Default
+      rect:
+        serializedVersion: 2
+        x: 1373
+        y: 1835
+        width: 153
+        height: 137
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce1fba801e719a84ebb5f123c64e7618
+      internalID: 21300072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UpgradeUI_0
+      rect:
+        serializedVersion: 2
+        x: 1533
+        y: 1835
+        width: 148
+        height: 137
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df4cf35093842bb46997a79f728556c6
+      internalID: 21300074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Moss
+      rect:
+        serializedVersion: 2
+        x: 1693
+        y: 1835
+        width: 151
+        height: 137
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db9148c85e405ef4586c038098b56903
+      internalID: 21300076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: White
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1835
+        width: 153
+        height: 137
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acd25269ed3b5d242af2a864104d34f9
+      internalID: 21300078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Muffler2
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 972
+        width: 112
+        height: 58
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 104a0bf760b33084e98d7b69e6c01a9b
+      internalID: 21300080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkinTattoo
+      rect:
+        serializedVersion: 2
+        x: 1093
+        y: 1251
+        width: 149
+        height: 135
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74513512b3bdb24429a220d9ab6e0241
+      internalID: 21300082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Oliva1
+      rect:
+        serializedVersion: 2
+        x: 1331
+        y: 1605
+        width: 153
+        height: 137
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 266981b1f4a826b4b8ce5836d6e2f0f7
+      internalID: 21300084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sand1
+      rect:
+        serializedVersion: 2
+        x: 1495
+        y: 1606
+        width: 153
+        height: 137
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3387f89c13db02e489cab9d10b493ba0
+      internalID: 21300086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Black1
+      rect:
+        serializedVersion: 2
+        x: 1688
+        y: 1619
+        width: 153
+        height: 137
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbba847c0464d5244baa8cffff477d3d
+      internalID: 21300088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: White1
+      rect:
+        serializedVersion: 2
+        x: 1866
+        y: 1620
+        width: 153
+        height: 137
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b93abc0a6fd5c540935f9d82b19fafc
+      internalID: 21300090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2ef81f39e54c9c741a55b7617e0602c2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BigAmmo: 21300006
+      BigScope: 21300004
+      Black1: 21300088
+      ColorHex: 21300038
+      Default: 21300072
+      DefaultAmmo: 21300008
+      Forest: 21300044
+      GlovesCut: 21300034
+      GlovesFull: 21300036
+      HexCenter: 21300000
+      HexSelected: 21300016
+      HexSlot: 21300014
+      LaserLath: 21300010
+      LaserSelf: 21300012
+      LongSleeves: 21300030
+      Moss: 21300076
+      Muffler: 21300020
+      Muffler2: 21300080
+      MuzzleAccelerator: 21300022
+      MuzzleBrake: 21300018
+      Night: 21300040
+      NoGloves: 21300028
+      None: 21300024
+      Oliva1: 21300084
+      Picatini: 21300026
+      RifleAim: 21300066
+      RifleAim12X: 21300070
+      RifleAim4X: 21300068
+      SGAim: 21300056
+      SGAmmo: 21300058
+      SGButt: 21300052
+      SGFlashlight: 21300048
+      SGMuzzleBrake: 21300054
+      SGPicatini: 21300046
+      SGPicatiniMiddle: 21300050
+      Sand: 21300042
+      Sand1: 21300086
+      ShortSleeves: 21300032
+      SkinBlack: 21300062
+      SkinTattoo: 21300082
+      SkinWhite: 21300060
+      SkinYellow: 21300064
+      SmallScope: 21300002
+      UpgradeUI_0: 21300074
+      White: 21300078
+      White1: 21300090
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

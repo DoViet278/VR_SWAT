@@ -12,6 +12,7 @@ TagManager:
   - 
   - Water
   - UI
+  - Magazine
   - 
   - 
   - 
@@ -35,8 +36,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - XR Simulation
   - 
   m_SortingLayers:
   - name: Default
