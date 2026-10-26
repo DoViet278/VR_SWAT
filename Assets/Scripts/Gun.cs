@@ -17,11 +17,20 @@ public class Gun : MonoBehaviour
     [SerializeField] private GunAmmoManager ammoManager;
     [SerializeField] private AudioSource dryFireAudioSource;
 
+    [Header("Ballistics")]
+    [SerializeField] private float maxRange = 100f;
+    [SerializeField] private float damage = 25f;
+    [SerializeField] private LayerMask hittableLayers = ~0;
+    [SerializeField] private GameObject impactEffect;
+    [SerializeField] private float impactEffectLiveTime = 2f;
+
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
+    private GunRecoilController recoilController;
 
     private void Awake()
     {
         grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        recoilController = GetComponent<GunRecoilController>();
 
         if (ammoManager == null)
             ammoManager = GetComponent<GunAmmoManager>();
@@ -40,8 +49,45 @@ public class Gun : MonoBehaviour
             return;
         }
 
+        FireRaycast();
         PlayGunShotEffect();
+        recoilController?.RegisterShot();
         // EjectShell();
+    }
+
+    private void FireRaycast()
+    {
+        Transform origin = muzzlePoint != null ? muzzlePoint : transform;
+        Vector3 direction = ApplySpread(origin.forward);
+
+        if (Physics.Raycast(origin.position, direction, out RaycastHit hit, maxRange, hittableLayers, QueryTriggerInteraction.Ignore))
+        {
+            IDamageable damageable = hit.collider.GetComponentInParent<IDamageable>();
+            damageable?.ApplyDamage(damage, hit);
+            PlayImpactEffect(hit);
+        }
+    }
+
+    private Vector3 ApplySpread(Vector3 forward)
+    {
+        float spreadDegrees = recoilController != null ? recoilController.CurrentSpreadDegrees : 0f;
+
+        if (spreadDegrees <= 0f)
+            return forward;
+
+        float angle = Random.Range(0f, spreadDegrees);
+        float rotation = Random.Range(0f, 360f);
+        Quaternion spreadRotation = Quaternion.AngleAxis(rotation, forward) * Quaternion.AngleAxis(angle, Vector3.up);
+        return spreadRotation * forward;
+    }
+
+    private void PlayImpactEffect(RaycastHit hit)
+    {
+        if (impactEffect == null)
+            return;
+
+        GameObject instance = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+        Destroy(instance, impactEffectLiveTime);
     }
 
     private void PlayDryFireEffect()
