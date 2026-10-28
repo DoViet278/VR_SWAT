@@ -14,7 +14,13 @@ public class GunAmmoManager : MonoBehaviour
     public UnityEvent OnAmmoEmpty;
     public UnityEvent OnAmmoChanged;
 
+    [Header("Charging")]
+    [SerializeField] private bool requireCharge = true;
+
     private Magazine currentMagazine;
+    private bool chambered;
+
+    public bool IsChambered => chambered;
 
     public bool HasMagazine => currentMagazine != null;
     public bool HasAmmo => currentMagazine != null && !currentMagazine.IsEmpty;
@@ -63,8 +69,33 @@ public class GunAmmoManager : MonoBehaviour
         OnAmmoChanged?.Invoke();
     }
 
+    // Called by the charging handle: feeds a round from the magazine into the chamber.
+    public void Chamber()
+    {
+        if (chambered || currentMagazine == null || !currentMagazine.TryConsumeRound())
+            return;
+
+        chambered = true;
+        OnAmmoChanged?.Invoke();
+    }
+
     public bool TryFireRound()
     {
+        if (requireCharge)
+        {
+            if (!chambered)
+            {
+                OnAmmoEmpty?.Invoke();
+                return false;
+            }
+
+            // Firing cycles the action: the next round (if any) is chambered automatically.
+            chambered = false;
+            Chamber();
+            OnAmmoChanged?.Invoke();
+            return true;
+        }
+
         if (currentMagazine == null || currentMagazine.IsEmpty)
         {
             OnAmmoEmpty?.Invoke();

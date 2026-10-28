@@ -12,14 +12,14 @@ public class MagazinePouch : MonoBehaviour
     [SerializeField] private bool refillOnStore = true;
 
     [Header("Capacity")]
-    [SerializeField] private int maxMagazines = 5;
+    [SerializeField] private int maxMagazines = 1;
     [SerializeField] private float respawnDelay = 1f;
     [SerializeField] private float initialSpawnDelay = 0.25f;
 
     [Header("Slot Layout")]
     [SerializeField] private float slotRingRadius = 0.07f;
     [SerializeField] private Vector3 slotLocalEuler = Vector3.zero;
-    [SerializeField] private float slotTriggerRadius = 0.05f;
+    [SerializeField] private Vector3 slotTriggerSize = new Vector3(0.1f, 0.1f, 0.1f);
     [SerializeField] private InteractionLayerMask magazineInteractionLayers = 1 << 1;
 
     [Header("Cleanup")]
@@ -68,9 +68,9 @@ public class MagazinePouch : MonoBehaviour
             slotObject.transform.localPosition = GetSlotLocalPosition(i);
             slotObject.transform.localRotation = Quaternion.Euler(slotLocalEuler);
 
-            SphereCollider trigger = slotObject.AddComponent<SphereCollider>();
+            BoxCollider trigger = slotObject.AddComponent<BoxCollider>();
             trigger.isTrigger = true;
-            trigger.radius = slotTriggerRadius;
+            trigger.size = slotTriggerSize;
 
             XRSocketInteractor socket = slotObject.AddComponent<XRSocketInteractor>();
             socket.interactionManager = interactionManager;

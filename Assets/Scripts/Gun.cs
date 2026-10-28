@@ -17,6 +17,10 @@ public class Gun : MonoBehaviour
     [SerializeField] private GunAmmoManager ammoManager;
     [SerializeField] private AudioSource dryFireAudioSource;
 
+    [Header("Gun Shot Sound")]
+    [SerializeField] private AudioSource gunShotAudioSource;
+    [SerializeField] private AudioClip gunShotClip;
+
     [Header("Ballistics")]
     [SerializeField] private float maxRange = 100f;
     [SerializeField] private float damage = 25f;
@@ -50,6 +54,7 @@ public class Gun : MonoBehaviour
         }
 
         FireRaycast();
+        PlayGunShotSound();
         PlayGunShotEffect();
         recoilController?.RegisterShot();
         // EjectShell();
@@ -94,6 +99,13 @@ public class Gun : MonoBehaviour
     {
         if (dryFireAudioSource != null)
             dryFireAudioSource.Play();
+    }
+
+    private void PlayGunShotSound()
+    {
+        Debug.Log($"Shot sound: src={gunShotAudioSource}, clip={gunShotClip}, mute={gunShotAudioSource?.mute}, vol={gunShotAudioSource?.volume}");
+        if (gunShotAudioSource != null && gunShotClip != null)
+            gunShotAudioSource.PlayOneShot(gunShotClip);
     }
 
     private void PlayGunShotEffect()
