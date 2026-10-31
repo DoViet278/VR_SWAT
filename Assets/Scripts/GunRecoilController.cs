@@ -57,9 +57,6 @@ public class GunRecoilController : XRBaseGrabTransformer
     {
         base.OnLink(grabInteractableArg);
 
-        // Ensure our offset is applied on top of any other grab transformer's computed pose
-        // (e.g. the default/general grab transformer that drives hand tracking) rather than
-        // being overwritten by one that processes after us.
         int singleIndex = grabInteractableArg.singleGrabTransformersCount - 1;
         if (singleIndex >= 0)
             grabInteractableArg.MoveSingleGrabTransformerTo(this, singleIndex);

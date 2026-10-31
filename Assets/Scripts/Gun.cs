@@ -3,6 +3,18 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class Gun : MonoBehaviour
 {
+    public enum FireMode
+    {
+        Single,
+        Auto
+    }
+
+    [Header("Fire Mode")]
+    [Tooltip("Single: mỗi lần kéo cò bắn 1 viên. Auto: giữ cò bắn liên tục đến khi hết đạn.")]
+    [SerializeField] private FireMode fireMode = FireMode.Single;
+    [Tooltip("Tốc độ bắn ở chế độ Auto (viên/phút).")]
+    [SerializeField] private float roundsPerMinute = 700f;
+
     [Header("Gun Shot Effect")]
     [SerializeField] private GameObject gunShotEffect;
     [SerializeField] private float gunShotLiveTime = 0.1f;
@@ -21,6 +33,10 @@ public class Gun : MonoBehaviour
     [SerializeField] private AudioSource gunShotAudioSource;
     [SerializeField] private AudioClip gunShotClip;
 
+    [Header("Charging Handle")]
+    [Tooltip("Tay cò tự giật về PositionRefill mỗi phát. Để trống sẽ tự tìm trong children.")]
+    [SerializeField] private ChargingHandle chargingHandle;
+
     [Header("Ballistics")]
     [SerializeField] private float maxRange = 100f;
     [SerializeField] private float damage = 25f;
@@ -30,34 +46,97 @@ public class Gun : MonoBehaviour
 
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
     private GunRecoilController recoilController;
+    private GunHapticFeedback hapticFeedback;
+
+    private bool triggerHeld;
+    private object activeInteractor;
+    private float nextFireTime;
+
+    private float FireInterval => 60f / Mathf.Max(1f, roundsPerMinute);
 
     private void Awake()
     {
         grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         recoilController = GetComponent<GunRecoilController>();
+        hapticFeedback = GetComponent<GunHapticFeedback>();
 
         if (ammoManager == null)
             ammoManager = GetComponent<GunAmmoManager>();
+
+        if (chargingHandle == null)
+            chargingHandle = GetComponentInChildren<ChargingHandle>(true);
     }
 
     void Start()
     {
-        grabInteractable.activated.AddListener(Shoot);
+        grabInteractable.activated.AddListener(OnTriggerPressed);
+        grabInteractable.deactivated.AddListener(OnTriggerReleased);
+        grabInteractable.selectExited.AddListener(OnSelectExited);
     }
 
-    private void Shoot(ActivateEventArgs args)
+    private void Update()
+    {
+        if (fireMode != FireMode.Auto || !triggerHeld)
+            return;
+
+        if (grabInteractable == null || !grabInteractable.isSelected)
+        {
+            triggerHeld = false;
+            return;
+        }
+
+        while (Time.time >= nextFireTime)
+        {
+            if (!TryShoot(activeInteractor))
+            {
+                triggerHeld = false;
+                return;
+            }
+
+            nextFireTime += FireInterval;
+        }
+    }
+
+    private void OnTriggerPressed(ActivateEventArgs args)
+    {
+        activeInteractor = args.interactorObject;
+        triggerHeld = true;
+        nextFireTime = Time.time + FireInterval;
+
+        if (!TryShoot(activeInteractor))
+            triggerHeld = false;
+    }
+
+    private void OnTriggerReleased(DeactivateEventArgs args)
+    {
+        triggerHeld = false;
+    }
+
+    private void OnSelectExited(SelectExitEventArgs args)
+    {
+        triggerHeld = false;
+    }
+
+    /// <summary>Bắn 1 viên. Trả về false khi không còn đạn (đã phát dry fire).</summary>
+    private bool TryShoot(object interactorObject)
     {
         if (ammoManager != null && !ammoManager.TryFireRound())
         {
             PlayDryFireEffect();
-            return;
+            hapticFeedback?.PlayDryFire(interactorObject);
+            return false;
         }
 
         FireRaycast();
         PlayGunShotSound();
         PlayGunShotEffect();
         recoilController?.RegisterShot();
+        hapticFeedback?.PlayShot(interactorObject);
+        bool emptyAfterShot = ammoManager != null && !ammoManager.IsChambered && !ammoManager.HasAmmo;
+        float cycleBudget = fireMode == FireMode.Auto && !emptyAfterShot ? FireInterval : 0f;
+        chargingHandle?.PlayCycle(emptyAfterShot, cycleBudget);
         // EjectShell();
+        return true;
     }
 
     private void FireRaycast()
@@ -103,7 +182,6 @@ public class Gun : MonoBehaviour
 
     private void PlayGunShotSound()
     {
-        Debug.Log($"Shot sound: src={gunShotAudioSource}, clip={gunShotClip}, mute={gunShotAudioSource?.mute}, vol={gunShotAudioSource?.volume}");
         if (gunShotAudioSource != null && gunShotClip != null)
             gunShotAudioSource.PlayOneShot(gunShotClip);
     }
@@ -136,7 +214,9 @@ public class Gun : MonoBehaviour
     {
         if (grabInteractable != null)
         {
-            grabInteractable.activated.RemoveListener(Shoot);
+            grabInteractable.activated.RemoveListener(OnTriggerPressed);
+            grabInteractable.deactivated.RemoveListener(OnTriggerReleased);
+            grabInteractable.selectExited.RemoveListener(OnSelectExited);
         }
     }
 }
