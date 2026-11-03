@@ -43,6 +43,16 @@ public class GunHapticFeedback : MonoBehaviour
     [Header("Dry Fire")]
     [SerializeField] private HapticPulse dryFire = new HapticPulse { amplitude = 0.25f, duration = 0.03f, frequency = 200f };
 
+    [Header("Reload (shotgun)")]
+    [Tooltip("Rung khi nhồi được 1 viên vào ống đạn.")]
+    [SerializeField] private HapticPulse shellInsert = new HapticPulse { amplitude = 0.4f, duration = 0.04f, frequency = 180f };
+    [Tooltip("Rung khi ống đạn đã đầy, không nhồi thêm được.")]
+    [SerializeField] private HapticPulse shellRejected = new HapticPulse { amplitude = 0.15f, duration = 0.03f, frequency = 90f };
+    [Tooltip("Rung khi kéo pump về sau (nhả vỏ).")]
+    [SerializeField] private HapticPulse pumpPull = new HapticPulse { amplitude = 0.5f, duration = 0.05f, frequency = 150f };
+    [Tooltip("Rung khi đẩy pump lên (lên nòng).")]
+    [SerializeField] private HapticPulse pumpPush = new HapticPulse { amplitude = 0.6f, duration = 0.05f, frequency = 220f };
+
     [Header("Two-Handed")]
     [Tooltip("Hệ số nhân độ rung khi cầm hai tay.")]
     [SerializeField] [Range(0f, 1f)] private float twoHandedMultiplier = 0.7f;
@@ -64,6 +74,32 @@ public class GunHapticFeedback : MonoBehaviour
     public void PlayDryFire(object interactorObject)
     {
         Play(interactorObject, new[] { dryFire }, 1f);
+    }
+
+    public void PlayShellInsert(object interactorObject)
+    {
+        Play(interactorObject, new[] { shellInsert }, 1f);
+    }
+
+    public void PlayShellRejected(object interactorObject)
+    {
+        Play(interactorObject, new[] { shellRejected }, 1f);
+    }
+
+    public void PlayPumpPull(object interactorObject)
+    {
+        Play(interactorObject, new[] { pumpPull }, 1f);
+    }
+
+    public void PlayPumpPush(object interactorObject)
+    {
+        Play(interactorObject, new[] { pumpPush }, 1f);
+    }
+
+    /// <summary>Phát một xung rung tuỳ ý vào bàn tay đang tác động.</summary>
+    public void PlayPulse(object interactorObject, HapticPulse pulse)
+    {
+        Play(interactorObject, new[] { pulse }, 1f);
     }
 
     private void Play(object interactorObject, HapticPulse[] pulses, float multiplier)

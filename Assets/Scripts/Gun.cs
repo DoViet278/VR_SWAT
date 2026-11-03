@@ -36,6 +36,8 @@ public class Gun : MonoBehaviour
     [Header("Charging Handle")]
     [Tooltip("Tay cò tự giật về PositionRefill mỗi phát. Để trống sẽ tự tìm trong children.")]
     [SerializeField] private ChargingHandle chargingHandle;
+    [Tooltip("Bật cho súng pump: không tự giật tay cò, người chơi phải tự kéo pump để lên nòng.")]
+    [SerializeField] private bool manualCycleOnly;
 
     [Header("Ballistics")]
     [SerializeField] private float maxRange = 100f;
@@ -132,9 +134,13 @@ public class Gun : MonoBehaviour
         PlayGunShotEffect();
         recoilController?.RegisterShot();
         hapticFeedback?.PlayShot(interactorObject);
-        bool emptyAfterShot = ammoManager != null && !ammoManager.IsChambered && !ammoManager.HasAmmo;
-        float cycleBudget = fireMode == FireMode.Auto && !emptyAfterShot ? FireInterval : 0f;
-        chargingHandle?.PlayCycle(emptyAfterShot, cycleBudget);
+        if (!manualCycleOnly)
+        {
+            bool emptyAfterShot = ammoManager != null && !ammoManager.IsChambered && !ammoManager.HasAmmo;
+            float cycleBudget = fireMode == FireMode.Auto && !emptyAfterShot ? FireInterval : 0f;
+            chargingHandle?.PlayCycle(emptyAfterShot, cycleBudget);
+        }
+
         // EjectShell();
         return true;
     }

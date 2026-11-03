@@ -5,6 +5,14 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class ChargingHandle : XRBaseInteractable
 {
+    public enum CycleMode
+    {
+        /// <summary>Kéo về quá ngưỡng là lên nòng luôn (rifle, pistol).</summary>
+        ChargeOnPull,
+        /// <summary>Hai nhịp: kéo về sau nhả vỏ, đẩy lên mới lên nòng (shotgun pump).</summary>
+        PumpAction
+    }
+
     [Header("Charging Handle")]
     [Tooltip("Object that slides. Defaults to this transform.")]
     [SerializeField] private Transform handle;
@@ -15,7 +23,11 @@ public class ChargingHandle : XRBaseInteractable
     [SerializeField] private GunAmmoManager ammoManager;
 
     [Header("Tuning")]
+    [Tooltip("PumpAction: kéo về sau nhả vỏ, đẩy lên mới lên nòng. Dùng cho shotgun.")]
+    [SerializeField] private CycleMode cycleMode = CycleMode.ChargeOnPull;
     [Range(0.5f, 1f)] [SerializeField] private float chargeThreshold = 0.95f;
+    [Tooltip("PumpAction: đẩy pump về dưới ngưỡng này thì tính là đã lên nòng.")]
+    [Range(0f, 0.5f)] [SerializeField] private float pumpReturnThreshold = 0.2f;
     [Tooltip("Return speed in units per second after release.")]
     [SerializeField] private float returnSpeed = 0.6f;
 
@@ -32,8 +44,17 @@ public class ChargingHandle : XRBaseInteractable
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip chargeClip;
+    [Tooltip("PumpAction: tiếng kéo pump về sau (nhả vỏ).")]
+    [SerializeField] private AudioClip ejectClip;
+    [Tooltip("PumpAction: tiếng đẩy pump lên (lên nòng).")]
+    [SerializeField] private AudioClip chamberClip;
+
+    [Header("Haptics")]
+    [SerializeField] private GunHapticFeedback hapticFeedback;
 
     public UnityEvent OnCharged;
+    [Tooltip("PumpAction: vừa kéo pump hết về sau.")]
+    public UnityEvent OnPumpPulled;
 
     public bool IsLockedOpen => lockedOpen;
 
@@ -42,6 +63,7 @@ public class ChargingHandle : XRBaseInteractable
     private Transform handleParent;
     private bool grabbed;
     private bool chargedThisPull;
+    private bool pumpPulled;
     private bool cycling;
     private float cycleTime;
     private bool pendingLockOpen;
@@ -62,6 +84,9 @@ public class ChargingHandle : XRBaseInteractable
 
         if (ammoManager == null)
             ammoManager = GetComponentInParent<GunAmmoManager>();
+
+        if (hapticFeedback == null)
+            hapticFeedback = GetComponentInParent<GunHapticFeedback>();
 
         IgnoreGunColliders();
     }
@@ -124,10 +149,45 @@ public class ChargingHandle : XRBaseInteractable
         float t = Mathf.Clamp01(Vector3.Dot(ToParentLocal(handWorld) - restLocal, axis / length) / length);
         handle.localPosition = restLocal + axis * t;
 
+        if (cycleMode == CycleMode.PumpAction)
+        {
+            UpdatePumpStroke(t);
+            return;
+        }
+
         if (t >= chargeThreshold && !chargedThisPull)
             Charge();
         else if (t < chargeThreshold * 0.5f)
             chargedThisPull = false;
+    }
+
+    // Shotgun: kéo về sau nhả vỏ, đẩy lên mới lên nòng. Hai nhịp tách biệt để người chơi cảm nhận được.
+    private void UpdatePumpStroke(float t)
+    {
+        if (!pumpPulled && t >= chargeThreshold)
+        {
+            pumpPulled = true;
+            ammoManager?.ExtractChamber();
+            PlayClip(ejectClip);
+            hapticFeedback?.PlayPumpPull(CurrentInteractor);
+            OnPumpPulled?.Invoke();
+        }
+        else if (pumpPulled && t <= pumpReturnThreshold)
+        {
+            pumpPulled = false;
+            ammoManager?.Chamber();
+            PlayClip(chamberClip);
+            hapticFeedback?.PlayPumpPush(CurrentInteractor);
+            OnCharged?.Invoke();
+        }
+    }
+
+    private object CurrentInteractor => interactorsSelecting.Count > 0 ? interactorsSelecting[0] : null;
+
+    private void PlayClip(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
     }
 
     // Called by Gun on each shot: the action cycles itself, no manual pull needed.
@@ -187,6 +247,25 @@ public class ChargingHandle : XRBaseInteractable
     private void ReturnToRest()
     {
         handle.localPosition = Vector3.MoveTowards(handle.localPosition, restLocal, returnSpeed * Time.deltaTime);
+
+        // Nhả tay giữa cú pump: lò xo đẩy pump về chỗ nghỉ, nhịp lên nòng vẫn phải chạy.
+        if (cycleMode == CycleMode.PumpAction && pumpPulled)
+            UpdatePumpStroke(CurrentTravel);
+    }
+
+    /// <summary>Vị trí hiện tại của tay cò trên trục rest -> refill, 0 = nghỉ, 1 = kéo hết.</summary>
+    private float CurrentTravel
+    {
+        get
+        {
+            Vector3 axis = refillLocal - restLocal;
+            float length = axis.magnitude;
+
+            if (length < 1e-5f)
+                return 0f;
+
+            return Mathf.Clamp01(Vector3.Dot(handle.localPosition - restLocal, axis / length) / length);
+        }
     }
 
     private void Charge()
