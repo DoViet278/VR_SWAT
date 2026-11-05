@@ -173,6 +173,9 @@ public class Gun : MonoBehaviour
 
     private void PlayImpactEffect(RaycastHit hit)
     {
+        // Lỗ đạn + tiếng va chạm: tự bỏ qua nếu scene không có BulletDecalManager.
+        BulletDecalManager.SpawnImpact(hit);
+
         if (impactEffect == null)
             return;
 
