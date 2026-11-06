@@ -30,6 +30,12 @@ public class ChargingHandle : XRBaseInteractable
     [Range(0f, 0.5f)] [SerializeField] private float pumpReturnThreshold = 0.2f;
     [Tooltip("Return speed in units per second after release.")]
     [SerializeField] private float returnSpeed = 0.6f;
+    [Tooltip("Cho collider của tay cò không sinh lực va chạm, nhưng VẪN grab được.\n\n" +
+             "Không dùng isTrigger: SphereInteractionCaster của Near-Far Interactor mặc định " +
+             "QueryTriggerInteraction.Ignore, nên tay cò để trigger là interactor không nhìn thấy " +
+             "và không tài nào kéo được. excludeLayers thì PhysX không sinh contact cho shape đó " +
+             "nữa, mà sphere cast của interactor vẫn thấy bình thường.")]
+    [SerializeField] private bool handleCollidersIgnorePhysics = true;
 
     [Header("Auto Cycle (khi bắn)")]
     [Tooltip("Thời gian tay cò giật về PositionRefill sau mỗi phát (giây).")]
@@ -70,6 +76,8 @@ public class ChargingHandle : XRBaseInteractable
     private bool lockedOpen;
     private float cycleSpeedFactor = 1f;
 
+    private const float HandlePositionEpsilonSqr = 1e-12f;
+
     protected override void Awake()
     {
         base.Awake();
@@ -88,24 +96,60 @@ public class ChargingHandle : XRBaseInteractable
         if (hapticFeedback == null)
             hapticFeedback = GetComponentInParent<GunHapticFeedback>();
 
-        IgnoreGunColliders();
+        SetUpHandleColliders();
     }
 
-    // The handle must not collide with the gun body it is attached to.
-    private void IgnoreGunColliders()
+    // Tay cò bị script dời vị trí mỗi frame. Nếu collider của nó vẫn tham gia va chạm vật lý thì
+    // mỗi lần dời, PhysX phải cập nhật pose của shape trong compound collider của súng: contact
+    // cache bị xoá, Rigidbody không bao giờ ngủ, và nếu tay cò là điểm chạm bàn thì nó bị đẩy ra
+    // rồi script lại kéo về -> súng rung lập bập. Trigger thì vẫn grab được mà không sinh lực.
+    private void SetUpHandleColliders()
     {
+        Collider[] handleColliders = handle.GetComponentsInChildren<Collider>(true);
+
+        if (handleCollidersIgnorePhysics)
+        {
+            foreach (Collider handleCollider in handleColliders)
+            {
+                // Trả về collider đặc: trigger thì interactor không thấy, không kéo được tay cò.
+                handleCollider.isTrigger = false;
+
+                // Loại khỏi mọi cặp va chạm -> không sinh lực, không phá contact cache của súng,
+                // nhưng query của interactor vẫn thấy.
+                handleCollider.excludeLayers = Physics.AllLayers;
+            }
+        }
+
         Transform root = ammoManager != null ? ammoManager.transform : transform.root;
         Collider[] gunColliders = root.GetComponentsInChildren<Collider>(true);
-        Collider[] handleColliders = handle.GetComponentsInChildren<Collider>(true);
 
         foreach (Collider handleCollider in handleColliders)
         {
+            if (!CanIgnoreCollision(handleCollider))
+                continue;
+
             foreach (Collider gunCollider in gunColliders)
             {
-                if (gunCollider != handleCollider)
+                if (gunCollider != handleCollider && CanIgnoreCollision(gunCollider))
                     Physics.IgnoreCollision(handleCollider, gunCollider, true);
             }
         }
+    }
+
+    // Physics.IgnoreCollision báo lỗi nếu một trong hai collider đang tắt (vd: vỏ đạn template).
+    private static bool CanIgnoreCollision(Collider collider)
+    {
+        return collider.enabled && collider.gameObject.activeInHierarchy && !collider.isTrigger;
+    }
+
+    // Ghi lại đúng cùng một vị trí mỗi frame vẫn khiến Unity sync transform sang PhysX và đánh thức
+    // Rigidbody của súng. Chỉ ghi khi giá trị thực sự đổi.
+    private void SetHandleLocalPosition(Vector3 value)
+    {
+        if ((handle.localPosition - value).sqrMagnitude <= HandlePositionEpsilonSqr)
+            return;
+
+        handle.localPosition = value;
     }
 
     protected override void OnSelectEntered(SelectEnterEventArgs args)
@@ -133,7 +177,7 @@ public class ChargingHandle : XRBaseInteractable
         else if (cycling)
             AdvanceCycle();
         else if (lockedOpen)
-            handle.localPosition = restLocal + (refillLocal - restLocal) * cycleTravel;
+            SetHandleLocalPosition(restLocal + (refillLocal - restLocal) * cycleTravel);
         else
             ReturnToRest();
     }
@@ -147,7 +191,7 @@ public class ChargingHandle : XRBaseInteractable
 
         // Project the hand onto the rest -> refill line, clamped to its ends.
         float t = Mathf.Clamp01(Vector3.Dot(ToParentLocal(handWorld) - restLocal, axis / length) / length);
-        handle.localPosition = restLocal + axis * t;
+        SetHandleLocalPosition(restLocal + axis * t);
 
         if (cycleMode == CycleMode.PumpAction)
         {
@@ -237,16 +281,16 @@ public class ChargingHandle : XRBaseInteractable
         else
         {
             cycling = false;
-            handle.localPosition = restLocal;
+            SetHandleLocalPosition(restLocal);
             return;
         }
 
-        handle.localPosition = restLocal + (refillLocal - restLocal) * (t * cycleTravel);
+        SetHandleLocalPosition(restLocal + (refillLocal - restLocal) * (t * cycleTravel));
     }
 
     private void ReturnToRest()
     {
-        handle.localPosition = Vector3.MoveTowards(handle.localPosition, restLocal, returnSpeed * Time.deltaTime);
+        SetHandleLocalPosition(Vector3.MoveTowards(handle.localPosition, restLocal, returnSpeed * Time.deltaTime));
 
         // Nhả tay giữa cú pump: lò xo đẩy pump về chỗ nghỉ, nhịp lên nòng vẫn phải chạy.
         if (cycleMode == CycleMode.PumpAction && pumpPulled)

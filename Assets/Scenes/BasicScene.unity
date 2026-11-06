@@ -853,6 +853,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Magazine
   capacity: 6
   startFull: 0
+  ignoreGunCollisionWhileHeld: 1
+  restoreCollisionDelay: 0.5
 --- !u!4 &193625647
 Transform:
   m_ObjectHideFlags: 0
@@ -6399,9 +6401,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!114 &352155476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6508,7 +6510,7 @@ MonoBehaviour:
   m_SnapToColliderVolume: 1
   m_ReinitializeDynamicAttachEverySingleGrab: 1
   m_AttachEaseInTime: 0.15
-  m_MovementType: 2
+  m_MovementType: 0
   m_PredictedVisualsTransform: {fileID: 0}
   m_VelocityDamping: 1
   m_VelocityScale: 1
@@ -6551,8 +6553,8 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 0
-  m_LimitLinearVelocity: 0
-  m_LimitAngularVelocity: 0
+  m_LimitLinearVelocity: 1
+  m_LimitAngularVelocity: 1
   m_MaxLinearVelocityDelta: 10
   m_MaxAngularVelocityDelta: 20
 --- !u!114 &352155478
@@ -6581,6 +6583,16 @@ MonoBehaviour:
   gunShotClip: {fileID: 8300000, guid: 68c5f0d035436224f869060f32326063, type: 3}
   chargingHandle: {fileID: 0}
   manualCycleOnly: 0
+  stabilizeBodyPhysics: 1
+  bodyMass: 0
+  solverIterations: 16
+  solverVelocityIterations: 4
+  maxDepenetrationVelocity: 3
+  minLinearDamping: 0.05
+  minAngularDamping: 0.5
+  limitHeldVelocity: 1
+  maxLinearVelocityDelta: 10
+  maxAngularVelocityDelta: 20
   maxRange: 100
   damage: 25
   hittableLayers:
@@ -7227,7 +7239,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.16
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -7235,7 +7247,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.79
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7293,6 +7305,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_Radius
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_SkinWidth
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_StepOffset
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 8748500131873809389, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -7328,7 +7352,16 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 713129146}
+    - targetCorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 713129147}
+    - targetCorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 713129145}
+    - targetCorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 713129153}
     - targetCorrespondingSourceObject: {fileID: 202364687, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 441087510}
@@ -18618,6 +18651,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Magazine
   capacity: 30
   startFull: 1
+  ignoreGunCollisionWhileHeld: 1
+  restoreCollisionDelay: 0.5
 --- !u!114 &654860188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24077,6 +24112,125 @@ MonoBehaviour:
   OnCrouchChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &713129146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441087511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34de2a50dfcf4e70a9def2e103b4951d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  xrOrigin: {fileID: 0}
+  blockPhysicalWalking: 1
+  bodyRadius: 0.15
+  bodyBottomOffset: 0.3
+  minBodyHeight: 0.4
+  blockingLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  ignoreDynamicRigidbodies: 1
+  horizontalOnly: 1
+  maxVerticalSeparationDot: 0.7
+  skinTolerance: 0.005
+  ignoreSelectedInteractables: 1
+  maxPushPerFrame: 0.5
+  solverIterations: 2
+--- !u!114 &713129147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441087511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07db6aa1c1c04da6b7da0d9beec4ea0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  xrOrigin: {fileID: 0}
+  playerColliderRoot: {fileID: 0}
+  refreshInterval: 0.5
+  releaseTimeout: 3
+--- !u!114 &713129153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441087511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7e07a0c2d1436b896514a36765e365, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhysicsHands
+  xrOrigin: {fileID: 0}
+  enablePhysicsHands: 1
+  handBodies: []
+  handMass: 2
+  maxSnapDistance: 0.4
+  maxDepenetrationVelocity: 3
+  ignoreCollisionBetweenHands: 1
+--- !u!1001 &727639777
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 8135023674665499069, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_Name
+      value: XR Interaction Simulator
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.56491
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.07264
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
 --- !u!1 &737007031
 GameObject:
   m_ObjectHideFlags: 0
@@ -48689,6 +48843,7 @@ MonoBehaviour:
   chargeThreshold: 0.95
   pumpReturnThreshold: 0.2
   returnSpeed: 0.6
+  handleCollidersIgnorePhysics: 1
   cycleOutTime: 0.08
   cycleReturnTime: 0.12
   cycleTravel: 1
@@ -55438,6 +55593,7 @@ MonoBehaviour:
   chargeThreshold: 0.95
   pumpReturnThreshold: 0.2
   returnSpeed: 0.6
+  handleCollidersIgnorePhysics: 1
   cycleOutTime: 0.03
   cycleReturnTime: 0.045
   cycleTravel: 1
@@ -55836,9 +55992,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!23 &2132735661
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -55986,6 +56142,16 @@ MonoBehaviour:
   gunShotClip: {fileID: 8300000, guid: 5b5d1358f212f054885f80c999b6224e, type: 3}
   chargingHandle: {fileID: 0}
   manualCycleOnly: 1
+  stabilizeBodyPhysics: 1
+  bodyMass: 0
+  solverIterations: 16
+  solverVelocityIterations: 4
+  maxDepenetrationVelocity: 3
+  minLinearDamping: 0.05
+  minAngularDamping: 0.5
+  limitHeldVelocity: 1
+  maxLinearVelocityDelta: 10
+  maxAngularVelocityDelta: 20
   maxRange: 100
   damage: 25
   hittableLayers:
@@ -56293,7 +56459,7 @@ MonoBehaviour:
   m_SnapToColliderVolume: 1
   m_ReinitializeDynamicAttachEverySingleGrab: 1
   m_AttachEaseInTime: 0.15
-  m_MovementType: 2
+  m_MovementType: 0
   m_PredictedVisualsTransform: {fileID: 0}
   m_VelocityDamping: 1
   m_VelocityScale: 1
@@ -56336,8 +56502,8 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 0
-  m_LimitLinearVelocity: 0
-  m_LimitAngularVelocity: 0
+  m_LimitLinearVelocity: 1
+  m_LimitAngularVelocity: 1
   m_MaxLinearVelocityDelta: 10
   m_MaxAngularVelocityDelta: 20
 --- !u!64 &2132735670
@@ -57232,6 +57398,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Magazine
   capacity: 30
   startFull: 1
+  ignoreGunCollisionWhileHeld: 1
+  restoreCollisionDelay: 0.5
 --- !u!33 &33272618560286585
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -57331,7 +57499,7 @@ MonoBehaviour:
   m_SnapToColliderVolume: 1
   m_ReinitializeDynamicAttachEverySingleGrab: 1
   m_AttachEaseInTime: 0.15
-  m_MovementType: 2
+  m_MovementType: 0
   m_PredictedVisualsTransform: {fileID: 0}
   m_VelocityDamping: 1
   m_VelocityScale: 1
@@ -57374,8 +57542,8 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 0
-  m_LimitLinearVelocity: 0
-  m_LimitAngularVelocity: 0
+  m_LimitLinearVelocity: 1
+  m_LimitAngularVelocity: 1
   m_MaxLinearVelocityDelta: 10
   m_MaxAngularVelocityDelta: 20
 --- !u!54 &33734902345818885
@@ -57402,9 +57570,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!114 &33734902345818886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57471,6 +57639,16 @@ MonoBehaviour:
   gunShotClip: {fileID: 8300000, guid: c453db89aee1b094c99c3a77d7d0b445, type: 3}
   chargingHandle: {fileID: 0}
   manualCycleOnly: 0
+  stabilizeBodyPhysics: 1
+  bodyMass: 0
+  solverIterations: 16
+  solverVelocityIterations: 4
+  maxDepenetrationVelocity: 3
+  minLinearDamping: 0.05
+  minAngularDamping: 0.5
+  limitHeldVelocity: 1
+  maxLinearVelocityDelta: 10
+  maxAngularVelocityDelta: 20
   maxRange: 50
   damage: 25
   hittableLayers:
@@ -57845,6 +58023,7 @@ MonoBehaviour:
   chargeThreshold: 0.95
   pumpReturnThreshold: 0.2
   returnSpeed: 0.6
+  handleCollidersIgnorePhysics: 1
   cycleOutTime: 0.03
   cycleReturnTime: 0.045
   cycleTravel: 1
@@ -58978,3 +59157,4 @@ SceneRoots:
   - {fileID: 4213739265561463}
   - {fileID: 7338781879924375426}
   - {fileID: 2072012560}
+  - {fileID: 727639777}

@@ -39,6 +39,33 @@ public class Gun : MonoBehaviour
     [Tooltip("Bật cho súng pump: không tự giật tay cò, người chơi phải tự kéo pump để lên nòng.")]
     [SerializeField] private bool manualCycleOnly;
 
+    [Header("Physics (chống rung khi súng rơi / đặt xuống)")]
+    [Tooltip("Tự chỉnh Rigidbody của súng lúc Awake cho tiếp đất êm, không nảy lập bập.")]
+    [SerializeField] private bool stabilizeBodyPhysics = true;
+    [Tooltip("Khối lượng súng (kg). 0 = giữ nguyên giá trị đang set trên Rigidbody.")]
+    [SerializeField] private float bodyMass;
+    [Tooltip("Số vòng giải va chạm. Cao hơn = nằm yên chắc hơn trên mặt bàn.")]
+    [SerializeField] private int solverIterations = 16;
+    [SerializeField] private int solverVelocityIterations = 4;
+    [Tooltip("Giới hạn tốc độ đẩy ra khi bị lún vào vật khác (m/s). Thấp = không bị bật nảy sau khi " +
+             "rơi, nhưng ĐỪNG hạ xuống quá thấp: mỗi lần lún sâu (lòng bàn tay lúc thả, băng đạn " +
+             "trong khoang) sẽ bị kéo thành một đợt rung dài nhiều bước physics thay vì một cú bật " +
+             "nhanh. Mặc định Unity là 10; 3 vừa đủ êm mà vẫn thoát overlap gọn.")]
+    [SerializeField] private float maxDepenetrationVelocity = 3f;
+    [Tooltip("Cản tịnh tiến / cản quay tối thiểu, giúp súng tắt dao động thừa và ngủ được.")]
+    [SerializeField] private float minLinearDamping = 0.05f;
+    [SerializeField] private float minAngularDamping = 0.5f;
+
+    [Header("Physics (chống súng xuyên bàn / tường khi đang cầm)")]
+    [Tooltip("Giới hạn mức tăng vận tốc mỗi bước physics lúc đang cầm. Tay là kinematic nên chui " +
+             "thẳng vào bàn được; không có giới hạn này thì XRI set vận tốc súng = quãng cách / " +
+             "dt, vọt lên vài chục m/s và xuyên qua mặt bàn trong đúng 1 bước physics.")]
+    [SerializeField] private bool limitHeldVelocity = true;
+    [Tooltip("m/s mỗi bước physics. 10 ~ 11 cm/bước ở 90 Hz, mỏng hơn mọi vật trong scene.")]
+    [SerializeField] private float maxLinearVelocityDelta = 10f;
+    [Tooltip("rad/s mỗi bước physics.")]
+    [SerializeField] private float maxAngularVelocityDelta = 20f;
+
     [Header("Ballistics")]
     [SerializeField] private float maxRange = 100f;
     [SerializeField] private float damage = 25f;
@@ -67,6 +94,58 @@ public class Gun : MonoBehaviour
 
         if (chargingHandle == null)
             chargingHandle = GetComponentInChildren<ChargingHandle>(true);
+
+        if (stabilizeBodyPhysics)
+            StabilizeBodyPhysics();
+
+        if (limitHeldVelocity)
+            LimitHeldVelocity();
+    }
+
+    // Đặt bằng code chứ không chỉ tick trong Inspector: cả 3 khẩu dùng chung Gun.cs nên khỏi phải
+    // nhớ tick từng khẩu, và không mất khi scene bị ghi đè.
+    private void LimitHeldVelocity()
+    {
+        if (grabInteractable == null)
+            return;
+
+        // Chỉ Velocity Tracking mới chạy qua solver vật lý. Kinematic / Instantaneous là dịch
+        // thẳng transform nên không gì chặn được, có set gì cũng vẫn xuyên.
+        if (grabInteractable.movementType !=
+            UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.VelocityTracking)
+        {
+            Debug.LogWarning(
+                $"{name}: Movement Type đang là {grabInteractable.movementType}, súng sẽ xuyên qua " +
+                "bàn/tường khi cầm. Đổi sang Velocity Tracking trên XR Grab Interactable.", this);
+            return;
+        }
+
+        grabInteractable.limitLinearVelocity = true;
+        grabInteractable.limitAngularVelocity = true;
+        grabInteractable.maxLinearVelocityDelta = Mathf.Max(0.1f, maxLinearVelocityDelta);
+        grabInteractable.maxAngularVelocityDelta = Mathf.Max(0.1f, maxAngularVelocityDelta);
+    }
+
+    // Mặc định của Unity (Discrete + Interpolate None + mass 1 + maxDepenetrationVelocity 10) làm
+    // súng rơi từ cao xuống lún sâu vào mặt bàn trong 1 bước physics, rồi bị đẩy ngược lên rất
+    // mạnh -> nảy lại nhiều lần. Siết mấy thông số này lại thì súng chạm bàn là nằm yên.
+    private void StabilizeBodyPhysics()
+    {
+        Rigidbody body = GetComponent<Rigidbody>();
+
+        if (body == null)
+            return;
+
+        if (bodyMass > 0f)
+            body.mass = bodyMass;
+
+        body.linearDamping = Mathf.Max(body.linearDamping, minLinearDamping);
+        body.angularDamping = Mathf.Max(body.angularDamping, minAngularDamping);
+        body.solverIterations = Mathf.Max(body.solverIterations, solverIterations);
+        body.solverVelocityIterations = Mathf.Max(body.solverVelocityIterations, solverVelocityIterations);
+        body.maxDepenetrationVelocity = Mathf.Max(0.1f, maxDepenetrationVelocity);
+        body.interpolation = RigidbodyInterpolation.Interpolate;
+        body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
     }
 
     void Start()
