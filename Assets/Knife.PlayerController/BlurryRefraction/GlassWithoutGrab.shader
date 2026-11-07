@@ -1,209 +1,118 @@
-Shader "FX/Glass/Stained BumpDistort URP"
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Similar to regular FX/Glass/Stained BumpDistort shader
+// from standard Effects package, just without grab pass,
+// and samples a texture with a different name.
+
+Shader "FX/Glass/Stained BumpDistort (no grab)" {
+Properties {
+	_BumpAmt  ("Distortion", range (0,640)) = 10
+	_TintAmt ("Tint Amount", Range(0,1)) = 0.1
+	_MainTex ("Tint Color (RGB)", 2D) = "white" {}
+	_Mask("Blur Mask", 2D) = "white" {}
+	_NoiseMask("Noise Mask", 2D) = "white" {}
+	_WorldScale("World Scale", float) = 1.0
+	_MaskPower("Blur Mask Power", float) = 1
+	_Tint ("Tint", Color) = (1, 1, 1, 1)
+	_BumpMap ("Normalmap", 2D) = "bump" {}
+}
+
+Category {
+
+	// We must be transparent, so other objects are drawn before this one.
+	Tags { "Queue"="Transparent" "RenderType"="Opaque" }
+
+	SubShader {
+
+		Pass {
+			Name "BASE"
+			Tags { "LightMode" = "Always" }
+			
+CGPROGRAM
+#pragma vertex vert
+#pragma fragment frag
+#pragma multi_compile_fog
+#include "UnityCG.cginc"
+
+struct appdata_t {
+	float4 vertex : POSITION;
+	float2 texcoord: TEXCOORD0;
+};
+
+struct v2f {
+	float4 vertex : POSITION;
+	float4 uvgrab : TEXCOORD0;
+	float2 uvbump : TEXCOORD1;
+	float2 uvmain : TEXCOORD2;
+	float2 uvnoise : TEXCOORD3;
+	UNITY_FOG_COORDS(3)
+};
+
+float _BumpAmt;
+half _TintAmt;
+float4 _BumpMap_ST;
+float4 _MainTex_ST;
+float4 _Tint;
+float _WorldScale;
+
+v2f vert (appdata_t v)
 {
-    Properties
-    {
-        _BumpAmt ("Distortion", Range(0, 640)) = 10
-        _TintAmt ("Tint Amount", Range(0, 1)) = 0.1
+	v2f o;
+	o.vertex = UnityObjectToClipPos(v.vertex);
+	#if UNITY_UV_STARTS_AT_TOP
+	float scale = -1.0;
+	#else
+	float scale = 1.0;
+	#endif
 
-        _MainTex ("Tint Color (RGB)", 2D) = "white" {}
-        _Mask ("Blur Mask", 2D) = "white" {}
-        _NoiseMask ("Noise Mask", 2D) = "white" {}
+	float2 worldXZ = mul(unity_ObjectToWorld, v.vertex).xz;
 
-        _WorldScale ("World Scale", Float) = 1.0
-        _MaskPower ("Blur Mask Power", Float) = 1.0
-        _Tint ("Tint", Color) = (1, 1, 1, 1)
+	o.uvgrab.xy = (float2(o.vertex.x, o.vertex.y*scale) + o.vertex.w) * 0.5;
+	o.uvgrab.zw = o.vertex.zw;
+	o.uvbump = TRANSFORM_TEX( v.texcoord, _BumpMap );
+	o.uvmain = TRANSFORM_TEX( v.texcoord, _MainTex );
+	o.uvnoise = v.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw + worldXZ * _WorldScale;
+	UNITY_TRANSFER_FOG(o,o.vertex);
+	return o;
+}
 
-        _BumpMap ("Normal Map", 2D) = "bump" {}
+sampler2D _GrabBlurTexture;
+sampler2D _GrabNotBlurTexture;
+float4 _GrabBlurTexture_TexelSize;
+sampler2D _BumpMap;
+sampler2D _MainTex;
+sampler2D _Mask;
+sampler2D _NoiseMask;
+float _MaskPower;
 
-        // These are explicit texture inputs, not automatic GrabPass textures.
-        _GrabBlurTexture ("Blurred Background", 2D) = "white" {}
-        _GrabNotBlurTexture ("Original Background", 2D) = "white" {}
-    }
+half4 frag (v2f i) : SV_Target
+{
+	// calculate perturbed coordinates
+	// we could optimize this by just reading the x & y without reconstructing the Z
+	half2 bump = UnpackNormal(tex2D( _BumpMap, i.uvbump )).rg;
+	float2 offset = bump * _BumpAmt * _GrabBlurTexture_TexelSize.xy;
+	i.uvgrab.xy = offset * i.uvgrab.z + i.uvgrab.xy;
+	
+	half4 col = tex2Dproj (_GrabBlurTexture, UNITY_PROJ_COORD(i.uvgrab));
+	half4 originalCol = tex2Dproj(_GrabNotBlurTexture, UNITY_PROJ_COORD(i.uvgrab));
+	half4 tint = tex2D(_MainTex, i.uvmain);
+	half4 noiseMask = tex2D(_NoiseMask, i.uvnoise);
+	half4 maskAmount = tex2D(_Mask, i.uvmain);
+	col = col * lerp (float4(1,1,1,1), tint, _TintAmt) * _Tint;
 
-    SubShader
-    {
-        Tags
-        {
-            "RenderPipeline" = "UniversalPipeline"
-            "Queue" = "Transparent"
-            "RenderType" = "Transparent"
-        }
+	col = lerp(originalCol, col, pow(maskAmount.r * noiseMask.r, _MaskPower));
 
-        Pass
-        {
-            Name "StainedGlass"
-            Tags { "LightMode" = "UniversalForward" }
+	UNITY_APPLY_FOG(i.fogCoord, col);
+	return col;
+}
+ENDCG
+		}
+	}
 
-            Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite Off
-            Cull Back
+}
 
-            HLSLPROGRAM
-
-            #pragma vertex Vert
-            #pragma fragment Frag
-            #pragma multi_compile_fog
-
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-            TEXTURE2D(_BumpMap);
-            SAMPLER(sampler_BumpMap);
-
-            TEXTURE2D(_MainTex);
-            SAMPLER(sampler_MainTex);
-
-            TEXTURE2D(_Mask);
-            SAMPLER(sampler_Mask);
-
-            TEXTURE2D(_NoiseMask);
-            SAMPLER(sampler_NoiseMask);
-
-            TEXTURE2D(_GrabBlurTexture);
-            SAMPLER(sampler_GrabBlurTexture);
-
-            TEXTURE2D(_GrabNotBlurTexture);
-            SAMPLER(sampler_GrabNotBlurTexture);
-
-            float4 _BumpMap_ST;
-            float4 _MainTex_ST;
-            float4 _GrabBlurTexture_TexelSize;
-
-            CBUFFER_START(UnityPerMaterial)
-                float _BumpAmt;
-                half _TintAmt;
-                float _WorldScale;
-                float _MaskPower;
-                float4 _Tint;
-            CBUFFER_END
-
-            struct Attributes
-            {
-                float4 positionOS : POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct Varyings
-            {
-                float4 positionCS : SV_POSITION;
-                float4 screenPos : TEXCOORD0;
-                float2 uvBump : TEXCOORD1;
-                float2 uvMain : TEXCOORD2;
-                float2 uvNoise : TEXCOORD3;
-                float3 positionWS : TEXCOORD4;
-                half fogFactor : TEXCOORD5;
-            };
-
-            Varyings Vert(Attributes input)
-            {
-                Varyings output = (Varyings)0;
-
-                VertexPositionInputs positionInputs =
-                    GetVertexPositionInputs(input.positionOS.xyz);
-
-                output.positionCS = positionInputs.positionCS;
-                output.positionWS = positionInputs.positionWS;
-
-                // Screen-space UVs for the two background textures.
-                output.screenPos = ComputeScreenPos(output.positionCS);
-
-                output.uvBump = TRANSFORM_TEX(input.uv, _BumpMap);
-                output.uvMain = TRANSFORM_TEX(input.uv, _MainTex);
-
-                // Preserve the original world-XZ noise mapping.
-                output.uvNoise =
-                    input.uv * _MainTex_ST.xy
-                    + _MainTex_ST.zw
-                    + positionInputs.positionWS.xz * _WorldScale;
-
-                output.fogFactor = ComputeFogFactor(output.positionCS.z);
-
-                return output;
-            }
-
-            half4 Frag(Varyings input) : SV_Target
-            {
-                // Convert clip-derived screen coordinates to UVs.
-                float2 screenUV =
-                    input.screenPos.xy / input.screenPos.w;
-
-                // Keep UVs inside the valid texture range.
-                screenUV = UnityStereoTransformScreenSpaceTex(screenUV);
-
-                // Preserve the original normal-map distortion.
-                half2 bump = UnpackNormal(
-                    SAMPLE_TEXTURE2D(
-                        _BumpMap,
-                        sampler_BumpMap,
-                        input.uvBump
-                    )
-                ).rg;
-
-                float2 offset =
-                    (float2)bump
-                    * _BumpAmt
-                    * _GrabBlurTexture_TexelSize.xy;
-
-                float2 distortedUV = screenUV + offset;
-
-                // Original and blurred background samples.
-                half4 blurredColor = SAMPLE_TEXTURE2D(
-                    _GrabBlurTexture,
-                    sampler_GrabBlurTexture,
-                    distortedUV
-                );
-
-                half4 originalColor = SAMPLE_TEXTURE2D(
-                    _GrabNotBlurTexture,
-                    sampler_GrabNotBlurTexture,
-                    distortedUV
-                );
-
-                // Tint and masks.
-                half4 tintTexture = SAMPLE_TEXTURE2D(
-                    _MainTex,
-                    sampler_MainTex,
-                    input.uvMain
-                );
-
-                half noise = SAMPLE_TEXTURE2D(
-                    _NoiseMask,
-                    sampler_NoiseMask,
-                    input.uvNoise
-                ).r;
-
-                half mask = SAMPLE_TEXTURE2D(
-                    _Mask,
-                    sampler_Mask,
-                    input.uvMain
-                ).r;
-
-                blurredColor *= lerp(
-                    half4(1, 1, 1, 1),
-                    tintTexture,
-                    _TintAmt
-                );
-
-                blurredColor *= _Tint;
-
-                half blendMask = pow(
-                    saturate(mask * noise),
-                    max(_MaskPower, 0.0001)
-                );
-
-                half4 color = lerp(
-                    originalColor,
-                    blurredColor,
-                    blendMask
-                );
-
-                color.rgb = MixFog(color.rgb, input.fogFactor);
-
-                return color;
-            }
-
-            ENDHLSL
-        }
-    }
-
-    FallBack Off
 }
