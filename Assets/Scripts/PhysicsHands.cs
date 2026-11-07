@@ -58,6 +58,10 @@ public class PhysicsHands : MonoBehaviour
 
     private readonly List<Hand> hands = new List<Hand>();
 
+    // Nhớ lại origin đã dùng lúc Start: RefreshSelfCollisionIgnores cần nó, mà lúc đó tay đã
+    // được tháo khỏi Controller nên không suy lại từ hierarchy được.
+    private Transform cachedOrigin;
+
     private Transform OriginTransform
     {
         get
@@ -104,7 +108,32 @@ public class PhysicsHands : MonoBehaviour
             return;
         }
 
+        cachedOrigin = origin;
         IgnoreSelfCollisions(origin);
+    }
+
+    /// <summary>
+    /// Đặt lại cờ bỏ va chạm giữa tay và thân người chơi / giữa hai tay.
+    ///
+    /// Phải gọi lại sau khi có collider của tay bị disable rồi enable: cờ
+    /// <see cref="Physics.IgnoreCollision"/> KHÔNG bền - Unity xoá cờ của một collider ngay khi
+    /// collider đó bị tắt rồi bật lại. <see cref="HandPoseDriver"/> tắt 16 capsule ngón tay
+    /// trong lúc đang cầm súng, nên không gọi lại thì ngay sau lần cầm đầu tiên ngón tay bắt đầu
+    /// đập vào CharacterController của chính người chơi và đập vào bàn tay kia.
+    /// </summary>
+    public void RefreshSelfCollisionIgnores()
+    {
+        if (hands.Count == 0)
+            return;
+
+        // Danh sách collider có thể đã đổi (model tay bật/tắt theo chế độ nhập liệu).
+        foreach (Hand hand in hands)
+        {
+            if (hand.Body != null)
+                hand.Colliders = hand.Body.GetComponentsInChildren<Collider>(true);
+        }
+
+        IgnoreSelfCollisions(cachedOrigin != null ? cachedOrigin : OriginTransform);
     }
 
     private IEnumerable<Rigidbody> CollectHandBodies(Transform origin)
@@ -182,7 +211,7 @@ public class PhysicsHands : MonoBehaviour
     {
         // Không có dòng này thì tay đập vào CharacterController của chính mình, không đưa ra trước
         // mặt được.
-        var characterController = origin.GetComponent<CharacterController>();
+        var characterController = origin != null ? origin.GetComponent<CharacterController>() : null;
 
         foreach (Hand hand in hands)
         {

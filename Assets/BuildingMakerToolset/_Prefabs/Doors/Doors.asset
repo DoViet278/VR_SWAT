@@ -1,3 +1,29 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0480b6303fd7cc51f9ec5732c66a78a62ba984ec860a2fd129799670f998395c
-size 1565
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07dd6f7996e897849b911903d7b01ba9, type: 3}
+  m_Name: Doors
+  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 6428635688939813109, guid: db566b4db7d030a49b7311eaa1138516, type: 3}
+  - {fileID: 4498941319094913661, guid: 234946a9d33394e49ae6287bc9a2958e, type: 3}
+  - {fileID: 994615563843771910, guid: 77702f6933da85b459d2fbe1478309d7, type: 3}
+  - {fileID: 2128791692748000856, guid: 1c74ec33fc5ce9a438cb5a19b765d4e1, type: 3}
+  - {fileID: 5271985346801709464, guid: 22db80f30a9b1fa4f99b76e6576b59d8, type: 3}
+  - {fileID: 224741743645544146, guid: ddab45723e8fd674aacefdf6b691dad8, type: 3}
+  - {fileID: 3018745589653111514, guid: a52745e58fe7ee448acd851105bdac67, type: 3}
+  - {fileID: 6756826875955657760, guid: 0d72a745da8e100439a3d711119cf97b, type: 3}
+  - {fileID: 1490705946920099456, guid: f655bd3375800f0409d70c3263aaa58a, type: 3}
+  - {fileID: 3856364159278673316, guid: dcd1b016dcfe1824a817faed2f68fb8a, type: 3}
+  - {fileID: 1680836436264309839, guid: 492f611f5af312a42905f0d4d92a6f4f, type: 3}
+  - {fileID: 4191036575237786479, guid: afbabc79ac6df7642a56ae1adb5546a0, type: 3}
+  - {fileID: 9211739268355902407, guid: 76a48161021100d46b44cba1ab466994, type: 3}
+  - {fileID: 7035102980229015511, guid: 25cdfcd4a8b2abb428e1cf2406d1df8c, type: 3}
