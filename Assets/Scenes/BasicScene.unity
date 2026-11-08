@@ -6691,7 +6691,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2116207657764143343, guid: 49d387f080e456b4d9e5da3aacbceb56, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8192
+      value: 0.998
       objectReference: {fileID: 0}
     - target: {fileID: 2116207657764143343, guid: 49d387f080e456b4d9e5da3aacbceb56, type: 3}
       propertyPath: m_LocalPosition.z
@@ -49892,7 +49892,7 @@ Transform:
   m_GameObject: {fileID: 1846189485}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0376, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -56136,20 +56136,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 362090695}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 349955c8d8572ae40bf7fd3fc51a7a97, type: 3}
+  m_Script: {fileID: 11500000, guid: 36fe4640619afd244ba011ca86f99ba6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandPoseAuthoring
-  handedness: 1
-  supportHand: 0
-  pose: {fileID: 11400000, guid: f4d072cfa2334b24a9c719ea65d02182, type: 2}
-  mirrorSource: {fileID: 0}
-  curl:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  previewHand: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
+  leftHandPose: {fileID: 0}
+  rightHandPose: {fileID: 11400000, guid: f4d072cfa2334b24a9c719ea65d02182, type: 2}
+  leftSupportPose: {fileID: 0}
+  rightSupportPose: {fileID: 0}
+  blendInTime: 0.08
+  blendOutTime: 0.08
+  interactable: {fileID: 0}
 --- !u!1 &2092139007
 GameObject:
   m_ObjectHideFlags: 0
