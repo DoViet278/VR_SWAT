@@ -37,6 +37,10 @@ public class GunAmmoManager : MonoBehaviour
     [SerializeField] private bool requireCharge = true;
     [Tooltip("Bật: bắn xong tự lên viên kế tiếp (rifle, pistol). Tắt: phải kéo pump bằng tay (shotgun).")]
     [SerializeField] private bool autoCycleOnFire = true;
+    [Tooltip("Vào scene là đã có sẵn 1 viên nằm trong buồng đạn, KHÔNG rút từ ống đạn / băng. " +
+             "Dùng cho cấu hình 7+1 của shotgun: 7 viên trong ống tiếp đạn + 1 viên đã lên nòng " +
+             "= 8 viên, bắn được ngay mà không phải kéo pump trước.")]
+    [SerializeField] private bool startChambered;
 
     private Magazine currentMagazine;
     private ChamberState chamber;
@@ -65,6 +69,11 @@ public class GunAmmoManager : MonoBehaviour
     // Magazine.Awake và Awake ở đây không có thứ tự xác định, nên số đạn chỉ đáng tin từ Start.
     private void Start()
     {
+        // Gán thẳng chứ không gọi Chamber(): Chamber() rút 1 viên ra khỏi ống đạn, nên cấu hình
+        // 7+1 sẽ bị thành 6+1 = 7 viên thay vì 8.
+        if (startChambered && chamber == ChamberState.Empty)
+            chamber = ChamberState.Live;
+
         OnAmmoChanged?.Invoke();
     }
 

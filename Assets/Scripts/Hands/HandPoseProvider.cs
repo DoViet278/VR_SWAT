@@ -63,6 +63,8 @@ public class HandPoseProvider : MonoBehaviour
         interactable.selectExited.AddListener(OnSelectChanged);
         subscribed = true;
 
+        WarnIfHandCanRotate();
+
         // Vật có thể đang được cầm sẵn (component vừa được bật lại).
         Refresh();
     }
@@ -87,6 +89,41 @@ public class HandPoseProvider : MonoBehaviour
     private void OnSelectChanged(SelectExitEventArgs args)
     {
         Refresh();
+    }
+
+    /// <summary>
+    /// Cảnh báo mấy setting làm bàn tay vẫn xoay được dù đã có dáng cố định.
+    ///
+    /// <c>Use Dynamic Attach</c> là cái bẫy chính: bật thì XRI dựng điểm bám NGAY TẠI chỗ bàn
+    /// tay lúc bấm nút, nên vật không hề snap vào điểm bám đã tạo dáng - cầm ở góc nào thì bàn
+    /// tay nằm nghiêng ở góc đó, chỉ dáng ngón là đúng. Phải bỏ tick.
+    ///
+    /// Thiếu <see cref="HandPosedGrabInteractable"/> thì hai tay dùng chung một điểm bám, nên
+    /// bên tay còn lại ôm báng lệch hẳn.
+    ///
+    /// Cảnh báo chứ không tự sửa: đổi setting của scene lúc đang chạy thì Inspector nói một
+    /// đằng, chạy một nẻo. Chạy Tools → VR SWAT → Đổi sang Hand Posed Grab Interactable.
+    /// </summary>
+    private void WarnIfHandCanRotate()
+    {
+        if (!(interactable is XRGrabInteractable grab))
+            return;
+
+        if (grab.useDynamicAttach)
+        {
+            Debug.LogWarning(nameof(HandPoseProvider) + " trên '" + name + "': Use Dynamic Attach " +
+                             "đang bật nên vật không snap vào điểm bám đã tạo dáng - cầm ở góc nào " +
+                             "thì bàn tay nghiêng ở góc đó. Bỏ tick Use Dynamic Attach trên " +
+                             "interactable.", this);
+        }
+
+        if (!(grab is HandPosedGrabInteractable))
+        {
+            Debug.LogWarning(nameof(HandPoseProvider) + " trên '" + name + "': vật còn là " +
+                             nameof(XRGrabInteractable) + " thường nên hai tay dùng chung một " +
+                             "Attach Transform. Chạy Tools → VR SWAT → Đổi sang Hand Posed Grab " +
+                             "Interactable rồi gán Left/Right Hand Attach.", this);
+        }
     }
 
     /// <summary>Tính lại dáng cho mọi bàn tay đang cầm vật này.</summary>
