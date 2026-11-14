@@ -340,8 +340,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 69705468}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.44562954, y: -0.30516607, z: 0.78682995, w: 0.29864153}
-  m_LocalPosition: {x: -0.019426756, y: -0.13835351, z: 0.072316505}
+  m_LocalRotation: {x: 0.608326, y: -0.43131626, z: 0.4691096, w: 0.47311953}
+  m_LocalPosition: {x: -0.013010061, y: -0.16180487, z: 0.078367494}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -462,7 +462,7 @@ Transform:
   m_GameObject: {fileID: 90640616}
   serializedVersion: 2
   m_LocalRotation: {x: -0.3621629, y: 0.4528975, z: 0.62241143, w: -0.5256672}
-  m_LocalPosition: {x: 0.008910795, y: 0.0050351266, z: 0.00257897}
+  m_LocalPosition: {x: 0.0039, y: 0.0039, z: 0.0042}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -851,8 +851,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1559c8015b36894da5709ac52db39c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Magazine
-  capacity: 6
-  startFull: 0
+  capacity: 7
+  startFull: 1
   ignoreGunCollisionWhileHeld: 1
   restoreCollisionDelay: 0.5
 --- !u!4 &193625647
@@ -5919,8 +5919,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 254406929}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.35109866, y: -0.3354746, z: -0.31188625, w: 0.81664777}
-  m_LocalPosition: {x: -0.0067, y: 0.0606, z: 0.0111}
+  m_LocalRotation: {x: 0.6219674, y: -0.020683615, z: -0.075719975, w: 0.779099}
+  m_LocalPosition: {x: -0.006919359, y: 0.061095625, z: 0.027346348}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6330,8 +6330,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 352155469}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.04845227, y: -0.14571723, z: -0.7381178, w: 0.65696347}
-  m_LocalPosition: {x: 4.549, y: 1.075, z: 3.902}
+  m_LocalRotation: {x: -0.2486233, y: -0.0148396585, z: 0.62613404, w: 0.7388656}
+  m_LocalPosition: {x: 4.1164002, y: 0.9936447, z: 3.466097}
   m_LocalScale: {x: 1.6000198, y: 1.6, z: 1.6000198}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -6355,7 +6355,7 @@ Transform:
   - {fileID: 876773001}
   - {fileID: 170920767}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -8.711, y: 344.57, z: 264.524}
+  m_LocalEulerAnglesHint: {x: -20.415, y: 699.169, z: 84.349}
 --- !u!64 &352155473
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6386,7 +6386,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 352155469}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 3.63
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -6571,7 +6571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gun
   fireMode: 1
-  roundsPerMinute: 700
+  roundsPerMinute: 600
   gunShotEffect: {fileID: 1499830363}
   gunShotLiveTime: 0.1
   usedShellTemplate: {fileID: 542523157}
@@ -6595,7 +6595,7 @@ MonoBehaviour:
   maxLinearVelocityDelta: 10
   maxAngularVelocityDelta: 20
   maxRange: 100
-  damage: 25
+  damage: 70
   hittableLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -7304,7 +7304,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4053579577978487484, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_CastRadius
-      value: 0.2
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 4065709321064247272, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_IsActive
@@ -7329,6 +7329,10 @@ PrefabInstance:
     - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_StepOffset
       value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436123941575367715, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_CastRadius
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 8748500131873809389, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_IsActive
@@ -18662,7 +18666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1559c8015b36894da5709ac52db39c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Magazine
-  capacity: 30
+  capacity: 20
   startFull: 1
   ignoreGunCollisionWhileHeld: 1
   restoreCollisionDelay: 0.5
@@ -24187,63 +24191,17 @@ MonoBehaviour:
   maxSnapDistance: 0.4
   maxDepenetrationVelocity: 3
   ignoreCollisionBetweenHands: 1
---- !u!1001 &727639777
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 8135023674665499069, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_Name
-      value: XR Interaction Simulator
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.56491
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 2.07264
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8518324294302271954, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+  lockHandWhileHolding: 1
+  disableCollidersWhileLocked: 1
+  colliderRestoreDelay: 0.2
+  colliderRestoreTimeout: 3
+  onlyLockForGrabInteractables: 1
+  weldHandToHeldItem: 1
+  weldHandPosition: 1
+  weldBlendTime: 0.15
+  weldOnlyToHandAttachTransforms: 0
+  weldMaxDistance: 0.5
+  selfIgnoreRefreshInterval: 1
 --- !u!1 &737007031
 GameObject:
   m_ObjectHideFlags: 0
@@ -30058,12 +30016,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 424b014d31aa43d7980928e91dab10f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionKickMin: {x: 0, y: 0, z: -0.01}
-  positionKickMax: {x: 0, y: 0, z: -0.025}
-  rotationKickMin: {x: -7, y: -1.5, z: -1}
-  rotationKickMax: {x: -4, y: 1.5, z: 1}
-  positionRecoverTime: 0.12
-  rotationRecoverTime: 0.1
+  recoilStrength: 0.5
+  verticalRecoil: 2
+  horizontalRecoil: 0.5
+  recoveryTime: 0.3
+  recoilDuration: 0.15
+  recoilIntensity: 1
+  kickBackDistance: 0.03
+  maxVerticalClimb: 12
+  applyCameraKick: 0
+  cameraRecoilPivot: {fileID: 0}
+  cameraPitch: 0.4
+  cameraYaw: 0.15
   heatPerShot: 0.15
   heatDecayPerSecond: 0.6
   minSpreadDegrees: 0.15
@@ -30186,7 +30150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
   leftHandPose: {fileID: 0}
   rightHandPose: {fileID: 11400000, guid: 29a4ed61b59f3004193656c464a9277e, type: 2}
-  leftSupportPose: {fileID: 0}
+  leftSupportPose: {fileID: 11400000, guid: c4d3a83e3b7294d48ad713b4ac81f9c7, type: 2}
   rightSupportPose: {fileID: 0}
   blendInTime: 0.08
   blendOutTime: 0.08
@@ -30575,13 +30539,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 990062347}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.3, z: 0.0552}
+  m_LocalRotation: {x: -0.6719558, y: 0.31346986, z: -0.5578799, w: -0.3728031}
+  m_LocalPosition: {x: -0.018259935, y: -0.3025556, z: 0.06071823}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2132735663}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 121.703995, y: -79.078, z: 0.58000183}
 --- !u!1 &992088542
 GameObject:
   m_ObjectHideFlags: 0
@@ -35708,8 +35672,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1021456388}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.38499126, y: -0.33969447, z: -0.5875697, w: 0.62542087}
+  m_LocalPosition: {x: -0.0024706554, y: -0.0063829557, z: 0.0049490393}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42340,10 +42304,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1310354247}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.56138533, y: -0.058687225, z: -0.07920042, w: 0.8216627}
-  m_LocalPosition: {x: -0.011936792, y: 0.011403048, z: -0.00574324}
-  m_LocalScale: {x: 0.8333333, y: 0.8333333, z: 0.8333333}
-  m_ConstrainProportionsScale: 1
+  m_LocalRotation: {x: -0.58483833, y: 0.023418305, z: 0.0071339, w: -0.81078035}
+  m_LocalPosition: {x: -0.012608272, y: 0.0021028968, z: 0.0043954505}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2132735663}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -43398,8 +43362,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.033, y: 0.026, z: 0.033}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.033, y: 0.058467317, z: 0.04753453}
+  m_Center: {x: -1.4690145e-10, y: 0.016233677, z: -0.007267267}
 --- !u!1 &1504132343
 GameObject:
   m_ObjectHideFlags: 0
@@ -49022,6 +48986,7 @@ MonoBehaviour:
   cycleReturnTime: 0.12
   cycleTravel: 1
   lockOpenWhenEmpty: 0
+  onlyWhenNotChambered: 1
   audioSource: {fileID: 1702315172}
   chargeClip: {fileID: 0}
   ejectClip: {fileID: 8300000, guid: eb410eaa96944e541a9209dfbe2d6c83, type: 3}
@@ -56084,6 +56049,7 @@ MonoBehaviour:
   cycleReturnTime: 0.045
   cycleTravel: 1
   lockOpenWhenEmpty: 1
+  onlyWhenNotChambered: 1
   audioSource: {fileID: 0}
   chargeClip: {fileID: 0}
   ejectClip: {fileID: 0}
@@ -56467,6 +56433,7 @@ GameObject:
   - component: {fileID: 2132735670}
   - component: {fileID: 2132735671}
   - component: {fileID: 2132735672}
+  - component: {fileID: 2132735690}
   m_Layer: 0
   m_Name: Shotgun
   m_TagString: Untagged
@@ -56482,7 +56449,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2132735658}
   serializedVersion: 5
-  m_Mass: 2
+  m_Mass: 3.45
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -56566,8 +56533,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2132735658}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.12789515, y: 0.056401957, z: -0.6954689, w: 0.7048296}
-  m_LocalPosition: {x: 6.5425, y: 1.047, z: 3.9335}
+  m_LocalRotation: {x: -0.46358684, y: -0.30961996, z: -0.53396785, w: 0.6356895}
+  m_LocalPosition: {x: 6.5590506, y: 1.3557601, z: 3.6506426}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -56599,7 +56566,7 @@ Transform:
   - {fileID: 1146605733}
   - {fileID: 1502267522}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -173.5174, y: -17, z: 102}
+  m_LocalEulerAnglesHint: {x: -113.067, y: -164.995, z: 89.99}
 --- !u!114 &2132735664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56635,7 +56602,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gun
   fireMode: 0
-  roundsPerMinute: 700
+  roundsPerMinute: 30
   gunShotEffect: {fileID: 1642338253}
   gunShotLiveTime: 0.1
   usedShellTemplate: {fileID: 0}
@@ -56659,7 +56626,7 @@ MonoBehaviour:
   maxLinearVelocityDelta: 10
   maxAngularVelocityDelta: 20
   maxRange: 100
-  damage: 25
+  damage: 90
   hittableLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -56729,6 +56696,42 @@ MonoBehaviour:
         m_CallState: 2
   requireCharge: 1
   autoCycleOnFire: 0
+  startChambered: 1
+--- !u!114 &2132735690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132735658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 424b014d31aa43d7980928e91dab10f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GunRecoilController
+  recoilStrength: 1
+  verticalRecoil: 4
+  horizontalRecoil: 0.6
+  recoveryTime: 0.5
+  recoilDuration: 0.22
+  recoilIntensity: 1
+  kickBackDistance: 0.03
+  maxVerticalClimb: 12
+  applyCameraKick: 0
+  cameraRecoilPivot: {fileID: 0}
+  cameraPitch: 0.6
+  cameraYaw: 0.2
+  heatPerShot: 0.15
+  heatDecayPerSecond: 0.6
+  minSpreadDegrees: 0.15
+  maxSpreadDegrees: 4
+  twoHandedRecoilMultiplier: 0.45
+  twoHandedSpreadMultiplier: 0.5
+  twoHandedStabilizationBoost: 0.6
+  stabilizeJitter: 1
+  jitterAngleThreshold: 1.2
+  minFollowFactor: 0.25
+  maxFollowFactor: 1
 --- !u!114 &2132735667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56957,7 +56960,7 @@ MonoBehaviour:
   m_StartingInteractionStrengthFilters: []
   m_AutoFindParentInteractableInHierarchy: 0
   m_ParentInteractableObject: {fileID: 0}
-  m_AttachTransform: {fileID: 1310354248}
+  m_AttachTransform: {fileID: 990062348}
   m_SecondaryAttachTransform: {fileID: 990062348}
   m_UseDynamicAttach: 0
   m_MatchAttachPosition: 1
@@ -57071,7 +57074,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
   leftHandPose: {fileID: 0}
   rightHandPose: {fileID: 11400000, guid: ca9d469ee4e928149aceebd234616eab, type: 2}
-  leftSupportPose: {fileID: 0}
+  leftSupportPose: {fileID: 11400000, guid: 66e33efa122a72c4b8f9e3e660f126d2, type: 2}
   rightSupportPose: {fileID: 0}
   blendInTime: 0.08
   blendOutTime: 0.08
@@ -57163,6 +57166,7 @@ GameObject:
   - component: {fileID: 33734902345818889}
   - component: {fileID: 33734902345818890}
   - component: {fileID: 33734902345818891}
+  - component: {fileID: 33734902345818892}
   m_Layer: 0
   m_Name: Pistol
   m_TagString: Untagged
@@ -57287,8 +57291,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575501686342039}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.416708, y: 1.0422, z: 3.7502513}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.416708, y: 1.1657263, z: 3.6952024}
   m_LocalScale: {x: 2.75, y: 2.7500086, z: 2.75}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -57922,7 +57926,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1559c8015b36894da5709ac52db39c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Magazine
-  capacity: 30
+  capacity: 17
   startFull: 1
   ignoreGunCollisionWhileHeld: 1
   restoreCollisionDelay: 0.5
@@ -58019,7 +58023,7 @@ MonoBehaviour:
   m_ParentInteractableObject: {fileID: 0}
   m_AttachTransform: {fileID: 90640617}
   m_SecondaryAttachTransform: {fileID: 1021456389}
-  m_UseDynamicAttach: 1
+  m_UseDynamicAttach: 0
   m_MatchAttachPosition: 1
   m_MatchAttachRotation: 1
   m_SnapToColliderVolume: 1
@@ -58080,7 +58084,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575501686342039}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 0.705
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -58151,8 +58155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6180d0baae67acb438431915111ecffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gun
-  fireMode: 1
-  roundsPerMinute: 700
+  fireMode: 0
+  roundsPerMinute: 300
   gunShotEffect: {fileID: 0}
   gunShotLiveTime: 0.1
   usedShellTemplate: {fileID: 0}
@@ -58176,7 +58180,7 @@ MonoBehaviour:
   maxLinearVelocityDelta: 10
   maxAngularVelocityDelta: 20
   maxRange: 50
-  damage: 25
+  damage: 35
   hittableLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -58291,12 +58295,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 424b014d31aa43d7980928e91dab10f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GunRecoilController
-  positionKickMin: {x: 0, y: 0, z: -0.008}
-  positionKickMax: {x: 0, y: 0, z: -0.02}
-  rotationKickMin: {x: -9, y: -1.5, z: -2}
-  rotationKickMax: {x: -6, y: 1.5, z: 2}
-  positionRecoverTime: 0.14
-  rotationRecoverTime: 0.12
+  recoilStrength: 0.18
+  verticalRecoil: 1.5
+  horizontalRecoil: 0.4
+  recoveryTime: 0.25
+  recoilDuration: 0.12
+  recoilIntensity: 1
+  kickBackDistance: 0.03
+  maxVerticalClimb: 12
+  applyCameraKick: 0
+  cameraRecoilPivot: {fileID: 0}
+  cameraPitch: 0.3
+  cameraYaw: 0.1
   heatPerShot: 0.1
   heatDecayPerSecond: 0.8
   minSpreadDegrees: 0.3
@@ -58345,11 +58355,67 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
   leftHandPose: {fileID: 0}
   rightHandPose: {fileID: 11400000, guid: 01fc689c4874b6242bd7db02177df5ed, type: 2}
-  leftSupportPose: {fileID: 0}
+  leftSupportPose: {fileID: 11400000, guid: e835118e5b3251e439fe92a985c16a23, type: 2}
   rightSupportPose: {fileID: 0}
   blendInTime: 0.08
   blendOutTime: 0.08
   interactable: {fileID: 0}
+--- !u!114 &33734902345818892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575501686342039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb69fd0a6b421024c833365aacd53ee9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GunHapticFeedback
+  quality: 0
+  advancedDeviceKeywords:
+  - Plus
+  - Pro
+  basicShot:
+    amplitude: 0.6
+    duration: 0.08
+    frequency: 0
+    delay: 0
+  advancedShot:
+  - amplitude: 1
+    duration: 0.03
+    frequency: 320
+    delay: 0
+  - amplitude: 0.45
+    duration: 0.07
+    frequency: 140
+    delay: 0.03
+  dryFire:
+    amplitude: 0.25
+    duration: 0.03
+    frequency: 200
+    delay: 0
+  shellInsert:
+    amplitude: 0.4
+    duration: 0.04
+    frequency: 180
+    delay: 0
+  shellRejected:
+    amplitude: 0.15
+    duration: 0.03
+    frequency: 90
+    delay: 0
+  pumpPull:
+    amplitude: 0.5
+    duration: 0.05
+    frequency: 150
+    delay: 0
+  pumpPush:
+    amplitude: 0.6
+    duration: 0.05
+    frequency: 220
+    delay: 0
+  twoHandedMultiplier: 0.7
 --- !u!33 &33854094409959103
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -58573,6 +58639,7 @@ MonoBehaviour:
   cycleReturnTime: 0.045
   cycleTravel: 1
   lockOpenWhenEmpty: 1
+  onlyWhenNotChambered: 1
   audioSource: {fileID: 0}
   chargeClip: {fileID: 0}
   ejectClip: {fileID: 0}
@@ -59702,4 +59769,3 @@ SceneRoots:
   - {fileID: 4213739265561463}
   - {fileID: 7338781879924375426}
   - {fileID: 2072012560}
-  - {fileID: 727639777}
