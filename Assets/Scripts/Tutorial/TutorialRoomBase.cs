@@ -186,6 +186,12 @@ namespace VRSwat.Tutorial
             listeners.Add(s => { if (s.id == id) action(); });
         }
 
+        // Giống OnSignal nhưng nhận cả tín hiệu (để đọc vị trí nổ, source...)
+        protected void OnSignal(string id, Action<TutorialSignal> action)
+        {
+            listeners.Add(s => { if (s.id == id) action(s); });
+        }
+
         protected void OnceOnSignal(string id, Action action)
         {
             Action<TutorialSignal> h = null;
