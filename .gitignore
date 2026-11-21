@@ -73,3 +73,28 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+Assets/XR/AndroidXR/AndroidXRSettingsInitializer
+Assets/XR/Settings/OpenXR Package Settings.asset
+ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json
+ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json
+ProjectSettings/ShaderGraphSettings.asset
+ProjectSettings/ProjectSettings.asset
+
+# IDE / editor folders
+.idea/
+.vscode/
+*.DotSettings.user
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Unity generated
+/[Aa]ssets/Plugins/Editor/JetBrains*
+InitTestScene*.unity*
+*.stackdump
+
+# Large assets kept out of git (shared separately; place into Assets/Model)
+/Assets/Model/
+/Assets/Model.meta

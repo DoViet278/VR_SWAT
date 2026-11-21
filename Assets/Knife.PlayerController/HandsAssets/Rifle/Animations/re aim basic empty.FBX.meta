@@ -1,0 +1,387 @@
+fileFormatVersion: 2
+guid: 7d3b8821978a7aa46bd73f7d89e7949b
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Camera001
+    100002: CATRigHub001
+    100004: CATRigLArm1
+    100006: CATRigLArm21
+    100008: CATRigLArm22
+    100010: CATRigLArmCollarbone
+    100012: CATRigLArmDigit11
+    100014: CATRigLArmDigit12
+    100016: CATRigLArmDigit13
+    100018: CATRigLArmDigit21
+    100020: CATRigLArmDigit22
+    100022: CATRigLArmDigit23
+    100024: CATRigLArmDigit31
+    100026: CATRigLArmDigit32
+    100028: CATRigLArmDigit33
+    100030: CATRigLArmDigit41
+    100032: CATRigLArmDigit42
+    100034: CATRigLArmDigit43
+    100036: CATRigLArmDigit51
+    100038: CATRigLArmDigit52
+    100040: CATRigLArmDigit53
+    100042: CATRigLArmIKTarget
+    100044: CATRigLArmPalm
+    100046: CATRigRArm1
+    100048: CATRigRArm21
+    100050: CATRigRArm22
+    100052: CATRigRArmCollarbone
+    100054: CATRigRArmDigit11
+    100056: CATRigRArmDigit12
+    100058: CATRigRArmDigit13
+    100060: CATRigRArmDigit21
+    100062: CATRigRArmDigit22
+    100064: CATRigRArmDigit23
+    100066: CATRigRArmDigit31
+    100068: CATRigRArmDigit32
+    100070: CATRigRArmDigit33
+    100072: CATRigRArmDigit41
+    100074: CATRigRArmDigit42
+    100076: CATRigRArmDigit43
+    100078: CATRigRArmDigit51
+    100080: CATRigRArmDigit52
+    100082: CATRigRArmDigit53
+    100084: CATRigRArmPalm
+    100086: Character001
+    100088: full gloves
+    100090: gloves without fingers
+    100092: hands
+    100094: long sleeves
+    100096: //RootNode
+    100098: scar h
+    100100: scar h aim1
+    100102: scar h aim2
+    100104: scar h barrel
+    100106: scar h handle
+    100108: scar h ring
+    100110: scar h trigger
+    100112: scar h trigger 2
+    100114: scar h004
+    100116: scar holder
+    100118: short sleeves
+    100120: "\u044B\u0441\u0444\u043A \u0440 butt"
+    100122: Rifle butt
+    100124: Rifle h
+    100126: Rifle h aim1
+    100128: Rifle h aim2
+    100130: Rifle h barrel
+    100132: Rifle h handle
+    100134: Rifle h ring
+    100136: Rifle h trigger
+    100138: Rifle h trigger 2
+    100140: Rifle h004
+    100142: Rifle holder
+    400000: Camera001
+    400002: CATRigHub001
+    400004: CATRigLArm1
+    400006: CATRigLArm21
+    400008: CATRigLArm22
+    400010: CATRigLArmCollarbone
+    400012: CATRigLArmDigit11
+    400014: CATRigLArmDigit12
+    400016: CATRigLArmDigit13
+    400018: CATRigLArmDigit21
+    400020: CATRigLArmDigit22
+    400022: CATRigLArmDigit23
+    400024: CATRigLArmDigit31
+    400026: CATRigLArmDigit32
+    400028: CATRigLArmDigit33
+    400030: CATRigLArmDigit41
+    400032: CATRigLArmDigit42
+    400034: CATRigLArmDigit43
+    400036: CATRigLArmDigit51
+    400038: CATRigLArmDigit52
+    400040: CATRigLArmDigit53
+    400042: CATRigLArmIKTarget
+    400044: CATRigLArmPalm
+    400046: CATRigRArm1
+    400048: CATRigRArm21
+    400050: CATRigRArm22
+    400052: CATRigRArmCollarbone
+    400054: CATRigRArmDigit11
+    400056: CATRigRArmDigit12
+    400058: CATRigRArmDigit13
+    400060: CATRigRArmDigit21
+    400062: CATRigRArmDigit22
+    400064: CATRigRArmDigit23
+    400066: CATRigRArmDigit31
+    400068: CATRigRArmDigit32
+    400070: CATRigRArmDigit33
+    400072: CATRigRArmDigit41
+    400074: CATRigRArmDigit42
+    400076: CATRigRArmDigit43
+    400078: CATRigRArmDigit51
+    400080: CATRigRArmDigit52
+    400082: CATRigRArmDigit53
+    400084: CATRigRArmPalm
+    400086: Character001
+    400088: full gloves
+    400090: gloves without fingers
+    400092: hands
+    400094: long sleeves
+    400096: //RootNode
+    400098: scar h
+    400100: scar h aim1
+    400102: scar h aim2
+    400104: scar h barrel
+    400106: scar h handle
+    400108: scar h ring
+    400110: scar h trigger
+    400112: scar h trigger 2
+    400114: scar h004
+    400116: scar holder
+    400118: short sleeves
+    400120: "\u044B\u0441\u0444\u043A \u0440 butt"
+    400122: Rifle butt
+    400124: Rifle h
+    400126: Rifle h aim1
+    400128: Rifle h aim2
+    400130: Rifle h barrel
+    400132: Rifle h handle
+    400134: Rifle h ring
+    400136: Rifle h trigger
+    400138: Rifle h trigger 2
+    400140: Rifle h004
+    400142: Rifle holder
+    2000000: Camera001
+    2100000: Scar - H
+    2100002: Scar - H2
+    2100004: hands
+    2100006: gloves
+    2100008: clothes
+    2100010: Rifle - H
+    2100012: Rifle - H2
+    2300000: scar h
+    2300002: scar h aim1
+    2300004: scar h aim2
+    2300006: scar h barrel
+    2300008: scar h handle
+    2300010: scar h ring
+    2300012: scar h trigger
+    2300014: scar h trigger 2
+    2300016: scar h004
+    2300018: scar holder
+    2300020: "\u044B\u0441\u0444\u043A \u0440 butt"
+    2300022: Rifle butt
+    2300024: Rifle h
+    2300026: Rifle h aim1
+    2300028: Rifle h aim2
+    2300030: Rifle h barrel
+    2300032: Rifle h handle
+    2300034: Rifle h ring
+    2300036: Rifle h trigger
+    2300038: Rifle h trigger 2
+    2300040: Rifle h004
+    2300042: Rifle holder
+    3300000: scar h
+    3300002: scar h aim1
+    3300004: scar h aim2
+    3300006: scar h barrel
+    3300008: scar h handle
+    3300010: scar h ring
+    3300012: scar h trigger
+    3300014: scar h trigger 2
+    3300016: scar h004
+    3300018: scar holder
+    3300020: "\u044B\u0441\u0444\u043A \u0440 butt"
+    3300022: Rifle butt
+    3300024: Rifle h
+    3300026: Rifle h aim1
+    3300028: Rifle h aim2
+    3300030: Rifle h barrel
+    3300032: Rifle h handle
+    3300034: Rifle h ring
+    3300036: Rifle h trigger
+    3300038: Rifle h trigger 2
+    3300040: Rifle h004
+    3300042: Rifle holder
+    4300000: scar h
+    4300002: "\u044B\u0441\u0444\u043A \u0440 butt"
+    4300004: scar holder
+    4300006: scar h trigger
+    4300008: scar h handle
+    4300010: scar h trigger 2
+    4300012: scar h aim2
+    4300014: scar h aim1
+    4300016: scar h004
+    4300018: scar h ring
+    4300020: scar h barrel
+    4300022: full gloves
+    4300024: short sleeves
+    4300026: hands
+    4300028: gloves without fingers
+    4300030: long sleeves
+    4300032: Rifle h
+    4300034: Rifle butt
+    4300036: Rifle holder
+    4300038: Rifle h trigger
+    4300040: Rifle h handle
+    4300042: Rifle h trigger 2
+    4300044: Rifle h aim2
+    4300046: Rifle h aim1
+    4300048: Rifle h004
+    4300050: Rifle h ring
+    4300052: Rifle h barrel
+    7400000: RifleReAimBasicEmpty
+    9500000: //RootNode
+    13700000: full gloves
+    13700002: gloves without fingers
+    13700004: hands
+    13700006: long sleeves
+    13700008: short sleeves
+  externalObjects: {}
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: RifleReAimBasicEmpty
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 200
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves:
+      - name: FOV
+        curve:
+          serializedVersion: 2
+          curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 136
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.2329748
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 136
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          preInfinity: 2
+          postInfinity: 2
+          rotationOrder: 4
+      events:
+      - time: 0
+        functionName: PlaySFX
+        data: ReaimCentral
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 0.001
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
