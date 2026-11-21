@@ -6,7 +6,7 @@ namespace VRSwat.Tutorial
 {
     // Điều khiển cụm PopUpTarget: bật ngẫu nhiên từng bia (hoặc vài bia cùng lúc).
     // Chỉ bật bia mới khi người chơi đang đứng trong shootingArea. Ra khỏi vùng thì ngừng bật.
-    // Đặt cùng object với TargetGroup (object cha của các bia) cho gọn.
+    // Tự đếm điểm luôn (không cần TargetGroup): trúng bia địch +1, trúng bia con tin phát Sig.CivilianHit.
     public class PopUpSpawner : MonoBehaviour
     {
         [Tooltip("Để trống = tự lấy mọi PopUpTarget con")]
@@ -28,6 +28,8 @@ namespace VRSwat.Tutorial
         [SerializeField] private bool avoidRepeat = true;
 
         public bool IsRunning { get; private set; }
+        public int Hits { get; private set; }          // số bia địch đã bắn trúng
+        public TutorialArea ShootingArea => shootingArea;
 
         private Coroutine loop;
         private PopUpTarget last;
@@ -37,7 +39,25 @@ namespace VRSwat.Tutorial
         {
             if (targets == null || targets.Length == 0)
                 targets = GetComponentsInChildren<PopUpTarget>(true);
+            foreach (var t in targets)
+                if (t) t.Knocked += OnKnocked;
         }
+
+        private void OnDestroy()
+        {
+            if (targets == null) return;
+            foreach (var t in targets)
+                if (t) t.Knocked -= OnKnocked;
+        }
+
+        private void OnKnocked(ITutorialTarget t)
+        {
+            if (!IsRunning) return;
+            if (t.IsCivilian) TutorialSignals.Raise(Sig.CivilianHit, this);
+            else Hits++;
+        }
+
+        public void ResetScore() => Hits = 0;
 
         public void Begin()
         {
