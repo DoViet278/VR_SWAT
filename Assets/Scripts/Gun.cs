@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class Gun : MonoBehaviour
 {
@@ -68,12 +69,27 @@ public class Gun : MonoBehaviour
 
     [Header("Ballistics")]
     [SerializeField] private float maxRange = 100f;
+    [Tooltip("Sát thương MỖI tia bắn ra. Với đạn ghém (Pellets Per Shot > 1) đây là sát thương " +
+             "của 1 hạt ghém, nên muốn giữ nguyên tổng sát thương một phát thì chia cho số hạt.")]
     [SerializeField] private float damage = 25f;
     [SerializeField] private LayerMask hittableLayers = ~0;
     [SerializeField] private GameObject impactEffect;
     [SerializeField] private float impactEffectLiveTime = 2f;
 
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
+    [Header("Buckshot (đạn ghém)")]
+    [Tooltip("Số hạt ghém mỗi phát. 1 = súng bắn 1 viên (rifle, pistol). Shotgun thường 8 - 9 hạt.")]
+    [SerializeField] [Min(1)] private int pelletsPerShot = 1;
+    [Tooltip("Nửa góc nón tản của chùm ghém (độ) - độ lệch tối đa của 1 hạt so với trục nòng. " +
+             "3 - 5 độ là chùm shotgun điển hình. Chỉ dùng khi Pellets Per Shot > 1.")]
+    [SerializeField] private float pelletSpreadDegrees = 4f;
+    [Tooltip("Độ dồn ghém về tâm chùm. 1 = rải đều trên mặt đĩa; > 1 = dày ở tâm, thưa ở rìa " +
+             "(giống chùm đạn thật hơn).")]
+    [SerializeField] [Min(0.1f)] private float pelletCenterBias = 1.5f;
+    [Tooltip("Chỉ phát tiếng va chạm cho hạt ghém đầu tiên trúng đích. Tắt đi thì cả chùm cùng " +
+             "kêu, tranh nhau pool AudioSource và nghe thành tiếng rè ngắt quãng.")]
+    [SerializeField] private bool singleImpactSoundPerShot = true;
+
+    private XRGrabInteractable grabInteractable;
     private GunRecoilController recoilController;
     private GunHapticFeedback hapticFeedback;
 
@@ -85,7 +101,7 @@ public class Gun : MonoBehaviour
 
     private void Awake()
     {
-        grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        grabInteractable = GetComponent<XRGrabInteractable>();
         recoilController = GetComponent<GunRecoilController>();
         hapticFeedback = GetComponent<GunHapticFeedback>();
 
@@ -112,7 +128,7 @@ public class Gun : MonoBehaviour
         // Chỉ Velocity Tracking mới chạy qua solver vật lý. Kinematic / Instantaneous là dịch
         // thẳng transform nên không gì chặn được, có set gì cũng vẫn xuyên.
         if (grabInteractable.movementType !=
-            UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.VelocityTracking)
+            XRBaseInteractable.MovementType.VelocityTracking)
         {
             Debug.LogWarning(
                 $"{name}: Movement Type đang là {grabInteractable.movementType}, súng sẽ xuyên qua " +
@@ -224,19 +240,33 @@ public class Gun : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Bắn ra Pellets Per Shot tia trong 1 phát. Trục chùm đã gồm độ lệch do recoil/heat,
+    /// mỗi hạt ghém lệch thêm trong hình nón Pellet Spread Degrees quanh trục đó.
+    /// </summary>
     private void FireRaycast()
     {
         Transform origin = muzzlePoint != null ? muzzlePoint : transform;
-        Vector3 direction = ApplySpread(origin.forward);
+        Vector3 axis = ApplySpread(origin.forward);
+        int pellets = Mathf.Max(1, pelletsPerShot);
+        bool impactSoundPlayed = false;
 
-        if (Physics.Raycast(origin.position, direction, out RaycastHit hit, maxRange, hittableLayers, QueryTriggerInteraction.Ignore))
+        for (int i = 0; i < pellets; i++)
         {
+            Vector3 direction = pellets > 1 ? ApplyPelletSpread(axis) : axis;
+
+            if (!Physics.Raycast(origin.position, direction, out RaycastHit hit, maxRange, hittableLayers, QueryTriggerInteraction.Ignore))
+                continue;
+
             IDamageable damageable = hit.collider.GetComponentInParent<IDamageable>();
             damageable?.ApplyDamage(damage, hit);
-            PlayImpactEffect(hit);
+
+            PlayImpactEffect(hit, !singleImpactSoundPerShot || !impactSoundPlayed);
+            impactSoundPlayed = true;
         }
     }
 
+    /// <summary>Độ lệch của cả chùm theo độ nóng nòng (recoil), áp 1 lần cho mỗi phát bắn.</summary>
     private Vector3 ApplySpread(Vector3 forward)
     {
         float spreadDegrees = recoilController != null ? recoilController.CurrentSpreadDegrees : 0f;
@@ -244,16 +274,45 @@ public class Gun : MonoBehaviour
         if (spreadDegrees <= 0f)
             return forward;
 
-        float angle = Random.Range(0f, spreadDegrees);
-        float rotation = Random.Range(0f, 360f);
-        Quaternion spreadRotation = Quaternion.AngleAxis(rotation, forward) * Quaternion.AngleAxis(angle, Vector3.up);
-        return spreadRotation * forward;
+        return Deflect(forward, Random.Range(0f, spreadDegrees));
     }
 
-    private void PlayImpactEffect(RaycastHit hit)
+    /// <summary>Lệch 1 hạt ghém ra khỏi trục chùm, rải trong hình nón Pellet Spread Degrees.</summary>
+    private Vector3 ApplyPelletSpread(Vector3 axis)
+    {
+        if (pelletSpreadDegrees <= 0f)
+            return axis;
+
+        // Lấy mẫu trên mặt đĩa: số mũ 0.5 cho phân bố đều theo diện tích (Random.value thẳng sẽ
+        // dồn cục ở tâm), số mũ cao hơn thì kéo dần chùm về tâm.
+        float unit = Mathf.Pow(Random.value, 0.5f * Mathf.Max(0.1f, pelletCenterBias));
+        return Deflect(axis, unit * pelletSpreadDegrees);
+    }
+
+    /// <summary>
+    /// Nghiêng axis đi angle độ theo một hướng ngẫu nhiên quanh nó. Trục nghiêng lấy vuông góc
+    /// với axis chứ không dùng Vector3.up: bắn thẳng lên/xuống thì world up suy biến, mất tản.
+    /// </summary>
+    private static Vector3 Deflect(Vector3 axis, float angle)
+    {
+        if (angle <= 0f)
+            return axis;
+
+        Vector3 reference = Mathf.Abs(axis.y) < 0.99f ? Vector3.up : Vector3.right;
+        Vector3 tiltAxis = Vector3.Cross(axis, reference).normalized;
+
+        if (tiltAxis.sqrMagnitude < 0.0001f)
+            return axis;
+
+        return Quaternion.AngleAxis(Random.Range(0f, 360f), axis)
+               * Quaternion.AngleAxis(angle, tiltAxis)
+               * axis;
+    }
+
+    private void PlayImpactEffect(RaycastHit hit, bool playImpactSound)
     {
         // Lỗ đạn + tiếng va chạm: tự bỏ qua nếu scene không có BulletDecalManager.
-        BulletDecalManager.SpawnImpact(hit);
+        BulletDecalManager.SpawnImpact(hit, playImpactSound);
 
         if (impactEffect == null)
             return;
