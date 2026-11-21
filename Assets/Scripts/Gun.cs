@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using static CONST;
 
 public class Gun : MonoBehaviour
 {
@@ -8,6 +9,11 @@ public class Gun : MonoBehaviour
         Single,
         Auto
     }
+
+    [Header("Weapon")]
+    [Tooltip("Loại súng, gửi kèm sự kiện PLAYER_SHOOT_TARGET để target biết bị bắn bằng súng gì.")]
+    [SerializeField] private WeaponType weaponType = WeaponType.Pistol;
+    public WeaponType Type => weaponType;
 
     [Header("Fire Mode")]
     [Tooltip("Single: mỗi lần kéo cò bắn 1 viên. Auto: giữ cò bắn liên tục đến khi hết đạn.")]
@@ -234,6 +240,9 @@ public class Gun : MonoBehaviour
             IDamageable damageable = hit.collider.GetComponentInParent<IDamageable>();
             damageable?.ApplyDamage(damage, hit);
             PlayImpactEffect(hit);
+
+            // Observer: (Gun gun, GameObject vật bị trúng, RaycastHit hit)
+            ObserverManager.InvokeEvent(PLAYER_SHOOT_TARGET, this, hit.collider.gameObject, hit);
         }
     }
 
