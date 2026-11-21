@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class ChargingHandle : XRBaseInteractable
 {
@@ -47,6 +48,11 @@ public class ChargingHandle : XRBaseInteractable
     [Tooltip("Hết đạn thì tay cò khóa lại ở PositionRefill cho tới khi người chơi kéo lại.")]
     [SerializeField] private bool lockOpenWhenEmpty = true;
 
+    [Header("Khi nào cho kéo")]
+    [Tooltip("Bật: chỉ kéo được tay cò khi súng chưa lên nòng (hết đạn, vừa cắm hộp tiếp đạn, " +
+             "hoặc shotgun còn vỏ đạn trong buồng). Tắt: lúc nào cũng kéo được.")]
+    [SerializeField] private bool onlyWhenNotChambered = true;
+
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip chargeClip;
@@ -63,6 +69,9 @@ public class ChargingHandle : XRBaseInteractable
     public UnityEvent OnPumpPulled;
 
     public bool IsLockedOpen => lockedOpen;
+
+    /// <summary>Tay cò có đang cho kéo không: súng chưa lên nòng thì mới kéo được.</summary>
+    public bool CanBePulled => !onlyWhenNotChambered || ammoManager == null || !ammoManager.IsChambered;
 
     private Vector3 restLocal;
     private Vector3 refillLocal;
@@ -150,6 +159,23 @@ public class ChargingHandle : XRBaseInteractable
             return;
 
         handle.localPosition = value;
+    }
+
+    // Súng đã lên nòng thì tay cò không phải thứ grab được: interactor bỏ qua luôn, không hover,
+    // không select. Kéo lúc đó chỉ moi viên đạn tốt ra ngoài nên chẳng có lý do gì cho kéo.
+    public override bool IsHoverableBy(IXRHoverInteractor interactor)
+    {
+        return base.IsHoverableBy(interactor) && CanBePulled;
+    }
+
+    public override bool IsSelectableBy(IXRSelectInteractor interactor)
+    {
+        if (!base.IsSelectableBy(interactor))
+            return false;
+
+        // Đang kéo thì giữ tới khi người chơi nhả tay. Nhịp kéo làm súng lên nòng ở giữa đường
+        // (pump shotgun), nếu xét điều kiện luôn thì tay cò bị rớt ngay giữa cú kéo.
+        return IsSelected(interactor) || CanBePulled;
     }
 
     protected override void OnSelectEntered(SelectEnterEventArgs args)

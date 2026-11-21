@@ -315,5 +315,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1559c8015b36894da5709ac52db39c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Magazine
-  capacity: 30
+  capacity: 20
   startFull: 1
