@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VRSwat.Doors
@@ -24,6 +25,10 @@ namespace VRSwat.Doors
         [Header("Start")]
         [SerializeField] bool startLocked;
 
+        [Header("Ổ khóa")]
+        [Tooltip("Vị trí ổ khóa: chỗ kit phá khóa và chỗ thanh tiến trình hiện ra. Để trống thì lấy gốc cửa.")]
+        [SerializeField] Transform lockPoint;
+
         [Header("AI points (đặt cho phía đội thường tiến vào)")]
         public Transform stackLeft, stackRight;
         public Transform clearLeft, clearRight;
@@ -36,6 +41,7 @@ namespace VRSwat.Doors
         public bool IsMoving => autoTarget.HasValue;
         public UnityEngine.Object Occupant { get; private set; }
         public Vector3 HingeLocalPosition => transform.InverseTransformPoint(hinge.position);
+        public Transform LockPoint => lockPoint ? lockPoint : transform;
 
         public event Action<DoorController, DoorState, DoorState> StateChanged; // (door, from, to)
         public event Action<DoorController> LockedRattle;                       // tay kéo cửa khóa
@@ -47,6 +53,21 @@ namespace VRSwat.Doors
         float breachTarget;
         float rattleCooldown;
         
+        // Danh sách cửa đang sống trong scene, để LockpickKit tìm ổ khóa gần nhất mà không
+        // phải quét toàn scene mỗi frame.
+        static readonly List<DoorController> all = new List<DoorController>();
+        public static IReadOnlyList<DoorController> All => all;
+
+        void OnEnable()
+        {
+            if (!all.Contains(this)) all.Add(this);
+        }
+
+        void OnDisable()
+        {
+            all.Remove(this);
+        }
+
         void Awake()
         {
             State = startLocked ? DoorState.Locked : DoorState.Closed;
@@ -221,7 +242,7 @@ namespace VRSwat.Doors
         void OnDrawGizmos()
         {
             Gizmos.color = Color.cyan;
-            foreach (var t in new[] { stackLeft, stackRight, clearLeft, clearRight, breachFrom })
+            foreach (var t in new[] { stackLeft, stackRight, clearLeft, clearRight, breachFrom, lockPoint })
                 if (t) Gizmos.DrawWireSphere(t.position, 0.2f);
         }
     }
