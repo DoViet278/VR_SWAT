@@ -1,29 +1,39 @@
 using System.Collections;
 using UnityEngine;
-using VRSwat.Doors;
 using VRSwat.Tutorial;
 using static CONST;
 
+// Phòng 2: với mỗi khẩu súng, cầm súng rồi bắn trúng LightTarget của khẩu đó đủ số phát (mặc định 3).
+// LightTarget tự nghe PLAYER_SHOOT_TARGET qua ObserverManager và chỉ đếm khi đúng loại súng,
+// nên phòng chỉ cần chờ target.IsCompleted, không phải đăng ký event nào.
 public class Room02_StaticRange : TutorialRoomBase
 {
-    public enum GunKind { Pistol, Rifle, Shotgun }
-
     [System.Serializable]
     public class Gun
     {
-        public GunKind kind;
+        public WeaponType kind;
         public GameObject gun;
-        public TargetGroup targets;       // bia riêng của khẩu này
-        public GameObject pouchGlow, portGlow, pumpGlow;   // chỉ shotgun, tắt sẵn
+        public LightTarget target;        // bia riêng của khẩu này (Required Weapon phải trùng kind)
     }
-    [SerializeField] Gun[] guns;          // 3 phần tử theo thứ tự
+    [SerializeField] Gun[] guns;          // 3 phần tử theo thứ tự: Pistol, Rifle, Shotgun
 
-    static string GrabLine(GunKind k) => k switch
+    static string GrabLine(WeaponType k) => k switch
     {
-        GunKind.Pistol => TutorialLine.R2_GRAB_PISTOL,
-        GunKind.Rifle  => TutorialLine.R2_GRAB_RIFLE,
-        _              => TutorialLine.R2_GRAB_SHOTGUN
+        WeaponType.Pistol => TutorialLine.R2_GRAB_PISTOL,
+        WeaponType.Rifle  => TutorialLine.R2_GRAB_RIFLE,
+        _                 => TutorialLine.R2_GRAB_SHOTGUN
     };
+
+    void Start()
+    {
+        foreach (var g in guns)
+        {
+            if (g.target == null)
+                Debug.LogWarning($"[Room02] {g.kind}: chưa gán LightTarget", this);
+            else if (g.target.RequiredWeapon != g.kind)
+                Debug.LogWarning($"[Room02] {g.kind}: LightTarget '{g.target.name}' đang yêu cầu {g.target.RequiredWeapon}", g.target);
+        }
+    }
 
     protected override IEnumerator Script()
     {
@@ -34,31 +44,9 @@ public class Room02_StaticRange : TutorialRoomBase
             yield return WaitSignal(Sig.GrabWeapon, source: g.gun);
 
             Say(TutorialLine.R2_SHOOT3);
-            yield return WaitTargets(g.targets, 3);
-
-            if (g.kind != GunKind.Shotgun)
-            {
-                Say(TutorialLine.R2_RELOAD_MAG);
-                yield return WaitSignal(Sig.MagInserted, source: g.gun);
-            }
-            else
-            {
-                Highlight(g.pouchGlow);
-                Say(TutorialLine.R2_SHELL_TAKE);
-                yield return WaitSignal(Sig.ShellTaken);
-
-                Highlight(g.portGlow);
-                Say(TutorialLine.R2_SHELL_INSERT);
-                yield return WaitSignal(Sig.ShellInserted, source: g.gun);
-
-                Highlight(g.pumpGlow);
-                Say(TutorialLine.R2_PUMP);
-                yield return WaitSignal(Sig.PumpRacked, source: g.gun);
-                Highlight(null);
-            }
-
-            Say(TutorialLine.R2_FINISH);
-            yield return WaitTargets(g.targets);   // hết bia của khẩu này
+            g.target.ResetTarget();
+            yield return WaitFor(() => g.target.IsCompleted,
+                                 () => g.target.Hits, g.target.HitsRequired, "Trúng");
         }
     }
 }

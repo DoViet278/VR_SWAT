@@ -166,7 +166,7 @@ namespace VRSwat.Tutorial
             door.LockedRattle += onRattle;
             yield return WaitFor(() => goal switch
             {
-                DoorGoal.OpenedPastAngle => door.Angle >= minAngle,
+                DoorGoal.OpenedPastAngle => Mathf.Abs(door.Angle) >= minAngle,   // cửa mở được cả 2 chiều (Angle âm)
                 DoorGoal.Rattled         => rattled,
                 DoorGoal.Breached        => door.State == DoorState.Breached,
                 _                        => door.State != DoorState.Locked

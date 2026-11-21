@@ -32,6 +32,11 @@ namespace VRSwat.Tutorial
 
         void Start()
         {
+            if (rooms == null || rooms.Length == 0)
+            {
+                Debug.LogError("[TutorialManager] Chưa kéo phòng nào vào mảng Rooms", this);
+                return;
+            }
             startRoom = Mathf.Clamp(startRoom, 0, rooms.Length - 1);
             for (int i = 0; i < startRoom; i++) rooms[i].CompleteInstantly();
             if (startRoom > 0) Teleport(rooms[startRoom].spawnPoint);

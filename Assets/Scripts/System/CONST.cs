@@ -60,4 +60,13 @@ public static class CONST
                     yield return (string)f.GetRawConstantValue();
         }
     }
+    
+    #region TUTORIAL
+
+    // Gun phát: (Gun gun, GameObject hitObject, RaycastHit hit)
+    public const string PLAYER_SHOOT_TARGET = "player_shoot_target";
+    // LightTarget phát khi đủ số phát: (LightTarget target)
+    public const string TARGET_COMPLETED = "target_completed";
+
+    #endregion
 }

@@ -4,7 +4,7 @@ using VRSwat.Doors;
 using VRSwat.Tutorial;
 using static CONST;
 
-public class Room05_Grenades : TutorialRoomBase
+public class Room04_Grenades : TutorialRoomBase
 {
     [SerializeField] TutorialArea roomA, roomB;          // 2 phòng nhỏ có cửa hé
     [SerializeField] GameObject roomAGlow, roomBGlow;    // viền sáng khe cửa, tắt sẵn
