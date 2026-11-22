@@ -10,6 +10,11 @@ public class Gun : MonoBehaviour
         Auto
     }
 
+    [Header("Weapon")]
+    [Tooltip("Loại súng, gửi kèm sự kiện PLAYER_SHOOT_TARGET để target biết bị bắn bằng súng gì.")]
+    [SerializeField] private WeaponType weaponType = WeaponType.Pistol;
+    public WeaponType Type => weaponType;
+
     [Header("Fire Mode")]
     [Tooltip("Single: mỗi lần kéo cò bắn 1 viên. Auto: giữ cò bắn liên tục đến khi hết đạn.")]
     [SerializeField] private FireMode fireMode = FireMode.Single;
