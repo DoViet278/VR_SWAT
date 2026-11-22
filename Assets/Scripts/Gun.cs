@@ -266,6 +266,9 @@ public class Gun : MonoBehaviour
             IDamageable damageable = hit.collider.GetComponentInParent<IDamageable>();
             damageable?.ApplyDamage(damage, hit);
 
+            // Báo cho LightTarget / PopUpTarget biết bia nào bị trúng, bởi súng nào
+            ObserverManager.InvokeEvent(CONST.PLAYER_SHOOT_TARGET, this, hit.collider.gameObject, hit);
+
             PlayImpactEffect(hit, !singleImpactSoundPerShot || !impactSoundPlayed);
             impactSoundPlayed = true;
         }

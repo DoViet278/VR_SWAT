@@ -13,9 +13,9 @@ public class Room02_StaticRange : TutorialRoomBase
     {
         public WeaponType kind;
         public GameObject gun;
-        public LightTarget target;        // bia riêng của khẩu này (Required Weapon phải trùng kind)
+        public LightTarget target; 
     }
-    [SerializeField] Gun[] guns;          // 3 phần tử theo thứ tự: Pistol, Rifle, Shotgun
+    [SerializeField] Gun[] guns;
 
     static string GrabLine(WeaponType k) => k switch
     {

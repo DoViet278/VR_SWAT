@@ -52,11 +52,11 @@ public class LightTarget : MonoBehaviour
         // Mọi phát bắn đều phát sự kiện, nên mỗi bia tự lọc xem có phải mình bị trúng không
         if (hitObject != gameObject && !hitObject.transform.IsChildOf(transform)) return;
 
-        if (gun.Type != requiredWeapon)
-        {
-            onWrongWeapon?.Invoke();
-            return;
-        }
+        // if (gun.Type != requiredWeapon)
+        // {
+        //     onWrongWeapon?.Invoke();
+        //     return;
+        // }
 
         Hits++;
         SetHitLight(Hits - 1, true);   // phát 1 -> đèn 0, phát 2 -> đèn 1...
