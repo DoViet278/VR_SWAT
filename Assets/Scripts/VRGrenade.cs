@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using VRSwat.Grenades;
 
 [RequireComponent(typeof(Rigidbody))]
 public class VRGrenade : MonoBehaviour
@@ -20,6 +21,11 @@ public class VRGrenade : MonoBehaviour
     [SerializeField] private AnimationCurve damageFalloff = AnimationCurve.Linear(0f, 1f, 1f, 0f);
     [SerializeField] private LayerMask hittableLayers = ~0;
     [SerializeField] private LayerMask lineOfSightLayers = ~0;
+
+    [Header("Flashbang")]
+    [Tooltip("Phần gây chói của flashbang. Để trống thì tự lấy component Flashbang trên cùng " +
+             "object; không có thì quả này chỉ là lựu nổ thường.")]
+    [SerializeField] private Flashbang flashbang;
 
     [Header("Effects")]
     [SerializeField] private GameObject explosionEffect;
@@ -41,6 +47,9 @@ public class VRGrenade : MonoBehaviour
     {
         grabInteractable = GetComponent<XRGrabInteractable>();
         body = GetComponent<Rigidbody>();
+
+        if (flashbang == null)
+            flashbang = GetComponent<Flashbang>();
     }
 
     private void OnEnable()
@@ -94,6 +103,12 @@ public class VRGrenade : MonoBehaviour
         // Morale NPC: nổ gần (kể cả ngoài vùng sát thương) làm NPC hoảng.
         NPCMorale.ReportExplosion(center, blastRadius * 2f);
         PlayEffects(center);
+
+        // Gọi trước khi Destroy cũng không sao: Detonate chỉ đẩy cường độ sang receiver trên
+        // đầu người chơi, phần đếm thời gian chói chạy bên đó.
+        if (flashbang != null)
+            flashbang.Detonate(center);
+
         Destroy(gameObject);
     }
 
