@@ -168,13 +168,15 @@ public partial class AttackAction : Action
     private bool TargetInRange(GameObject target)
     {
         float range = NPCConditionUtils.Resolve(AttackRange, _npc, n => n.AttackRange);
-        if (_fromCover) range += CanAttackCondition.CoverRangeMargin;
+        if (_fromCover) range += CanAttackCondition.CoverRangeMarginFor(_npc);
         return NPCConditionUtils.IsWithin(GameObject.transform.position, target.transform.position, range);
     }
 
     private bool Fire(GameObject target)
     {
-        bool hit = Random.value <= Accuracy.Value;
+        // Morale thấp: tay run, bắn kém chính xác hơn (NPC.AccuracyScale).
+        float accuracy = Accuracy.Value * (_npc != null ? _npc.AccuracyScale : 1f);
+        bool hit = Random.value <= accuracy;
 
         // Có súng: anim Fire + chớp lửa + tiếng súng + vỏ đạn trong cùng một frame. Hết đạn / đang reload thì không bắn.
         if (_holder != null)
@@ -191,6 +193,7 @@ public partial class AttackAction : Action
         {
             float damage = NPCConditionUtils.Resolve(Damage, _npc, n => n.Damage);
             target.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+            if (_npc != null && _npc.MoraleComponent != null) _npc.MoraleComponent.OnHitPlayer();
         }
         return true;
     }

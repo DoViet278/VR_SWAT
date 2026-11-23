@@ -165,6 +165,54 @@ public class NPCWeaponHolder : MonoBehaviour
         return true;
     }
 
+    /// <summary>Sắp đầu hàng: hủy thay đạn, bỏ lệnh bắn đang chờ.</summary>
+    public void PrepareSurrender()
+    {
+        if (_reloading) CancelReload();
+        _animator.ResetTrigger(FireHash);
+        _ikWeight = 0f;
+    }
+
+    /// <summary>
+    /// Thả súng xuống đất (đầu hàng): tách khỏi tay, thêm Rigidbody + collider để rơi.
+    /// Sau đó NPC không còn súng (HasWeapon = false, IsOutOfAmmo = true).
+    /// </summary>
+    public void DropWeapon()
+    {
+        if (_weapon == null) return;
+        if (_reloading) CancelReload();
+
+        NPCWeapon weapon = _weapon;
+        _weapon = null;
+        weapon.StopReloadSound();
+        weapon.transform.SetParent(null, true);
+
+        if (weapon.GetComponentInChildren<Collider>() == null)
+        {
+            Bounds bounds = new(weapon.transform.position, Vector3.zero);
+            foreach (Renderer r in weapon.GetComponentsInChildren<Renderer>()) bounds.Encapsulate(r.bounds);
+            BoxCollider box = weapon.gameObject.AddComponent<BoxCollider>();
+            box.center = weapon.transform.InverseTransformPoint(bounds.center);
+            Vector3 scale = weapon.transform.lossyScale;
+            box.size = new Vector3(
+                bounds.size.x / Mathf.Max(0.0001f, Mathf.Abs(scale.x)),
+                bounds.size.y / Mathf.Max(0.0001f, Mathf.Abs(scale.y)),
+                bounds.size.z / Mathf.Max(0.0001f, Mathf.Abs(scale.z)));
+        }
+        // Không va vào thân NPC đang quỳ.
+        foreach (Collider own in GetComponentsInChildren<Collider>())
+            foreach (Collider c in weapon.GetComponentsInChildren<Collider>())
+                Physics.IgnoreCollision(own, c);
+
+        if (!weapon.TryGetComponent(out Rigidbody body)) body = weapon.gameObject.AddComponent<Rigidbody>();
+        body.isKinematic = false;
+        body.mass = 3.5f;
+        body.interpolation = RigidbodyInterpolation.Interpolate;
+        body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        body.AddForce(transform.forward * 0.6f, ForceMode.VelocityChange);
+        weapon.enabled = false;
+    }
+
     private void Update()
     {
         bool dead = _npc != null && _npc.IsDead;

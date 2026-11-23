@@ -100,6 +100,8 @@ public class VRGrenade : MonoBehaviour
             own.enabled = false;
 
         ApplyBlast(center);
+        // Morale NPC: nổ gần (kể cả ngoài vùng sát thương) làm NPC hoảng.
+        NPCMorale.ReportExplosion(center, blastRadius * 2f);
         PlayEffects(center);
 
         // Gọi trước khi Destroy cũng không sao: Detonate chỉ đẩy cường độ sang receiver trên
