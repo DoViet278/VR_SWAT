@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Behavior;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
+using VRSwat.Tutorial;
 
 /// <summary>
 /// Thành phần chính của NPC: giữ máu và đồng bộ thông số với Blackboard của Behavior Graph
@@ -13,9 +15,13 @@ using UnityEngine.Serialization;
 /// ViewDistance, ViewAngle, HideThreshold, SearchRadius, CoverTag, WayPoints từ Blackboard.
 /// Giá trị trong Inspector của NPC chỉ dùng khi Blackboard thiếu biến đó (hoặc WayPoints rỗng).
 /// NPC chỉ GHI vào Blackboard: Health (máu hiện tại) và Target (khi Blackboard chưa có object trong scene).
+///
+/// Đầu hàng (Surrender): tắt Behavior Graph, thả súng, quỳ giơ tay (anim complyXXX). Khi đã đầu hàng, NPC tự xử lý
+/// trúng đạn / chết (graph đã tắt). Restrain = bị còng. Có NPCMorale thì morale quyết định khi nào đầu hàng
+/// và cách đánh (nấp nhiều hay ít, bắn chuẩn hay không).
 /// </summary>
 [RequireComponent(typeof(BehaviorGraphAgent), typeof(NavMeshAgent), typeof(NPCLocomotion))]
-public class NPC : MonoBehaviour
+public class NPC : MonoBehaviour, IDamageable
 {
     public const string HealthVar = "Health";
     public const string TargetVar = "Target";
@@ -75,9 +81,21 @@ public class NPC : MonoBehaviour
     [Tooltip("Thời gian từ lúc đứng dậy tới phát bắn đầu tiên (chờ anim đứng lên).")]
     [SerializeField] private float _standUpTime = 0.4f;
 
+    [Header("Surrender")]
+    [Tooltip("Giây từ lúc bắt đầu anim đầu hàng (đứng, sDropWeapon1) tới lúc súng rời tay.")]
+    [SerializeField] private float _dropWeaponTimeStanding = 1.5f;
+    [Tooltip("Giây từ lúc bắt đầu anim đầu hàng (đang ngồi, cDropWeapon1) tới lúc súng rời tay.")]
+    [SerializeField] private float _dropWeaponTimeCrouching = 1.2f;
+    [Tooltip("Chiều cao collider thân khi quỳ đầu hàng.")]
+    [SerializeField] private float _kneelColliderHeight = 1.1f;
+    [Tooltip("Bị giết khi đã đầu hàng: hủy object sau số giây này (giống DestroyDelay của node Die).")]
+    [SerializeField] private float _destroyDelayWhenSurrendered = 5f;
+
     [Header("Events")]
     public UnityEvent<float> OnDamaged;
     public UnityEvent OnDied;
+    public UnityEvent OnSurrendered;
+    public UnityEvent OnRestrained;
 
     [SerializeField] private BehaviorGraphAgent _behaviorAgent;
 
@@ -85,9 +103,18 @@ public class NPC : MonoBehaviour
     private const float InCoverDistance = 1f;
     private const float CoverProtectAngle = 110f;
     private static readonly int IsCrouchingHash = Animator.StringToHash("IsCrouching");
+    private static readonly int SurrenderHash = Animator.StringToHash("Surrender");
+    private static readonly int SurrenderedHash = Animator.StringToHash("Surrendered");
+    private static readonly int RestrainHash = Animator.StringToHash("Restrain");
+    private static readonly int FlinchHash = Animator.StringToHash("Flinch");
+    private static readonly int MoveXHash = Animator.StringToHash("MoveX");
+    private static readonly int MoveYHash = Animator.StringToHash("MoveY");
 
     private Animator _animator;
     private NPCWeaponHolder _weaponHolder;
+    private NPCMorale _morale;
+    private CapsuleCollider _body;
+    private bool _surrenderPending;
     private float _health;
     private float _lastHitTime = float.NegativeInfinity;
     private float _lastSeenTime = float.NegativeInfinity;
@@ -129,6 +156,22 @@ public class NPC : MonoBehaviour
     /// <summary>Vị trí nên nhắm tới: vị trí thật nếu đang thấy, không thì vị trí lần cuối thấy.</summary>
     public Vector3 ThreatPosition => CanSeeTarget && _target != null ? _target.transform.position : LastKnownTargetPosition;
 
+    /// <summary>Bị đe dọa (bị hô, đạn sượt qua, nổ gần): biết Target đang ở đâu và vào giao chiến.</summary>
+    public void NotifyThreat() => Alert();
+
+    // ---------- Morale / đầu hàng ----------
+
+    public NPCMorale MoraleComponent => _morale;
+
+    /// <summary>Không có NPCMorale thì coi như luôn Aggressive (hành vi cũ).</summary>
+    public MoraleState MoraleState => _morale != null ? _morale.State : MoraleState.Aggressive;
+
+    /// <summary>Hệ số độ chính xác theo morale (AttackAction nhân vào Accuracy).</summary>
+    public float AccuracyScale => _morale != null ? _morale.AccuracyScale : 1f;
+
+    public bool IsSurrendered { get; private set; }
+    public bool IsRestrained { get; private set; }
+
     public void ForgetTarget()
     {
         _lastSeenTime = float.NegativeInfinity;
@@ -139,11 +182,29 @@ public class NPC : MonoBehaviour
 
     public float StandUpTime => _standUpTime;
 
-    /// <summary>Số phát cho một lần đứng dậy bắn từ chỗ nấp.</summary>
-    public int RollCoverShots() => Random.Range(Mathf.Max(1, _coverShots.x), Mathf.Max(_coverShots.x, _coverShots.y) + 1);
+    /// <summary>Số phát cho một lần đứng dậy bắn từ chỗ nấp. Morale thấp: bắn ít hơn.</summary>
+    public int RollCoverShots()
+    {
+        int shots = Random.Range(Mathf.Max(1, _coverShots.x), Mathf.Max(_coverShots.x, _coverShots.y) + 1);
+        return MoraleState switch
+        {
+            MoraleState.Defensive => Mathf.Max(1, shots - 1),
+            MoraleState.Panicked => Random.Range(1, 3),
+            _ => shots,
+        };
+    }
 
-    /// <summary>Thời gian ngồi nấp trước lần đứng dậy kế tiếp.</summary>
-    public float RollCoverHideTime() => Random.Range(_coverHideTime.x, Mathf.Max(_coverHideTime.x, _coverHideTime.y));
+    /// <summary>Thời gian ngồi nấp trước lần đứng dậy kế tiếp. Morale thấp: nấp lâu hơn.</summary>
+    public float RollCoverHideTime()
+    {
+        float time = Random.Range(_coverHideTime.x, Mathf.Max(_coverHideTime.x, _coverHideTime.y));
+        return MoraleState switch
+        {
+            MoraleState.Defensive => time * 1.5f,
+            MoraleState.Panicked => time * 2.2f,
+            _ => time,
+        };
+    }
 
     /// <summary>Thời điểm sớm nhất được đứng dậy bắn khi đang núp.</summary>
     public float CoverReadyTime { get; set; }
@@ -200,6 +261,8 @@ public class NPC : MonoBehaviour
         if (_behaviorAgent == null) _behaviorAgent = GetComponent<BehaviorGraphAgent>();
         _animator = GetComponentInChildren<Animator>();
         _weaponHolder = GetComponentInChildren<NPCWeaponHolder>();
+        _morale = GetComponent<NPCMorale>();
+        _body = GetComponent<CapsuleCollider>();
         _health = _maxHealth;
     }
 
@@ -207,7 +270,14 @@ public class NPC : MonoBehaviour
 
     private void Update()
     {
-        if (IsDead) return;
+        if (IsDead || IsSurrendered) return;
+
+        // Đang rút / ném bom thì chờ ném xong mới đầu hàng (không để bom kẹt trên tay).
+        if (_surrenderPending)
+        {
+            Surrender();
+            if (IsSurrendered) return;
+        }
 
         UpdatePerception();
 
@@ -251,6 +321,91 @@ public class NPC : MonoBehaviour
     /// <remarks>Đặt tên khác TakeDamage để SendMessage("TakeDamage") không bị nhầm overload.</remarks>
     public void TakeDamageFrom(float amount, Vector3 hitFrom) => ApplyDamage(amount, hitFrom);
 
+    /// <summary>Súng / lựu đạn của người chơi (IDamageable). Hướng bắn lấy từ vị trí người chơi.</summary>
+    void IDamageable.ApplyDamage(float damage, RaycastHit hit)
+    {
+        Vector3 from = _target != null ? _target.transform.position : hit.point + hit.normal;
+        ApplyDamage(damage, from);
+    }
+
+    // ---------- Đầu hàng ----------
+
+    /// <summary>
+    /// Đầu hàng: dừng Behavior Graph, đứng yên, thả súng, quỳ giơ tay.
+    /// Trả false nếu đã chết / đã đầu hàng. Đang ném bom thì hoãn tới khi ném xong (vẫn trả true).
+    /// </summary>
+    public bool Surrender()
+    {
+        if (IsDead || IsSurrendered) return false;
+        if (_weaponHolder != null && _weaponHolder.IsThrowing)
+        {
+            _surrenderPending = true;
+            return true;
+        }
+        _surrenderPending = false;
+        IsSurrendered = true;
+
+        // Tắt graph: từ giờ NPC tự lo anim trúng đạn / chết.
+        if (_behaviorAgent != null) _behaviorAgent.enabled = false;
+
+        if (TryGetComponent(out NPCLocomotion locomotion)) locomotion.enabled = false;
+        if (NPCActionUtils.TryGetAgent(gameObject, out NavMeshAgent agent))
+        {
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+            agent.isStopped = true;
+        }
+
+        bool crouched = _crouching;
+        _cover = default;
+        _crouchInPlace = false;
+
+        if (_weaponHolder != null) _weaponHolder.PrepareSurrender();
+
+        if (_animator != null)
+        {
+            _animator.SetFloat(MoveXHash, 0f);
+            _animator.SetFloat(MoveYHash, 0f);
+            _animator.SetBool(SurrenderedHash, true);
+            _animator.SetTrigger(SurrenderHash); // IsCrouching chọn anim đứng (sDropWeapon1) hay ngồi (cDropWeapon1)
+        }
+        StartCoroutine(DropWeaponAfter(crouched ? _dropWeaponTimeCrouching : _dropWeaponTimeStanding));
+
+        if (_body != null)
+        {
+            _body.height = Mathf.Min(_body.height, _kneelColliderHeight);
+            _body.center = new Vector3(_body.center.x, _body.height * 0.5f, _body.center.z);
+        }
+
+        OnSurrendered?.Invoke();
+        TutorialSignals.Raise(Sig.NpcSurrendered, this);
+        NPCMorale.ReportAllyDown(this, false);
+        return true;
+    }
+
+    /// <summary>Còng tay NPC đã đầu hàng. Trả false nếu chưa đầu hàng / đã còng / đã chết.</summary>
+    public bool Restrain()
+    {
+        if (IsDead || !IsSurrendered || IsRestrained) return false;
+        IsRestrained = true;
+        if (_animator != null) _animator.SetTrigger(RestrainHash);
+        OnRestrained?.Invoke();
+        TutorialSignals.Raise(Sig.NpcRestrained, this);
+        return true;
+    }
+
+    /// <summary>Giật mình (nổ gần) khi đang quỳ đầu hàng.</summary>
+    public void Flinch()
+    {
+        if (!IsDead && IsSurrendered && _animator != null) _animator.SetTrigger(FlinchHash);
+    }
+
+    private IEnumerator DropWeaponAfter(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (_weaponHolder != null) _weaponHolder.DropWeapon();
+    }
+
     public void SetTarget(GameObject target)
     {
         _target = target;
@@ -271,12 +426,17 @@ public class NPC : MonoBehaviour
 
         if (IsDead)
         {
-            OnDied?.Invoke(); // Behavior Graph (IsDead -> Die) lo phần anim và dọn dẹp.
+            OnDied?.Invoke();
+            NPCMorale.ReportAllyDown(this, true);
+            // Bình thường Behavior Graph (IsDead -> Die) lo phần anim và dọn dẹp. Đã đầu hàng thì graph tắt, tự gọi.
+            // Animator: Surrendered = true nên trigger Die* chuyển sang anim complyDie* (chết khi đang quỳ).
+            if (IsSurrendered) DieAction.Kill(gameObject, _destroyDelayWhenSurrendered);
             return;
         }
 
         // Đang thay đạn / rút, ném bom thì không phát anim trúng đạn (cùng layer UpperBody) để anim và model không bị ngắt.
-        bool reloading = _weaponHolder != null && (_weaponHolder.IsReloading || _weaponHolder.IsThrowing);
+        // Đã đầu hàng: trigger Hit* chạy anim complyHit* / cuffedHit* ở Base Layer (UpperBody bỏ qua khi Surrendered).
+        bool reloading = !IsSurrendered && _weaponHolder != null && (_weaponHolder.IsReloading || _weaponHolder.IsThrowing);
         if (_animator != null && !reloading) _animator.SetTrigger(HitTrigger(LastHitSide));
     }
 

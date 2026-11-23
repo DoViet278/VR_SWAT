@@ -20,6 +20,16 @@ public partial class CanAttackCondition : Condition
     /// <summary>Đang nấp thì cho thêm khoảng này mới rời nấp, tránh nhấp nháy ở mép tầm bắn.</summary>
     public const float CoverRangeMargin = 1f;
 
+    /// <summary>
+    /// Morale thấp thì bám chỗ nấp: Target ra xa hơn tầm bắn một đoạn vẫn ngồi nấp bắn, không rời nấp đuổi theo.
+    /// </summary>
+    public static float CoverRangeMarginFor(NPC npc) => npc == null ? CoverRangeMargin : npc.MoraleState switch
+    {
+        MoraleState.Defensive => CoverRangeMargin + 4f,
+        MoraleState.Panicked => CoverRangeMargin + 8f,
+        _ => CoverRangeMargin,
+    };
+
     public override bool IsTrue()
     {
         GameObject self = NPCConditionUtils.ResolveSelf(Self, GameObject);
@@ -38,7 +48,7 @@ public partial class CanAttackCondition : Condition
         if (holder != null && holder.HasWeapon && holder.IsOutOfAmmo) return false;
 
         bool inCover = npc.IsInCover;
-        if (inCover) range += CoverRangeMargin;
+        if (inCover) range += CoverRangeMarginFor(npc);
         if (!NPCConditionUtils.IsWithin(self.transform.position, target.transform.position, range))
             return false;
 

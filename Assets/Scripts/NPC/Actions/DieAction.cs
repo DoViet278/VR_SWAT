@@ -21,8 +21,19 @@ public partial class DieAction : Action
 
     protected override Status OnStart()
     {
-        GameObject npc = GameObject;
+        Kill(GameObject, DestroyDelay.Value);
+        return Status.Running;
+    }
 
+    // Giữ Running để logic chết chỉ chạy một lần.
+    protected override Status OnUpdate() => Status.Running;
+
+    /// <summary>
+    /// Dừng di chuyển, tắt collider, phát anim chết theo hướng trúng đòn và hủy object sau destroyDelay giây.
+    /// NPC gọi trực tiếp khi chết lúc đã đầu hàng (Behavior Graph đã tắt).
+    /// </summary>
+    public static void Kill(GameObject npc, float destroyDelay)
+    {
         if (npc.TryGetComponent(out NPCLocomotion locomotion))
             locomotion.enabled = false;
 
@@ -43,10 +54,6 @@ public partial class DieAction : Action
                 : DieTriggers[Random.Range(0, DieTriggers.Length)]);
         }
 
-        UnityEngine.Object.Destroy(npc, DestroyDelay.Value);
-        return Status.Running;
+        UnityEngine.Object.Destroy(npc, destroyDelay);
     }
-
-    // Giữ Running để logic chết chỉ chạy một lần.
-    protected override Status OnUpdate() => Status.Running;
 }
