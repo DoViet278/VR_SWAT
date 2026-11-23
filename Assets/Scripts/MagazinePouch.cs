@@ -102,11 +102,26 @@ public class MagazinePouch : MonoBehaviour
 
     private void Start()
     {
-        if (interactionManager == null)
-            interactionManager = FindAnyObjectByType<XRInteractionManager>();
-
         reserveMagazines = Mathf.Max(0, startingMagazines);
         BuildSlots();
+    }
+
+    /// <summary>
+    /// Manager của ô túi. Để trống field interactionManager là tốt nhất: XRI tự gán đúng
+    /// manager mặc định mà tay người chơi cũng đăng ký vào.
+    ///
+    /// Đừng tự đi FindAnyObjectByType&lt;XRInteractionManager&gt;(): scene này có TỚI 2 XR Interaction
+    /// Manager (một trong prefab "XR All", một rời trong scene), mà interactor đăng ký ở manager
+    /// khác với interactable thì KHÔNG tương tác được với nhau. Rebuild/lưu scene là thứ tự
+    /// FindAnyObjectByType đảo, túi đạn rơi sang manager còn lại và băng nằm trong ô nhưng
+    /// tay không rút ra được nữa.
+    /// </summary>
+    private XRInteractionManager ResolveManager(XRSocketInteractor socket)
+    {
+        if (interactionManager != null)
+            return interactionManager;
+
+        return socket != null ? socket.interactionManager : null;
     }
 
     private void BuildSlots()
@@ -136,7 +151,12 @@ public class MagazinePouch : MonoBehaviour
             trigger.size = slotTriggerSize;
 
             XRSocketInteractor socket = slotObject.AddComponent<XRSocketInteractor>();
-            socket.interactionManager = interactionManager;
+
+            // Chỉ gán khi người dùng tự kéo manager vào field; để trống thì XRI tự tìm đúng
+            // manager mặc định (xem ResolveManager).
+            if (interactionManager != null)
+                socket.interactionManager = interactionManager;
+
             socket.interactionLayers = magazineInteractionLayers;
             socket.showInteractableHoverMeshes = false;
             socket.recycleDelayTime = 0f;
@@ -239,7 +259,9 @@ public class MagazinePouch : MonoBehaviour
     {
         slot.respawnTimer = respawnDelay;
 
-        if (magazineTemplate == null || interactionManager == null)
+        XRInteractionManager manager = ResolveManager(slot.socket);
+
+        if (magazineTemplate == null || manager == null)
             return;
 
         if (!infiniteSupply && reserveMagazines <= 0)
@@ -267,8 +289,12 @@ public class MagazinePouch : MonoBehaviour
             spawnedMagazines.Add(magazine);
         }
 
-        interactable.interactionManager = interactionManager;
-        interactionManager.SelectEnter((IXRSelectInteractor)slot.socket, (IXRSelectInteractable)interactable);
+        // Chỉ đổi manager của băng khi field được chỉ rõ; mặc định để nguyên cái XRI đã
+        // tự đăng ký trong OnEnable, cùng manager với socket và với tay người chơi.
+        if (interactionManager != null)
+            interactable.interactionManager = interactionManager;
+
+        manager.SelectEnter((IXRSelectInteractor)slot.socket, (IXRSelectInteractable)interactable);
 
         OnMagazineSpawned?.Invoke();
     }
