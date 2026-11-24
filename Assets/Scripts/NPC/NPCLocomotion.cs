@@ -7,9 +7,15 @@ using UnityEngine.AI;
 /// MoveX/MoveY là hướng đi theo WORLD (Y của tham số = trục Z của scene). Độ lớn 1 = đi bộ, 2 = chạy.
 /// Blend tree Locomotion/Crouch đặt clip đi tới ở mọi hướng nên hướng nào cũng phát clip đi tới.
 ///
-/// - Lệch hướng lớn: dừng lại, phát TurnLeft / TurnRight / Turn180 và xoay thân theo tiến độ clip.
-/// - Lệch hướng nhỏ: xoay mượt.
-/// - NPC luôn tiến theo hướng thân đang quay mặt, không đi ngang hay đi lùi.
+/// Chống trượt chân:
+/// - Clip đi/chạy là in-place (không có root motion), nên tốc độ di chuyển phải khớp với bước chân của clip.
+///   WalkSpeed / RunSpeed / CrouchWalkSpeed là tốc độ đo từ bước chân của từng clip.
+/// - Thân NPC di chuyển theo hướng đang quay mặt, với tốc độ suy ra từ MoveX/MoveY ĐANG PHÁT trong Animator
+///   (đã làm mượt), nên chân luôn khớp quãng đường đi, kể cả lúc tăng / giảm tốc.
+/// - NavMeshAgent chỉ tìm đường (updatePosition = false): agent không tự đẩy NPC đi ngang ở khúc cua.
+///   Vị trí vẫn bị giới hạn trên NavMesh qua agent.nextPosition.
+/// - Đang ngồi (Crouch) thì tốc độ tối đa là CrouchWalkSpeed, dù agent muốn đi nhanh hơn.
+/// - Lệch hướng nhỏ: vừa xoay vừa đi chậm lại theo góc lệch. Lệch lớn: dừng lại, phát TurnLeft / TurnRight / Turn180.
 /// </summary>
 [RequireComponent(typeof(Animator))]
 public class NPCLocomotion : MonoBehaviour
@@ -29,10 +35,18 @@ public class NPCLocomotion : MonoBehaviour
     [Header("Input")]
     [Tooltip("Bật: lấy hướng đi từ NavMeshAgent và tự ghi vào MoveX/MoveY. Tắt: chỉnh MoveX/MoveY trong Animator.")]
     [SerializeField] private bool _driveFromAgent;
-    [Tooltip("Tốc độ (m/s) ứng với độ lớn 1 (đi bộ). Độ lớn 2 (chạy) = 2x giá trị này.")]
-    [SerializeField] private float _walkSpeed = 1.5f;
     [Tooltip("Khi dùng MoveX/MoveY: di chuyển NPC thật (root motion tắt nên nếu không bật NPC sẽ đi tại chỗ).")]
     [SerializeField] private bool _moveTransform = true;
+
+    [Header("Speed (m/s) khớp bước chân của clip")]
+    [Tooltip("Tốc độ bước chân của clip đi bộ (sWalkFWD_dynamic), ứng với độ lớn 1.")]
+    [SerializeField] private float _walkSpeed = 1.4f;
+    [Tooltip("Tốc độ bước chân của clip chạy (sGangRunFWD), ứng với độ lớn 2.")]
+    [SerializeField] private float _runSpeed = 2.7f;
+    [Tooltip("Tốc độ bước chân của clip đi khom (cWalkFWD_stealth). Đang ngồi thì không đi nhanh hơn mức này.")]
+    [SerializeField] private float _crouchWalkSpeed = 0.45f;
+    [Tooltip("Lệch hướng lúc đang đi thì đi chậm lại theo cos(góc lệch), để không đi chéo khỏi đường.")]
+    [SerializeField] private bool _slowDownWhenTurning = true;
 
     [Header("Rotation")]
     [Tooltip("Hướng quay mặt khi ĐỨNG YÊN. Khi đang đi, NPC luôn quay theo hướng đi.")]
@@ -60,7 +74,7 @@ public class NPCLocomotion : MonoBehaviour
     [SerializeField] private bool _disableRootMotion = true;
 
     [Header("Smoothing")]
-    [Tooltip("Thời gian làm mượt tốc độ di chuyển (và MoveX/MoveY khi dùng agent).")]
+    [Tooltip("Thời gian làm mượt MoveX/MoveY (tăng / giảm tốc). Tốc độ di chuyển đi theo giá trị đã làm mượt.")]
     [SerializeField] private float _dampTime = 0.1f;
 
     private Animator _animator;
@@ -83,8 +97,13 @@ public class NPCLocomotion : MonoBehaviour
 
     public bool IsTurning => _turning;
 
-    /// <summary>Tốc độ (m/s) ứng với clip đi bộ. Action dùng để đặt agent.speed khớp anim.</summary>
+    /// <summary>Tốc độ (m/s) ứng với clip đi bộ.</summary>
     public float WalkSpeed => _walkSpeed;
+    public float RunSpeed => _runSpeed;
+    public float CrouchWalkSpeed => _crouchWalkSpeed;
+
+    /// <summary>Tốc độ thật (m/s) NPC đang di chuyển trong frame vừa rồi.</summary>
+    public float CurrentSpeed { get; private set; }
 
     public bool DriveFromAgent
     {
@@ -104,8 +123,12 @@ public class NPCLocomotion : MonoBehaviour
         _animator.SetFloat(MoveYHash, worldMove.y);
     }
 
+    /// <summary>Đổi độ lớn blend (1 = đi bộ, 2 = chạy) sang m/s khớp bước chân. Action dùng để đặt agent.speed.</summary>
+    public float SpeedForBlend(float blend) => BlendToSpeed(blend, false);
+
     private bool AgentReady => _agent != null && _agent.enabled && _agent.isOnNavMesh;
     private bool UsingAgent => _driveFromAgent && AgentReady;
+    private bool Crouching => _animator.GetBool(IsCrouchingHash);
 
     private void Awake()
     {
@@ -115,9 +138,22 @@ public class NPCLocomotion : MonoBehaviour
         if (_agent != null) _agent.updateRotation = false; // script này là nơi duy nhất xoay thân
     }
 
+    private void OnEnable()
+    {
+        // Agent chỉ tìm đường, script này quyết định vị trí để chân khớp anim.
+        if (_agent != null) _agent.updatePosition = false;
+    }
+
     private void OnDisable()
     {
         if (_turning) EndTurn();
+        CurrentSpeed = 0f;
+        // Trả quyền điều khiển vị trí cho agent (đầu hàng, chết...). Đồng bộ trước để NPC không bị giật về chỗ cũ.
+        if (_agent != null)
+        {
+            if (AgentReady) _agent.nextPosition = transform.position;
+            _agent.updatePosition = true;
+        }
     }
 
     private void Update()
@@ -125,7 +161,7 @@ public class NPCLocomotion : MonoBehaviour
         if (_turning)
         {
             TickTurn();
-            UpdateMovement(Vector3.zero);
+            UpdateMovement(Vector3.zero, false);
             return;
         }
 
@@ -133,7 +169,7 @@ public class NPCLocomotion : MonoBehaviour
         {
             _isMoving = false;
             _yawVelocity = 0f;
-            UpdateMovement(Vector3.zero);
+            UpdateMovement(Vector3.zero, false);
             return;
         }
 
@@ -154,32 +190,49 @@ public class NPCLocomotion : MonoBehaviour
                 if (CanStartTurnClip())
                 {
                     StartTurn(angle);
-                    UpdateMovement(Vector3.zero);
+                    UpdateMovement(Vector3.zero, false);
                     return;
                 }
 
                 // Chờ clip quay (cooldown/transition): không đi lệch khỏi hướng đang quay mặt.
-                if (_useTurnClips && !_animator.GetBool(IsCrouchingHash))
+                if (_useTurnClips && !Crouching)
                 {
-                    UpdateMovement(Vector3.zero);
+                    UpdateMovement(Vector3.zero, true);
                     return;
                 }
             }
             RotateSmooth(angle);
+
+            // Đi chậm lại khi thân chưa quay kịp hướng đi, để không đi chéo / trượt ngang ở khúc cua.
+            if (_isMoving && _slowDownWhenTurning)
+            {
+                float remaining = Vector3.Angle(transform.forward, faceDir);
+                worldMove *= Mathf.Clamp01(Mathf.Cos(remaining * Mathf.Deg2Rad));
+            }
         }
         else
         {
             _yawVelocity = 0f;
         }
 
-        UpdateMovement(worldMove);
+        UpdateMovement(worldMove, true);
     }
 
+    /// <summary>Hướng đi (world) với độ lớn theo blend: 1 = đi bộ, 2 = chạy.</summary>
     private Vector3 GetWorldMove()
     {
-        Vector3 move = UsingAgent
-            ? _agent.desiredVelocity / Mathf.Max(0.01f, _walkSpeed)
-            : new Vector3(_animator.GetFloat(MoveXHash), 0f, _animator.GetFloat(MoveYHash));
+        Vector3 move;
+        if (UsingAgent)
+        {
+            Vector3 desired = _agent.desiredVelocity;
+            desired.y = 0f;
+            float speed = desired.magnitude;
+            move = speed > 0.0001f ? desired / speed * SpeedToBlend(speed, Crouching) : Vector3.zero;
+        }
+        else
+        {
+            move = new Vector3(_animator.GetFloat(MoveXHash), 0f, _animator.GetFloat(MoveYHash));
+        }
         move.y = 0f;
         return Vector3.ClampMagnitude(move, MaxMoveMagnitude);
     }
@@ -198,29 +251,77 @@ public class NPCLocomotion : MonoBehaviour
         transform.Rotate(0f, signedAngle - newOffset, 0f, Space.World);
     }
 
-    // Luôn tiến theo hướng thân. Khi dùng MoveX/MoveY thì script chỉ đọc, không ghi đè giá trị bạn chỉnh.
-    private void UpdateMovement(Vector3 worldMove)
+    /// <summary>
+    /// Ghi MoveX/MoveY (khi dùng agent) rồi tiến theo hướng thân với tốc độ của blend đang phát.
+    /// canTranslate = false: đang quay / ở state không phải đi (bắn, trúng đạn...) thì đứng yên, không trượt.
+    /// </summary>
+    private void UpdateMovement(Vector3 worldMove, bool canTranslate)
     {
-        _speed = Mathf.SmoothDamp(_speed, worldMove.magnitude, ref _speedVelocity, _dampTime);
+        bool crouching = Crouching;
+        float blend;
 
         if (UsingAgent)
         {
             _animator.SetFloat(MoveXHash, worldMove.x, _dampTime, Time.deltaTime);
             _animator.SetFloat(MoveYHash, worldMove.z, _dampTime, Time.deltaTime);
-            return;
+            // Tốc độ lấy từ giá trị Animator đang phát (đã làm mượt) để bước chân và quãng đường luôn khớp.
+            blend = new Vector2(_animator.GetFloat(MoveXHash), _animator.GetFloat(MoveYHash)).magnitude;
+            _speed = blend;
+            _speedVelocity = 0f;
+        }
+        else
+        {
+            _speed = Mathf.SmoothDamp(_speed, worldMove.magnitude, ref _speedVelocity, _dampTime);
+            blend = _speed;
+            if (!_moveTransform) canTranslate = false;
         }
 
-        if (!_moveTransform) return;
+        // Clip đang phát trong blend tree là clip đi tới: chỉ tiến khi đang ở state đi (Locomotion / Crouch).
+        float speed = canTranslate && IsInMovableState() ? BlendToSpeed(blend, crouching) : 0f;
+        CurrentSpeed = speed;
+        MoveBody(transform.forward * (speed * Time.deltaTime));
+    }
 
-        Vector3 delta = transform.forward * (_speed * _walkSpeed * Time.deltaTime);
-        if (AgentReady) _agent.Move(delta);
-        else transform.position += delta;
+    /// <summary>Di chuyển thân và giữ agent đồng bộ (vị trí bị giới hạn trên NavMesh).</summary>
+    private void MoveBody(Vector3 delta)
+    {
+        if (AgentReady && !_agent.updatePosition)
+        {
+            // nextPosition tự kẹp vào NavMesh, nên NPC không đi xuyên tường / ra ngoài NavMesh.
+            _agent.nextPosition = transform.position + delta;
+            transform.position = _agent.nextPosition;
+        }
+        else if (AgentReady)
+        {
+            _agent.Move(delta);
+        }
+        else
+        {
+            transform.position += delta;
+        }
+    }
+
+    /// <summary>Độ lớn blend -> m/s. Đứng: 0..1 = 0..Walk, 1..2 = Walk..Run. Ngồi: chỉ có clip đi khom.</summary>
+    private float BlendToSpeed(float blend, bool crouching)
+    {
+        blend = Mathf.Clamp(blend, 0f, MaxMoveMagnitude);
+        if (crouching) return Mathf.Min(blend, 1f) * _crouchWalkSpeed;
+        return blend <= 1f ? blend * _walkSpeed : Mathf.Lerp(_walkSpeed, _runSpeed, blend - 1f);
+    }
+
+    /// <summary>m/s -> độ lớn blend (nghịch đảo BlendToSpeed).</summary>
+    private float SpeedToBlend(float speed, bool crouching)
+    {
+        if (speed <= 0f) return 0f;
+        if (crouching) return Mathf.Clamp01(speed / Mathf.Max(0.01f, _crouchWalkSpeed));
+        if (speed <= _walkSpeed) return speed / Mathf.Max(0.01f, _walkSpeed);
+        return 1f + Mathf.Clamp01((speed - _walkSpeed) / Mathf.Max(0.01f, _runSpeed - _walkSpeed));
     }
 
     private bool CanStartTurnClip()
     {
         if (!_useTurnClips || Time.time < _nextTurnTime) return false;
-        if (_animator.GetBool(IsCrouchingHash) || _animator.IsInTransition(0)) return false;
+        if (Crouching || _animator.IsInTransition(0)) return false;
         return _animator.GetCurrentAnimatorStateInfo(0).shortNameHash == LocomotionStateHash;
     }
 

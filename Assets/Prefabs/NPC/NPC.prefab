@@ -1012,8 +1012,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCLocomotion
   _driveFromAgent: 0
-  _walkSpeed: 1.5
   _moveTransform: 1
+  _walkSpeed: 1.4
+  _runSpeed: 2.7
+  _crouchWalkSpeed: 0.45
+  _slowDownWhenTurning: 1
   _lookTarget: {fileID: 0}
   _turnSpeed: 360
   _turnSmoothTime: 0.12
