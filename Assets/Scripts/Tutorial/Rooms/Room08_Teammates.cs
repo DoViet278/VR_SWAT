@@ -5,7 +5,7 @@ using VRSwat.Doors;
 using VRSwat.Tutorial;
 using static CONST;
 
-public class Room07_Teammates : TutorialRoomBase
+public class Room08_Teammates : TutorialRoomBase
 {
     [SerializeField] DoorController stackDoor;
     [Tooltip("Phúc nối câu tự giới thiệu của 2 đồng đội vào đây")]

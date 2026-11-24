@@ -35,6 +35,10 @@ public static class CONST
 
         public const string R6_TRY_HANDLE = "r6_try_handle";
         public const string R6_SHOOT_LOCK = "r6_shoot_lock";
+        public const string R6_GRAB_LOCKPICK = "r6_grab_lockpick";
+        public const string R6_PICK_LOCK = "r6_pick_lock";
+        public const string R6_PLACE_C4 = "r6_place_c4";
+        public const string R6_DETONATE = "r6_detonate";
 
         public const string R7_INTRO = "r7_intro";
         public const string R7_OPEN_MENU = "r7_open_menu";

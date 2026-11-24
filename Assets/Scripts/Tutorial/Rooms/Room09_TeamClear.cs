@@ -4,7 +4,7 @@ using VRSwat.Doors;
 using VRSwat.Tutorial;
 using static CONST;
 
-public class Room08_TeamClear : TutorialRoomBase
+public class Room09_TeamClear : TutorialRoomBase
 {
     [SerializeField] DoorController doorA;   // mở được
     [SerializeField] DoorController doorB;   // Start Locked
