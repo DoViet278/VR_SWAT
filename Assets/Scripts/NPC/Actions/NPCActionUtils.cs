@@ -4,7 +4,7 @@ using UnityEngine.AI;
 /// <summary>Hàm dùng chung cho các Action: điều khiển NavMeshAgent và nối với NPCLocomotion.</summary>
 public static class NPCActionUtils
 {
-    private const float DefaultWalkSpeed = 1.5f;
+    private const float DefaultWalkSpeed = 1.4f;
     private const float ArriveTolerance = 0.1f;
 
     /// <summary>
@@ -33,12 +33,9 @@ public static class NPCActionUtils
         }
     }
 
-    /// <summary>Đổi độ lớn blend (1 = đi bộ, 2 = chạy) sang m/s để agent chạy khớp với clip.</summary>
-    public static float SpeedFor(GameObject npc, float blendSpeed)
-    {
-        float walk = npc.TryGetComponent(out NPCLocomotion locomotion) ? locomotion.WalkSpeed : DefaultWalkSpeed;
-        return walk * blendSpeed;
-    }
+    /// <summary>Đổi độ lớn blend (1 = đi bộ, 2 = chạy) sang m/s khớp bước chân của clip (đi bộ và chạy có tốc độ riêng).</summary>
+    public static float SpeedFor(GameObject npc, float blendSpeed) =>
+        npc.TryGetComponent(out NPCLocomotion locomotion) ? locomotion.SpeedForBlend(blendSpeed) : DefaultWalkSpeed * blendSpeed;
 
     public static bool MoveTo(NavMeshAgent agent, Vector3 destination, float speed, float stoppingDistance)
     {

@@ -13,7 +13,7 @@ using VRSwat.Tutorial;
 ///
 /// Blackboard (giá trị gán trên BehaviorGraphAgent) là NGUỒN CHÍNH: khi chạy, NPC đọc AttackRange, Damage,
 /// ViewDistance, ViewAngle, HideThreshold, SearchRadius, CoverTag, WayPoints từ Blackboard.
-/// Giá trị trong Inspector của NPC chỉ dùng khi Blackboard thiếu biến đó (hoặc WayPoints rỗng).
+/// Giá trị trong Inspector của NPC chỉ dùng khi Blackboard thiếu biến đó (hoặc WayPoints không có phần tử nào khác None).
 /// NPC chỉ GHI vào Blackboard: Health (máu hiện tại) và Target (khi Blackboard chưa có object trong scene).
 ///
 /// Đầu hàng (Surrender): tắt Behavior Graph, thả súng, quỳ giơ tay (anim complyXXX). Khi đã đầu hàng, NPC tự xử lý
@@ -471,9 +471,17 @@ public class NPC : MonoBehaviour, IDamageable
         else if (coverTag.ObjectValue is string tag && !string.IsNullOrEmpty(tag)) _coverTag = tag;
         else Set(CoverTagVar, _coverTag);
 
+        // WayPoints: Blackboard của prefab không giữ được object trong scene nên thường là list toàn phần tử None.
+        // Chỉ lấy list Blackboard khi có ít nhất 1 waypoint thật, không thì dùng list gán trong Inspector.
+        // Luôn bỏ phần tử None và ghi lại Blackboard để graph (ô WayPoints có nối biến) đọc đúng list.
+        _wayPoints.RemoveAll(w => w == null);
         if (!TryGetVariable(WayPointsVar, out BlackboardVariable wayPoints)) missing.Add(WayPointsVar);
-        else if (wayPoints.ObjectValue is List<GameObject> list && list.Count > 0) _wayPoints = list;
-        else Set(WayPointsVar, _wayPoints);
+        else
+        {
+            if (wayPoints.ObjectValue is List<GameObject> list && list.Exists(w => w != null))
+                _wayPoints = list.FindAll(w => w != null);
+            Set(WayPointsVar, new List<GameObject>(_wayPoints));
+        }
 
         // Target: dùng object trong scene trên Blackboard; trống (hoặc là prefab asset) thì tìm theo tag rồi ghi lại.
         if (!TryGetVariable(TargetVar, out BlackboardVariable target)) missing.Add(TargetVar);
