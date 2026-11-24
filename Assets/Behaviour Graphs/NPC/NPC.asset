@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2dd922ae02c94c87a66e46a10a7319b9, type: 3}
-  m_Name: NPC Behavior Graph Blackboard
+  m_Name: NPC Blackboard
   m_EditorClassIdentifier: Unity.Behavior.Authoring::Unity.Behavior.BehaviorBlackboardAuthoringAsset
   AssetID:
     m_Value0: 6063474915500477573
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c02bb70996b49eba31d0c206e28da24, type: 3}
-  m_Name: NPC Behavior Graph Blackboard
+  m_Name: NPC Blackboard
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.RuntimeBlackboardAsset
   VersionTimestamp: 639297415283847046
   AssetID:
@@ -315,7 +315,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db920e62f70f420bb33c771449926fa4, type: 3}
-  m_Name: NPC Behavior Graph
+  m_Name: NPC
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraph
   Graphs:
   - rid: 8005720480717210249
@@ -2660,7 +2660,8 @@ MonoBehaviour:
           m_Value1: 6344581185245245069
         NodeModel:
           rid: 5428636593672159511
-        m_FieldValues: []
+        m_FieldValues:
+        - rid: 5428636905219031040
         OperatorFieldModel:
           rid: -2
     - rid: 5428636593672159521
@@ -2777,7 +2778,9 @@ MonoBehaviour:
           m_Value1: 488607383781950137
         NodeModel:
           rid: 5428636593672159514
-        m_FieldValues: []
+        m_FieldValues:
+        - rid: 5428636905219031041
+        - rid: 5428636905219031042
         OperatorFieldModel:
           rid: -2
     - rid: 5428636593672159532
@@ -2888,6 +2891,63 @@ MonoBehaviour:
           m_Value1: 0
         Name: 
         m_Value: 1.2
+    - rid: 5428636905219031040
+      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        FieldName: Self
+        Type:
+          m_SerializableType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        LocalValue:
+          rid: 5428636905219031043
+        LinkedVariable:
+          rid: -2
+    - rid: 5428636905219031041
+      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        FieldName: Self
+        Type:
+          m_SerializableType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        LocalValue:
+          rid: 5428636905219031044
+        LinkedVariable:
+          rid: -2
+    - rid: 5428636905219031042
+      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        FieldName: Target
+        Type:
+          m_SerializableType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        LocalValue:
+          rid: 5428636905219031045
+        LinkedVariable:
+          rid: -2
+    - rid: 5428636905219031043
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: {fileID: 0}
+    - rid: 5428636905219031044
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: {fileID: 0}
+    - rid: 5428636905219031045
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: {fileID: 0}
     - rid: 8005720480717210254
       type: {class: StartNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
@@ -3492,6 +3552,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b27bb6d9a2c8d540a10dff10acc543e, type: 3}
-  m_Name: NPC Behavior Graph Debug Info
+  m_Name: NPC Debug Info
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphDebugInfo
   m_CodeBreakPointsList: []
