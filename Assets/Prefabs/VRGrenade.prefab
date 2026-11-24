@@ -518,10 +518,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3525891100949683157}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0376, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
-  m_ConstrainProportionsScale: 1
+  m_LocalRotation: {x: 0.424172, y: -0.07840995, z: -0.27577758, w: 0.8589975}
+  m_LocalPosition: {x: 0.0040470297, y: 0.007239705, z: 0.006469328}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7886542632012190569}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -650,7 +650,7 @@ GameObject:
   - component: {fileID: 4762152080403116000}
   - component: {fileID: 7690136761134798779}
   - component: {fileID: 7301217664262472035}
-  - component: {fileID: 8408347817629366485}
+  - component: {fileID: 7058015931855556098}
   m_Layer: 0
   m_Name: VRGrenade
   m_TagString: Untagged
@@ -885,7 +885,8 @@ MonoBehaviour:
   explosionClip: {fileID: 8300000, guid: 2eea60465fb6b6440b757102c9e991b7, type: 3}
   landingClip: {fileID: 8300000, guid: 9b495c23d28a8eb45a9f718c4ca86f45, type: 3}
   landingMinSpeed: 1
---- !u!114 &8408347817629366485
+  landingSoundOnlyWhenThrown: 1
+--- !u!114 &7058015931855556098
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -894,17 +895,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8828995299312858377}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 349955c8d8572ae40bf7fd3fc51a7a97, type: 3}
+  m_Script: {fileID: 11500000, guid: 36fe4640619afd244ba011ca86f99ba6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandPoseAuthoring
-  handedness: 1
-  supportHand: 0
-  pose: {fileID: 11400000, guid: f4d072cfa2334b24a9c719ea65d02182, type: 2}
-  mirrorSource: {fileID: 0}
-  curl:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  previewHand: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
+  leftHandPose: {fileID: 0}
+  rightHandPose: {fileID: 11400000, guid: f4d072cfa2334b24a9c719ea65d02182, type: 2}
+  leftSupportPose: {fileID: 0}
+  rightSupportPose: {fileID: 0}
+  blendInTime: 0.08
+  blendOutTime: 0.08
+  interactable: {fileID: 0}

@@ -1795,17 +1795,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 6651241201395653666}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ca584192062b154e9f2345d61838fd6, type: 3}
+  m_Script: {fileID: 11500000, guid: b2d4f6a81c3e5a79b8c6d4e2f0a81357, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MagazinePouch
-  magazineTemplate: {fileID: 3321391959722049888, guid: c546fb38fcc9941459940428d1c0af0e, type: 3}
-  refillOnStore: 1
-  maxMagazines: 5
-  startingMagazines: 5
-  infiniteSupply: 0
-  recoverLostMagazines: 1
-  respawnDelay: 0.5
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPouch
+  startingItems:
+  - prefab: {fileID: 9008962673442156550, guid: 53dc71c73bb80114aa97420876b3ac29, type: 3}
+    slotIndex: 0
+  - prefab: {fileID: 2978713314218588587, guid: 82cd01f251b5b5e4383d989bc38bdb51, type: 3}
+    slotIndex: 1
+  - prefab: {fileID: 1432260059430220022, guid: 526b9e61d9ee5e14fa56aca744aecd7d, type: 3}
+    slotIndex: 2
+  - prefab: {fileID: 5942077102685946559, guid: c546fb38fcc9941459940428d1c0af0e, type: 3}
+    slotIndex: 3
+  - prefab: {fileID: 3311160907884077557, guid: 526a0fa7b80678a4e8b7edb27f09a49f, type: 3}
+    slotIndex: 4
+  - prefab: {fileID: 8828995299312858377, guid: 49d387f080e456b4d9e5da3aacbceb56, type: 3}
+    slotIndex: 5
+  - prefab: {fileID: 8828995299312858377, guid: f1d1c2856b965484ba57d8e75b2420a3, type: 3}
+    slotIndex: 6
   initialSpawnDelay: 0.25
+  fillMagazinesOnSpawn: 1
+  maxSlots: 7
+  acceptGuns: 1
+  acceptMagazines: 1
+  acceptGrenades: 1
+  acceptAnyGrabbable: 0
+  refillMagazineOnStore: 0
   layout: 1
   slotRingRadius: 0.18
   arcSpanDegrees: 150
@@ -1822,15 +1837,16 @@ MonoBehaviour:
   - {x: -87, y: -75, z: -145}
   - {x: -87, y: -75, z: -130}
   slotPositionOffsets: []
-  slotTriggerSize: {x: 0.1, y: 0.1, z: 0.1}
-  magazineInteractionLayers:
-    m_Bits: 2
-  droppedMagazineLifetime: 30
+  slotTriggerSize: {x: 0.07, y: 0.07, z: 0.07}
+  itemInteractionLayers:
+    m_Bits: 3
+  scaleStoredItems: 0
+  storedItemScale: {x: 1, y: 1, z: 1}
   interactionManager: {fileID: 0}
-  OnMagazineTaken:
+  OnItemStored:
     m_PersistentCalls:
       m_Calls: []
-  OnMagazineSpawned:
+  OnItemTaken:
     m_PersistentCalls:
       m_Calls: []
   OnPouchEmpty:

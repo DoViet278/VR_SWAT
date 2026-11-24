@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 namespace VRSwat.Doors
 {
@@ -54,6 +55,12 @@ namespace VRSwat.Doors
 
         /// <summary>Đã bấm kíp và đang đếm ngược.</summary>
         public bool IsCountingDown => fireAt >= 0f;
+
+        /// <summary>
+        /// Bàn tay cầm quả bom gần nhất (không tính socket). <see cref="DetonatorSpawner"/> dùng
+        /// để biết nên đưa kíp nổ vào tay nào. Null nếu quả bom chưa từng được cầm lên.
+        /// </summary>
+        public IXRSelectInteractor LastHeldBy { get; private set; }
 
         public event Action<BreachCharge> Placed;
         public event Action<BreachCharge> Removed;
@@ -163,7 +170,15 @@ namespace VRSwat.Doors
         {
             // Tay cầm cũng là một lần select; chỉ quan tâm lúc vào ổ trên cửa.
             if (!(args.interactorObject is ChargeMount entered))
+            {
+                // Nhớ bàn tay vừa cầm quả bom để DetonatorSpawner đưa kíp nổ vào đúng tay đó.
+                // Phải nhớ ở đây chứ không đọc lúc dán được: khi ổ select quả bom thì tay đã thả
+                // ra rồi, interactorsSelecting không còn bàn tay nào.
+                if (!(args.interactorObject is XRSocketInteractor))
+                    LastHeldBy = args.interactorObject;
+
                 return;
+            }
 
             mount = entered;
             MountedDoor = entered.Door;
