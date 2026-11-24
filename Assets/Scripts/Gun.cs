@@ -174,6 +174,7 @@ public class Gun : MonoBehaviour
         grabInteractable.activated.AddListener(OnTriggerPressed);
         grabInteractable.deactivated.AddListener(OnTriggerReleased);
         grabInteractable.selectExited.AddListener(OnSelectExited);
+        grabInteractable.selectEntered.AddListener(OnSelectEntered);
     }
 
     private void Update()
@@ -212,6 +213,12 @@ public class Gun : MonoBehaviour
     private void OnTriggerReleased(DeactivateEventArgs args)
     {
         triggerHeld = false;
+    }
+
+    // Báo cho tutorial (Room02...) biết người chơi đã cầm khẩu này lên
+    private void OnSelectEntered(SelectEnterEventArgs args)
+    {
+        VRSwat.Tutorial.TutorialSignals.Raise(VRSwat.Tutorial.Sig.GrabWeapon, this);
     }
 
     private void OnSelectExited(SelectExitEventArgs args)
@@ -372,6 +379,7 @@ public class Gun : MonoBehaviour
             grabInteractable.activated.RemoveListener(OnTriggerPressed);
             grabInteractable.deactivated.RemoveListener(OnTriggerReleased);
             grabInteractable.selectExited.RemoveListener(OnSelectExited);
+            grabInteractable.selectEntered.RemoveListener(OnSelectEntered);
         }
     }
 }

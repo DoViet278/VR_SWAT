@@ -24,12 +24,16 @@ MonoBehaviour:
     probeSamplingDebugMesh: {fileID: 0}
     probeSamplingDebugTexture: {fileID: 0}
     probeVolumeBlendStatesCS: {fileID: 0}
-  m_RendererFeatures: []
-  m_RendererFeatureMap: 
+  m_RendererFeatures:
+  - {fileID: 787681856763633255}
+  m_RendererFeatureMap: 679e6ab47968ee0a
   m_UseNativeRenderPass: 1
-  xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
-  postProcessData: {fileID: 0}
-  m_AssetVersion: 2
+  xrSystemData: {fileID: 0}
+  postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
+  m_AssetVersion: 3
+  m_PrepassLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_OpaqueLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -51,3 +55,22 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
+--- !u!114 &787681856763633255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 192026a5f8a87a242a65aefdc15286c3, type: 3}
+  m_Name: SelectionOutlineURPRenderFeature
+  m_EditorClassIdentifier: Assembly-CSharp::SelectionOutlineURPRenderFeature
+  m_Active: 1
+  settings:
+    outlinedLayers:
+      serializedVersion: 2
+      m_Bits: 128
+    maskMaterial: {fileID: 2100000, guid: 2514199256e74b247bb68bebb82a3797, type: 2}
+    outlineMaterial: {fileID: 2100000, guid: 85df9280dcb88c54ab35797b5a97ec86, type: 2}
