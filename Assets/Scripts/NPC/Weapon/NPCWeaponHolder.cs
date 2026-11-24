@@ -13,6 +13,7 @@ using UnityEngine;
 public class NPCWeaponHolder : MonoBehaviour
 {
     private static readonly int FireHash = Animator.StringToHash("Fire");
+    private static readonly int AimingHash = Animator.StringToHash("Aiming");
     private static readonly int ReloadHash = Animator.StringToHash("Reload");
     private static readonly int ReloadTacticalHash = Animator.StringToHash("ReloadTactical");
     private static readonly int ReloadStateHash = Animator.StringToHash("Reload");
@@ -65,6 +66,11 @@ public class NPCWeaponHolder : MonoBehaviour
     [Tooltip("Thời gian (giây) bật/tắt IK tay trái.")]
     [SerializeField] private float _ikBlendTime = 0.2f;
 
+    [Header("Aim")]
+    [Tooltip("Ngừng gọi KeepAiming() quá thời gian này (giây) thì hạ súng về tư thế thường. " +
+             "Giữ súng ngắm giữa các phát bắn để chỉ còn độ giật gốc của anim sFire_M4A1auto.")]
+    [SerializeField] private float _aimHoldTime = 0.6f;
+
     [Header("Reload")]
     [Tooltip("Đang nấp mà số đạn còn dưới tỉ lệ này thì thay đạn sớm (reload chiến thuật).")]
     [SerializeField, Range(0f, 1f)] private float _tacticalReloadRatio = 0.4f;
@@ -87,6 +93,8 @@ public class NPCWeaponHolder : MonoBehaviour
     private NPCGrenadeThrower _thrower;
     private Transform _upperArm, _foreArm, _hand;
     private float _ikWeight = 1f;
+    private float _aimUntil;
+    private bool _hasAimingParam;
 
     private bool _reloading;
     private bool _tactical;
@@ -129,7 +137,21 @@ public class NPCWeaponHolder : MonoBehaviour
             _hand = _animator.GetBoneTransform(HumanBodyBones.LeftHand);
         }
         if (_weapon != null) _weapon.SetOwner(transform);
+        foreach (AnimatorControllerParameter p in _animator.parameters)
+            if (p.nameHash == AimingHash && p.type == AnimatorControllerParameterType.Bool) _hasAimingParam = true;
     }
+
+    /// <summary>
+    /// Giữ súng ở tư thế ngắm (state Aim trên layer UpperBody = khung đầu của anim bắn).
+    /// Gọi mỗi frame khi NPC đứng yên chuẩn bị / đang bắn. Không gọi nữa thì sau _aimHoldTime súng tự hạ xuống.
+    /// </summary>
+    public void KeepAiming() => _aimUntil = Time.time + _aimHoldTime;
+
+    /// <summary>Hạ súng ngay (ngồi nấp, di chuyển...).</summary>
+    public void StopAiming() => _aimUntil = 0f;
+
+    private bool ShouldAim(bool dead) =>
+        !dead && _weapon != null && !_reloading && !IsThrowing && Time.time < _aimUntil;
 
     /// <summary>
     /// Bắn 1 phát vào target. Anim Fire, chớp lửa, tiếng súng, vỏ đạn chạy cùng một frame.
@@ -140,6 +162,7 @@ public class NPCWeaponHolder : MonoBehaviour
         if (!CanFire || target == null) return false;
         if (!_weapon.Fire(NPCConditionUtils.CenterOf(target), hit)) return false;
         _animator.SetTrigger(FireHash);
+        KeepAiming();
         return true;
     }
 
@@ -170,6 +193,8 @@ public class NPCWeaponHolder : MonoBehaviour
     {
         if (_reloading) CancelReload();
         _animator.ResetTrigger(FireHash);
+        StopAiming();
+        if (_hasAimingParam) _animator.SetBool(AimingHash, false);
         _ikWeight = 0f;
     }
 
@@ -218,6 +243,7 @@ public class NPCWeaponHolder : MonoBehaviour
         bool dead = _npc != null && _npc.IsDead;
         if (dead && _reloading) CancelReload();
         if (_reloading) TickReload();
+        if (_hasAimingParam) _animator.SetBool(AimingHash, ShouldAim(dead));
 
         float targetIk = !dead && _leftHandIK && WantsLeftHandIK() ? 1f : 0f;
         _ikWeight = Mathf.MoveTowards(_ikWeight, targetIk, Time.deltaTime / Mathf.Max(0.01f, _ikBlendTime));
