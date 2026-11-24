@@ -74,6 +74,9 @@ namespace VRSwat.Doors
         /// <summary>Đang thực sự phá: có cửa khóa trong tầm và đang giữ cò.</summary>
         public bool IsPicking { get; private set; }
 
+        /// <summary>Đang có tay cầm kit.</summary>
+        public bool IsHeld => Held;
+
         public UnlockProgressBar ProgressBar
         {
             get => progressBar;

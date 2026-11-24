@@ -4734,7 +4734,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 2eea60465fb6b6440b757102c9e991b7, type: 3}
+  m_Resource: {fileID: 8300000, guid: fbf328d346a71ff41a83576566dc6a62, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -14556,7 +14556,7 @@ MonoBehaviour:
   _groundSearch: 2.5
   _audio: {fileID: 2444395274630439815}
   _explosionClips:
-  - {fileID: 8300000, guid: 2eea60465fb6b6440b757102c9e991b7, type: 3}
+  - {fileID: 8300000, guid: fbf328d346a71ff41a83576566dc6a62, type: 3}
   _pitchJitter: 0.08
   _flash: {fileID: 6925043640801585748}
   _flashTime: 0.35

@@ -301,7 +301,7 @@ MonoBehaviour:
   _spoon: {fileID: 4875749115464601494}
   _audio: {fileID: 8414692067922537370}
   _bounceClips:
-  - {fileID: 8300000, guid: 9b495c23d28a8eb45a9f718c4ca86f45, type: 3}
+  - {fileID: 8300000, guid: 7fb4c1a6fe0bd6d45b768470e0c828e5, type: 3}
   _bounceVolume: 0.6
 --- !u!1 &6207713000219745809
 GameObject:

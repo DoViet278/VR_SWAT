@@ -521,17 +521,17 @@ MonoBehaviour:
   _audio: {fileID: 5991448329659802489}
   _reloadAudio: {fileID: 9220602533146487946}
   _shotClips:
-  - {fileID: 8300000, guid: b54c5157912808e4c81d63d16f467a2a, type: 3}
-  _lastShotClip: {fileID: 8300000, guid: 9455a5b25757a2d4c809b60148db5302, type: 3}
-  _reloadEmptyClip: {fileID: 8300000, guid: dbc4bc8748ca0ac4fa88510db17ae6e4, type: 3}
-  _reloadTacticalClip: {fileID: 8300000, guid: aa46ddf618be0684e887c387c7c44029, type: 3}
+  - {fileID: 8300000, guid: 61418676e5b05b74386575331e7e4cac, type: 3}
+  _lastShotClip: {fileID: 8300000, guid: 25812ec4bdc05934daf1a1a363ac53f6, type: 3}
+  _reloadEmptyClip: {fileID: 8300000, guid: 6f3b3839768f11b4bb52356d05c23eb2, type: 3}
+  _reloadTacticalClip: {fileID: 8300000, guid: cbe80fb31d095224ba0e8569f50cf6bf, type: 3}
   _shellDropClips:
-  - {fileID: 8300000, guid: 1a606d105f1eda74ba9eb0d67b2ffeb1, type: 3}
-  - {fileID: 8300000, guid: 2a5013840f2882e438c9e46627179da7, type: 3}
-  - {fileID: 8300000, guid: 2921104bb95db364984d53f80c5aa9d7, type: 3}
-  - {fileID: 8300000, guid: aae850782fec8cb4f813cd45cd8b533c, type: 3}
-  - {fileID: 8300000, guid: 68d6d63b95f8666469a6e502eadecf15, type: 3}
-  - {fileID: 8300000, guid: bb073c2783fd5254f921d0497a6e7233, type: 3}
+  - {fileID: 8300000, guid: 9ad0f07c08252f24b85ad32b35150652, type: 3}
+  - {fileID: 8300000, guid: cf28bfd5640bdb240aaf589ca71913f6, type: 3}
+  - {fileID: 8300000, guid: 27c15e042266a5b44ac66b7871d22cf7, type: 3}
+  - {fileID: 8300000, guid: b34dca2e13ce8d64f84cb56477529ffd, type: 3}
+  - {fileID: 8300000, guid: 52ea5226fbcd1d84892e6754cff18dac, type: 3}
+  - {fileID: 8300000, guid: ae54f879d70b07f49997355b3058933d, type: 3}
   _pitchJitter: 0.06
   _shellVolume: 0.35
 --- !u!82 &9220602533146487946
@@ -928,6 +928,9 @@ GameObject:
   - component: {fileID: 8508267059015934403}
   - component: {fileID: 5330901107825680843}
   - component: {fileID: 6714828587477597209}
+  - component: {fileID: 5597375608021971134}
+  - component: {fileID: 3152380516079377051}
+  - component: {fileID: 206442084334091059}
   m_Layer: 0
   m_Name: NPC
   m_TagString: NPC
@@ -1009,8 +1012,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCLocomotion
   _driveFromAgent: 0
-  _walkSpeed: 1.5
   _moveTransform: 1
+  _walkSpeed: 1.4
+  _runSpeed: 2.7
+  _crouchWalkSpeed: 0.45
+  _slowDownWhenTurning: 1
   _lookTarget: {fileID: 0}
   _turnSpeed: 360
   _turnSmoothTime: 0.12
@@ -1176,10 +1182,20 @@ MonoBehaviour:
   _coverHideTime: {x: 3, y: 5}
   _crouchSettleTime: 0.6
   _standUpTime: 0.4
+  _dropWeaponTimeStanding: 1.5
+  _dropWeaponTimeCrouching: 1.2
+  _kneelColliderHeight: 1.1
+  _destroyDelayWhenSurrendered: 5
   OnDamaged:
     m_PersistentCalls:
       m_Calls: []
   OnDied:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSurrendered:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRestrained:
     m_PersistentCalls:
       m_Calls: []
   _behaviorAgent: {fileID: 3469483115465208540}
@@ -1311,6 +1327,91 @@ MonoBehaviour:
   _releaseAt: 0.6
   _rifleBackAt: 0.86
   _releaseOffsetFromHips: {x: 0.1, y: 0.4, z: 0.5}
+--- !u!114 &5597375608021971134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439265955848960901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e44ec7d0a9aab446ae4b44f0759e84b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCMorale
+  _startMorale: {x: 0.5, y: 0.9}
+  _defensiveBelow: 0.6
+  _complyBelow: 0.35
+  _complyJitter: 0.05
+  _autoSurrenderBelow: 0.1
+  _autoSurrenderDistance: 8
+  _shout: 0.1
+  _surpriseMultiplier: 2
+  _wounded: 0.12
+  _woundedPerHealth: 0.4
+  _nearMiss: 0.04
+  _nearMissRadius: 1.5
+  _explosion: 0.3
+  _allyKilled: 0.2
+  _allySurrendered: 0.12
+  _allyRadius: 20
+  _outOfAmmo: 0.3
+  _lowHealth: 0.15
+  _lowHealthRatio: 0.35
+  _hitPlayer: 0.02
+  _recoverPerSecond: 0.01
+  _calmDelay: 12
+  _logChanges: 0
+  OnMoraleChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!136 &3152380516079377051
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439265955848960901}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &206442084334091059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439265955848960901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96c14a89c6326284d8529ee5c441ff1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCCuffable
+  _presentDistance: 2.2
+  _blendTime: 0.5
+  _handsForward: 0.36
+  _handsHeight: 0.8
+  _wristGap: 0.06
+  _turnSpeed: 90
+  _cuffTime: 1
+  _cuffRadius: 0.15
+  _maxHandDistance: 0.45
+  _cuffsPrefab: {fileID: 0}
+  _cuffClip: {fileID: 0}
+  _keyboardR: 1
 --- !u!1 &1932291266078926935
 GameObject:
   m_ObjectHideFlags: 0

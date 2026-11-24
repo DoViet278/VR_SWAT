@@ -33,6 +33,9 @@ public class PlayerShout : MonoBehaviour
 
     private float _nextShout;
 
+    /// <summary>Mỗi lần hô: (vị trí miệng, bán kính nghe, bán kính nghe xuyên tường). Hostage lắng nghe event này.</summary>
+    public static event System.Action<Vector3, float, float> Shouted;
+
     private void OnEnable() => _shoutAction.action?.Enable();
 
     private void Update()
@@ -53,6 +56,7 @@ public class PlayerShout : MonoBehaviour
             _audio.PlayOneShot(_clips[Random.Range(0, _clips.Length)]);
 
         TutorialSignals.Raise(Sig.PlayerShout, this, mouth.position);
+        Shouted?.Invoke(mouth.position, _radius, _throughWallsRadius);
         return NPCMorale.IssueComplianceOrder(mouth.position, _radius, _throughWallsRadius);
     }
 }

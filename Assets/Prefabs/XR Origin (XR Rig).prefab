@@ -642,6 +642,17 @@ MonoBehaviour:
   maxSnapDistance: 0.4
   maxDepenetrationVelocity: 3
   ignoreCollisionBetweenHands: 1
+  lockHandWhileHolding: 1
+  disableCollidersWhileLocked: 1
+  colliderRestoreDelay: 0.2
+  colliderRestoreTimeout: 3
+  onlyLockForGrabInteractables: 1
+  weldHandToHeldItem: 1
+  weldHandPosition: 1
+  weldBlendTime: 0.15
+  weldOnlyToHandAttachTransforms: 0
+  weldMaxDistance: 0.5
+  selfIgnoreRefreshInterval: 1
 --- !u!1 &1634010354156157494
 GameObject:
   m_ObjectHideFlags: 0
@@ -2943,6 +2954,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2761784063978902504, guid: c1800acf6366418a9b5f610249000331, type: 3}
+      propertyPath: m_Parameters.widthMultiplier
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 2761784063978902504, guid: c1800acf6366418a9b5f610249000331, type: 3}
       propertyPath: m_Parameters.numCornerVertices
       value: 4
       objectReference: {fileID: 0}
@@ -3235,6 +3250,10 @@ PrefabInstance:
     - target: {fileID: 2761784063978902504, guid: c1800acf6366418a9b5f610249000331, type: 3}
       propertyPath: m_Parameters.numCapVertices
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2761784063978902504, guid: c1800acf6366418a9b5f610249000331, type: 3}
+      propertyPath: m_Parameters.widthMultiplier
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 2761784063978902504, guid: c1800acf6366418a9b5f610249000331, type: 3}
       propertyPath: m_Parameters.numCornerVertices
