@@ -8,23 +8,29 @@ using static CONST;
 // Đủ 'required' điểm thì qua phòng (mở exitDoor).
 public class Room03_PopUp : TutorialRoomBase
 {
-    [SerializeField] TargetGroup targets;        // object cha của các PopUpTarget, đếm điểm
-    [SerializeField] PopUpSpawner spawner;       // thường đặt cùng object với TargetGroup
-    [SerializeField] TutorialArea shootingArea;  // vùng đứng bắn (gán cùng vùng vào PopUpSpawner)
+    [Tooltip("PopUpSpawner: vừa bật bia, vừa đếm điểm, vừa giữ vùng bắn")]
+    [SerializeField] PopUpSpawner spawner;
     [Tooltip("Số điểm cần để qua phòng")]
-    [SerializeField, Min(1)] int required = 8;
+    [SerializeField, Min(1)] int required = 5;
 
     protected override IEnumerator Script()
     {
         yield return SayAndWait(TutorialLine.R3_INTRO);
         OnSignal(Sig.CivilianHit, () => Note(TutorialLine.R3_CIVILIAN));
 
-        // Chờ người chơi đứng vào vùng bắn
-        if (shootingArea) yield return WaitZone(shootingArea);
+        if (spawner == null)
+        {
+            Debug.LogError("[Room03] Chưa gán PopUpSpawner", this);
+            yield break;
+        }
 
+        // Chờ người chơi đứng vào vùng bắn (lấy luôn vùng của spawner)
+        if (spawner.ShootingArea) yield return WaitZone(spawner.ShootingArea);
+
+        spawner.ResetScore();
         spawner.Begin();
         Say(TutorialLine.R3_SHOOT);
-        yield return WaitTargets(targets, required);   // bảng hiện "Bia: x/8"
+        yield return WaitFor(() => spawner.Hits >= required, () => spawner.Hits, required, "Bia");   // bảng hiện "Bia: x/8"
         spawner.Stop(true);
     }
 }

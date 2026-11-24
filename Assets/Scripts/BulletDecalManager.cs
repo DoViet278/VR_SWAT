@@ -89,8 +89,17 @@ public class BulletDecalManager : MonoBehaviour
     /// <summary>Điểm vào duy nhất cho súng: tự bỏ qua khi scene không có manager.</summary>
     public static void SpawnImpact(RaycastHit hit)
     {
+        SpawnImpact(hit, true);
+    }
+
+    /// <summary>
+    /// Bản cho đạn ghém: cả chùm đều tạo lỗ đạn, nhưng chỉ 1 hạt phát tiếng va chạm.
+    /// 9 hạt cùng kêu sẽ tranh nhau pool AudioSource và nghe thành tiếng rè ngắt quãng.
+    /// </summary>
+    public static void SpawnImpact(RaycastHit hit, bool playSound)
+    {
         if (instance != null)
-            instance.Spawn(hit);
+            instance.Spawn(hit, playSound);
     }
 
     /// <summary>Xoá toàn bộ lỗ đạn đang hiển thị. Dùng khi reset màn chơi.</summary>
@@ -103,7 +112,7 @@ public class BulletDecalManager : MonoBehaviour
         nextSlot = 0;
     }
 
-    private void Spawn(RaycastHit hit)
+    private void Spawn(RaycastHit hit, bool playSound)
     {
         if (hit.collider == null)
             return;
@@ -112,7 +121,9 @@ public class BulletDecalManager : MonoBehaviour
         ImpactSurfaceEntry entry = ResolveEntry(surface);
 
         TrySpawnDecal(hit, surface, entry);
-        TryPlayImpactSound(hit.point, surface, entry);
+
+        if (playSound)
+            TryPlayImpactSound(hit.point, surface, entry);
     }
 
     private ImpactSurfaceEntry ResolveEntry(ImpactSurface surface)
