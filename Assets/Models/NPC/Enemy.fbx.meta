@@ -3,7 +3,32 @@ guid: e6fa87e512882e44986205b5993d9f87
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ch18_Body
+    second: {fileID: 2100000, guid: 3f939d2d4bf6d3845bd4724a1e6ed1b3, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch18_1001_Diffuse
+    second: {fileID: 2800000, guid: 46d485151982aa7479f0eeb4103f76be, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch18_1001_Glossiness
+    second: {fileID: 2800000, guid: c523193bf1d4b4d42b7abafa915bccfc, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch18_1001_Normal
+    second: {fileID: 2800000, guid: 4d07bfbe62c6e3f4ea78499c85ad2c56, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Ch18_1001_Specular
+    second: {fileID: 2800000, guid: cb4ea858d973fdb4a8f421666b6b1e55, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -22,7 +47,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -94,13 +119,13 @@ ModelImporter:
     globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
-    hasExtraRoot: 0
+    hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 2
+  animationType: 3
   humanoidOversampling: 1
-  avatarSetup: 0
+  avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0

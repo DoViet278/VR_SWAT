@@ -99,6 +99,7 @@ public partial class AttackAction : Action
 
         if (_hidden)
         {
+            if (_holder != null) _holder.StopAiming();
             if (Time.time < _standAt) return Status.Running;
             _hidden = false;
             _npc.SetCrouch(false);
@@ -109,6 +110,7 @@ public partial class AttackAction : Action
         // Bị chắn: đi bộ lại gần cho tới khi thấy mục tiêu (rời chỗ nấp nếu đang nấp).
         if (!NPCConditionUtils.HasLineOfSight(GameObject, target))
         {
+            if (_holder != null) _holder.StopAiming(); // đi bộ thì hạ súng, không giữ tư thế ngắm
             if (!NPCActionUtils.TryGetAgent(GameObject, out _agent)) return Status.Success;
             if (_fromCover) { _npc.LeaveCover(); _fromCover = false; }
             float speed = NPCActionUtils.SpeedFor(GameObject, 1f);
@@ -118,6 +120,10 @@ public partial class AttackAction : Action
         }
 
         NPCActionUtils.Stop(_agent);
+
+        // Đứng yên, thấy mục tiêu: giơ súng ngắm và giữ nguyên giữa các phát bắn,
+        // để mỗi phát chỉ có độ giật gốc của anim sFire_M4A1auto (không bị kéo lên/hạ xuống mỗi phát).
+        if (_holder != null) _holder.KeepAiming();
 
         // Chờ NPCLocomotion quay mặt về mục tiêu rồi mới bắn.
         if (NPCConditionUtils.HorizontalAngleTo(GameObject, target.transform.position) > AimTolerance || Time.time < _nextFire)
@@ -154,6 +160,7 @@ public partial class AttackAction : Action
         if (_npc != null && _npc.IsInCover && target != null && TargetInRange(target))
         {
             _npc.SetCrouch(true);
+            if (_holder != null) _holder.StopAiming(); // ngồi nấp: hạ súng
             if (!_hidden) _npc.CoverReadyTime = Time.time + _npc.RollCoverHideTime();
             // Ngồi nấp mà băng còn ít đạn: tranh thủ thay đạn (cất băng cũ, không thả xuống đất).
             if (_holder != null && _holder.WantsTacticalReload) _holder.Reload(true);
@@ -161,6 +168,8 @@ public partial class AttackAction : Action
         else
         {
             NPCActionUtils.SetupLocomotion(GameObject, null);
+            // Target ra ngoài tầm / mất mục tiêu: sắp di chuyển nên hạ súng ngay.
+            if (_holder != null && (target == null || !TargetInRange(target))) _holder.StopAiming();
         }
         NPCActionUtils.Stop(_agent);
     }
