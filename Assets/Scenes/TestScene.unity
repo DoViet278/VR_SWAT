@@ -6302,126 +6302,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e7e7c709e2b8c141826fbf7bfff0857, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &745211696
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -20.580969
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.0764633
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -33.73081
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.043599032
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.9870893
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.039339762
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.14901768
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -185.612
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 16.987
-      objectReference: {fileID: 0}
-    - target: {fileID: 609402409769912398, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: -3.7260132
-      objectReference: {fileID: 0}
-    - target: {fileID: 2635451520524539740, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.0053
-      objectReference: {fileID: 0}
-    - target: {fileID: 2635451520524539740, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.0018
-      objectReference: {fileID: 0}
-    - target: {fileID: 2635451520524539740, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0053
-      objectReference: {fileID: 0}
-    - target: {fileID: 2635451520524539740, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.29316944
-      objectReference: {fileID: 0}
-    - target: {fileID: 2635451520524539740, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.9560605
-      objectReference: {fileID: 0}
-    - target: {fileID: 2635451520524539740, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.000000007450581
-      objectReference: {fileID: 0}
-    - target: {fileID: 2635451520524539740, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.000000029802322
-      objectReference: {fileID: 0}
-    - target: {fileID: 2635451520524539740, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 145.90399
-      objectReference: {fileID: 0}
-    - target: {fileID: 6385567290643213662, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_UseDynamicAttach
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8834459977516896619, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      propertyPath: m_Name
-      value: Detonator
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8834459977516896619, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 745211698}
-  m_SourcePrefab: {fileID: 100100000, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
---- !u!1 &745211697 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8834459977516896619, guid: 644ea9b276a52e0479e33043b978e34b, type: 3}
-  m_PrefabInstance: {fileID: 745211696}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &745211698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 745211697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36fe4640619afd244ba011ca86f99ba6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
-  leftHandPose: {fileID: 0}
-  rightHandPose: {fileID: 11400000, guid: 2dfcda0e19ab9af4fb059bb228d0715e, type: 2}
-  leftSupportPose: {fileID: 0}
-  rightSupportPose: {fileID: 0}
-  blendInTime: 0.08
-  blendOutTime: 0.08
-  interactable: {fileID: 0}
 --- !u!1 &755983629
 GameObject:
   m_ObjectHideFlags: 0
@@ -12156,6 +12036,14 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 23975200071586298, guid: 06b8dd01fb3f67c469c824a21a270efa, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 23975200071586298, guid: 06b8dd01fb3f67c469c824a21a270efa, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e85c427847a0041479301293ba743e6a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -18861,4 +18749,3 @@ SceneRoots:
   - {fileID: 955199622}
   - {fileID: 1172528197}
   - {fileID: 1141098983}
-  - {fileID: 745211696}

@@ -968,8 +968,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6614276417188885669}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.7041736, y: -0.052609354, z: 0.6794069, w: 0.1994445}
+  m_LocalPosition: {x: -0.001998351, y: -0.0061660176, z: -0.003874119}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1150,6 +1150,7 @@ GameObject:
   - component: {fileID: 5155716197903835159}
   - component: {fileID: 6385567290643213662}
   - component: {fileID: 4741693934686156852}
+  - component: {fileID: 7514250885381551857}
   m_Layer: 0
   m_Name: Detonator
   m_TagString: Untagged
@@ -1165,7 +1166,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8834459977516896619}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.9870893, y: 0.039339762, z: -0.14901768, w: 0.043599032}
+  m_LocalRotation: {x: -0.9870896, y: -0.039341398, z: 0.14901614, w: -0.043595977}
   m_LocalPosition: {x: -20.5089, y: 1.0994, z: -33.6457}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
@@ -1369,6 +1370,25 @@ MonoBehaviour:
   emptyClick: {fileID: 0}
   hapticAmplitude: 0.5
   hapticDuration: 0.1
+--- !u!114 &7514250885381551857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8834459977516896619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36fe4640619afd244ba011ca86f99ba6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
+  leftHandPose: {fileID: 0}
+  rightHandPose: {fileID: 11400000, guid: 2dfcda0e19ab9af4fb059bb228d0715e, type: 2}
+  leftSupportPose: {fileID: 0}
+  rightSupportPose: {fileID: 0}
+  blendInTime: 0.08
+  blendOutTime: 0.08
+  interactable: {fileID: 0}
 --- !u!1 &9120543981054606934
 GameObject:
   m_ObjectHideFlags: 0
