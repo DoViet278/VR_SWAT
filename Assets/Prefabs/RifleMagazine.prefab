@@ -24,8 +24,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2091063947015722392}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.06153653, y: -0.54070836, z: -0.8314796, w: 0.11175538}
+  m_LocalPosition: {x: -0.0013356142, y: -0.017805303, z: 0.007714167}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 5729543273765465093}
   - component: {fileID: 3458667181182185243}
   - component: {fileID: 3321391959722049888}
+  - component: {fileID: 1908271850922101678}
   m_Layer: 0
   m_Name: RifleMagazine
   m_TagString: Untagged
@@ -61,7 +62,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5942077102685946559}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.3400469, y: -0.09461768, z: 0.6273294, w: 0.6941711}
+  m_LocalRotation: {x: -0.3400481, y: -0.09461498, z: 0.6273297, w: 0.6941706}
   m_LocalPosition: {x: 4.7028613, y: 1.0174958, z: 3.7644897}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
@@ -317,3 +318,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Magazine
   capacity: 20
   startFull: 1
+  magazineType: 1
+  typeFromFirstGun: 0
+  ignoreGunCollisionWhileHeld: 1
+  restoreCollisionDelay: 0.5
+  separateSocketAttach: 1
+  socketAttachTransform: {fileID: 0}
+--- !u!114 &1908271850922101678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5942077102685946559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36fe4640619afd244ba011ca86f99ba6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
+  leftHandPose: {fileID: 11400000, guid: 6b450b5eb1f1c1e49abb57cc114c6e57, type: 2}
+  rightHandPose: {fileID: 0}
+  leftSupportPose: {fileID: 0}
+  rightSupportPose: {fileID: 0}
+  blendInTime: 0.08
+  blendOutTime: 0.08
+  interactable: {fileID: 0}

@@ -48,6 +48,21 @@ namespace VRSwat.Tutorial
         private void Awake()
         {
             if (animator == null) animator = GetComponentInChildren<Animator>();
+            EnsureCollider();
+        }
+
+        // Không có Collider thì tia đạn của Gun đi xuyên qua bia, không bao giờ tính điểm.
+        // Tự thêm BoxCollider (vừa khít mesh) cho từng MeshRenderer con nếu bia chưa có collider nào.
+        private void EnsureCollider()
+        {
+            if (GetComponentInChildren<Collider>(true) != null) return;
+            int added = 0;
+            foreach (var r in GetComponentsInChildren<MeshRenderer>(true))
+            {
+                r.gameObject.AddComponent<BoxCollider>();
+                added++;
+            }
+            Debug.LogWarning($"[PopUpTarget] {name}: chưa có Collider, đã tự thêm {added} BoxCollider. Nên thêm sẵn trong scene.", this);
         }
 
         private void Start()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using VRSwat.Grenades;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -34,11 +35,17 @@ public class VRGrenade : MonoBehaviour
     [SerializeField] private AudioClip landingClip;
     [SerializeField] private float landingMinSpeed = 1f;
 
+    [Tooltip("Tiếng rơi chỉ phát khi quả này vừa được ném ra khỏi tay người chơi. " +
+             "Tắt thì mọi cú va đập đủ mạnh đều kêu: lúc spawn vào túi đồ và đụng đồ bên cạnh, lúc đang " +
+             "cầm mà quẹt vào tường, hay lúc nằm sẵn trong scene mà bị đi vấp.")]
+    [SerializeField] private bool landingSoundOnlyWhenThrown = true;
+
     private XRGrabInteractable grabInteractable;
     private Rigidbody body;
     private bool pinPulled;
     private bool fuseStarted;
     private float lastLandingTime;
+    private bool thrownByHand;
 
     public bool PinPulled => pinPulled;
     public bool IsHeld => grabInteractable != null && grabInteractable.isSelected;
@@ -54,11 +61,13 @@ public class VRGrenade : MonoBehaviour
 
     private void OnEnable()
     {
+        grabInteractable.selectEntered.AddListener(HandleGrabbed);
         grabInteractable.selectExited.AddListener(HandleReleased);
     }
 
     private void OnDisable()
     {
+        grabInteractable.selectEntered.RemoveListener(HandleGrabbed);
         grabInteractable.selectExited.RemoveListener(HandleReleased);
     }
 
@@ -67,17 +76,21 @@ public class VRGrenade : MonoBehaviour
         pinPulled = true;
     }
 
-    /// <summary>Rút chốt và cho ngòi cháy ngay (NPC đồng đội ném, không qua tay người chơi).</summary>
-    public void Arm()
+    /// <summary>
+    /// Vào tay người chơi hoặc vào ô túi đồ: quên cú ném trước đó đi, nên quả lựu đạn
+    /// nằm trong túi mà bị va đập thì không kêu.
+    /// </summary>
+    private void HandleGrabbed(SelectEnterEventArgs args)
     {
-        pinPulled = true;
-        if (pin != null) pin.gameObject.SetActive(false);
-        if (!fuseStarted)
-            StartCoroutine(FuseRoutine());
+        thrownByHand = false;
     }
 
     private void HandleReleased(SelectExitEventArgs args)
     {
+        // Rời khỏi ô túi đồ (socket) không phải là ném: chỉ tính khi tay người chơi nhả ra.
+        if (!(args.interactorObject is XRSocketInteractor))
+            thrownByHand = true;
+
         if (pinPulled && !fuseStarted)
             StartCoroutine(FuseRoutine());
     }
@@ -91,6 +104,9 @@ public class VRGrenade : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (landingSoundOnlyWhenThrown && !thrownByHand)
+            return;
+
         if (landingClip == null || collision.relativeVelocity.magnitude < landingMinSpeed)
             return;
 

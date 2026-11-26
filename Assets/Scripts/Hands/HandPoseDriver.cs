@@ -144,6 +144,27 @@ public class HandPoseDriver : MonoBehaviour
         targetWeight = 0f;
     }
 
+    /// <summary>
+    /// Ép bàn tay quặp như đang bóp grip, dùng cho vật tự hiện ra trong tay thay vì được người
+    /// chơi cầm lên (xem <c>DetonatorSpawner</c>). Chuyển tiếp xuống
+    /// <see cref="AnimateHandOnInput"/> của chính bàn tay này.
+    ///
+    /// Đây là mức tối thiểu để bàn tay không xòe ra: vật nào có <see cref="HandPoseProvider"/>
+    /// kèm dáng tạo sẵn thì dáng đó vẫn ăn và đẹp hơn hẳn.
+    /// </summary>
+    public void SetGripOverride(float value)
+    {
+        if (handInput != null)
+            handInput.SetGripOverride(value);
+    }
+
+    /// <summary>Bỏ ép grip, trả bàn tay về đọc nút.</summary>
+    public void ClearGripOverride()
+    {
+        if (handInput != null)
+            handInput.ClearGripOverride();
+    }
+
     /// <summary>Áp một dáng lên bàn tay, blend vào theo Blend In Time.</summary>
     public void ApplyPose(HandPose newPose)
     {

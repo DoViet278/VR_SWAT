@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 899895572963519162}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.03}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -297,6 +297,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShotgunShell
   noseTip: {fileID: 3902941591993379906}
   isLive: 1
+  ignoreGunCollisionWhileHeld: 1
+  restoreCollisionDelay: 0.5
+  refreshInterval: 0.5
 --- !u!136 &4205284564756398931
 CapsuleCollider:
   m_ObjectHideFlags: 0

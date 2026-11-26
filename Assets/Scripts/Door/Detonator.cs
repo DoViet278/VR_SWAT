@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -36,6 +37,14 @@ namespace VRSwat.Doors
         /// <summary>Bắn ra sau mỗi lần bóp cò. int = số quả đã nhận lệnh nổ.</summary>
         public event Action<Detonator, int> Fired;
 
+        /// <summary>
+        /// Kíp đang sống trong scene. <see cref="DetonatorSpawner"/> đọc danh sách này để khỏi
+        /// sinh thêm kíp khi người chơi đã có một cái trong tay (hoặc màn chơi đặt sẵn một cái).
+        /// </summary>
+        public static IReadOnlyList<Detonator> All => all;
+
+        private static readonly List<Detonator> all = new List<Detonator>();
+
         private XRBaseInteractable interactable;
 
         private bool Held => interactable != null && interactable.isSelected;
@@ -52,12 +61,17 @@ namespace VRSwat.Doors
 
         private void OnEnable()
         {
+            if (!all.Contains(this))
+                all.Add(this);
+
             if (interactable != null)
                 interactable.activated.AddListener(OnTriggerPressed);
         }
 
         private void OnDisable()
         {
+            all.Remove(this);
+
             if (interactable != null)
                 interactable.activated.RemoveListener(OnTriggerPressed);
         }

@@ -8,7 +8,12 @@ namespace VRSwat.Grenades
     /// Phần "bị chói" của flashbang, gắn lên mắt người chơi (camera của XR Origin).
     ///
     /// Component này không tự biết quả lựu nổ ở đâu. <see cref="Flashbang"/> tính ra cường độ
-    /// 0..1 rồi gọi <see cref="ApplyFlash"/>, ở đây chỉ lo dựng màn trắng và tiếng rít tai.
+    /// 0..1 rồi gọi <see cref="ApplyFlash"/>, ở đây chỉ lo dựng màn trắng, vệt võng mạc và
+    /// tiếng rít tai.
+    ///
+    /// Vệt võng mạc là ảnh chụp khung hình ngay trước lúc màn trắng bật lên, xem
+    /// <see cref="CaptureAfterImage"/>. Nó hiện rõ nhất lúc màn trắng đã dịu bớt, giống cái vệt
+    /// sáng còn đọng trong mắt sau khi nhìn phải đèn flash.
     ///
     /// Màn trắng là một tấm quad sinh ra lúc chạy, làm con của camera, nằm sát mặt phẳng near.
     /// Không dùng Canvas Screen Space Overlay vì kiểu đó không hiện trên kính VR, cũng không
@@ -23,6 +28,9 @@ namespace VRSwat.Grenades
     {
         private static readonly List<FlashbangReceiver> Receivers = new List<FlashbangReceiver>();
         private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private static readonly int AfterImageId = Shader.PropertyToID("_AfterImage");
+        private static readonly int AfterImageAlphaId = Shader.PropertyToID("_AfterImageAlpha");
+        private static readonly int AfterImageFlipId = Shader.PropertyToID("_AfterImageFlip");
 
         public const string OverlayShaderName = "VR SWAT/Flashbang Overlay";
 
@@ -56,6 +64,32 @@ namespace VRSwat.Grenades
             new Keyframe(0f, 1f, 0f, -0.6f),
             new Keyframe(1f, 0f, -1.2f, 0f));
 
+        [Header("Vệt võng mạc")]
+        [Tooltip("Chụp lại khung hình ngay lúc nổ rồi để nó mờ dần, giống vệt sáng đọng lại " +
+                 "trong mắt sau khi nhìn phải đèn flash.")]
+        [SerializeField] private bool captureAfterImage = true;
+
+        [Tooltip("Chiều ngang ảnh chụp (pixel). Để thấp cũng được, vệt này vốn nhòe.")]
+        [Range(64, 2048)]
+        [SerializeField] private int afterImageResolution = 512;
+
+        [Tooltip("Vệt đậm nhất bao nhiêu. 0 = tắt hẳn.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float afterImageStrength = 0.55f;
+
+        [Tooltip("Độ đậm của vệt theo tiến trình hồi phục: X là 0..1 từ lúc chói đỉnh tới lúc " +
+                 "hết hẳn, Y là phần độ đậm. Mặc định là một bướu: lúc trắng xóa chưa thấy gì, " +
+                 "trắng dịu bớt thì vệt hiện rõ nhất, rồi tan dần.")]
+        [SerializeField]
+        private AnimationCurve afterImageCurve = new AnimationCurve(
+            new Keyframe(0f, 0f),
+            new Keyframe(0.45f, 1f),
+            new Keyframe(1f, 0f));
+
+        [Tooltip("Bật nếu vệt hiện ra bị lộn ngược. Tùy nền đồ họa mà RenderTexture có bị lật " +
+                 "dọc hay không, không đoán trước được nên để thành ô chỉnh tay.")]
+        [SerializeField] private bool flipAfterImage;
+
         [Header("Tiếng rít tai")]
         [Tooltip("Clip rít tai, nên là loop. Không bắt buộc.")]
         [SerializeField] private AudioClip ringingClip;
@@ -74,6 +108,9 @@ namespace VRSwat.Grenades
         private Material overlayMaterial;
         private Mesh overlayMesh;
         private AudioSource ringingSource;
+        private Camera captureCamera;
+        private RenderTexture afterImageTarget;
+        private bool hasAfterImage;
 
         private float peakAlpha;
         private float holdLeft;
@@ -157,6 +194,15 @@ namespace VRSwat.Grenades
 
             if (overlayMesh != null)
                 Destroy(overlayMesh);
+
+            if (captureCamera != null)
+                Destroy(captureCamera.gameObject);
+
+            if (afterImageTarget != null)
+            {
+                afterImageTarget.Release();
+                Destroy(afterImageTarget);
+            }
         }
 
 #if UNITY_EDITOR
@@ -188,6 +234,9 @@ namespace VRSwat.Grenades
             if (overlayRenderer == null)
                 return;
 
+            // Chụp trước khi bật màn trắng, nếu không sẽ chụp đúng cái màn trắng của chính mình.
+            CaptureAfterImage();
+
             peakAlpha = Mathf.Max(peakAlpha, maxOpacity * intensity01);
             holdLeft = Mathf.Max(holdLeft, peakHold * intensity01);
             fadeTotal = Mathf.Max(fadeTotal, fadeDuration * intensity01);
@@ -213,6 +262,10 @@ namespace VRSwat.Grenades
             fadeLeft = 0f;
             fadeTotal = 0f;
             currentAlpha = 0f;
+            hasAfterImage = false;
+
+            if (overlayMaterial != null)
+                overlayMaterial.SetFloat(AfterImageAlphaId, 0f);
 
             if (overlayRenderer != null)
                 overlayRenderer.enabled = false;
@@ -256,6 +309,14 @@ namespace VRSwat.Grenades
                 Color c = flashColor;
                 c.a = currentAlpha;
                 overlayMaterial.SetColor(ColorId, c);
+
+                // Vệt đi ngược với màn trắng: lúc trắng xóa thì chưa thấy gì, trắng dịu bớt thì
+                // vệt mới nổi lên rõ nhất, rồi tan theo.
+                float ghost = hasAfterImage
+                    ? afterImageStrength * Mathf.Clamp01(afterImageCurve.Evaluate(1f - envelope))
+                    : 0f;
+
+                overlayMaterial.SetFloat(AfterImageAlphaId, ghost);
             }
 
             if (ringingSource != null && ringingSource.isPlaying)
@@ -286,6 +347,110 @@ namespace VRSwat.Grenades
 
             if (!ringingSource.isPlaying)
                 ringingSource.Play();
+        }
+
+        /// <summary>
+        /// Chụp lại đúng thứ người chơi đang nhìn, vào một RenderTexture.
+        ///
+        /// Không dùng <c>Texture2D.ReadPixels</c> như cách làm trên màn hình phẳng: hàm đó kéo
+        /// pixel từ GPU về CPU, làm nghẽn pipeline mất trọn một frame. Ở 90Hz trong kính, đúng
+        /// lúc người chơi đang quay đầu, một frame rớt là thấy ngay. Thay vào đó dựng một camera
+        /// phụ sao y camera mắt rồi render thẳng vào texture: mọi thứ ở lại trên GPU.
+        ///
+        /// Ảnh chụp là mono, hai mắt dùng chung. Vệt đọng trên võng mạc vốn không có thị sai nên
+        /// điều đó đúng, mà lại đỡ được một nửa chi phí.
+        /// </summary>
+        private void CaptureAfterImage()
+        {
+            hasAfterImage = false;
+
+            if (!captureAfterImage || afterImageStrength <= 0f || overlayMaterial == null)
+                return;
+
+            Camera source = Eye != null ? Eye.GetComponent<Camera>() : null;
+
+            if (source == null)
+                source = Camera.main;
+
+            if (source == null)
+                return;
+
+            EnsureAfterImageTarget(source);
+
+            if (afterImageTarget == null || captureCamera == null)
+                return;
+
+            // Quả thứ hai nổ khi màn trắng đang bật thì phải tắt tạm, không thì chụp phải nó.
+            bool overlayWasOn = overlayRenderer != null && overlayRenderer.enabled;
+
+            if (overlayWasOn)
+                overlayRenderer.enabled = false;
+
+            captureCamera.CopyFrom(source);
+
+            // CopyFrom bê theo cả targetTexture lẫn stereoTargetEye của camera gốc, phải ghi đè
+            // sau đó: cần một lần render mono vào texture của mình.
+            captureCamera.targetTexture = null;
+            captureCamera.stereoTargetEye = StereoTargetEyeMask.None;
+            captureCamera.enabled = false;
+
+            // Đường chính thức để render một phát theo yêu cầu dưới SRP. Camera.Render() vẫn
+            // chạy nhưng là API thời Built-in, dưới URP nó kêu warning.
+            var request = new RenderPipeline.StandardRequest { destination = afterImageTarget };
+
+            if (RenderPipeline.SupportsRenderRequest(captureCamera, request))
+            {
+                RenderPipeline.SubmitRenderRequest(captureCamera, request);
+            }
+            else
+            {
+                captureCamera.targetTexture = afterImageTarget;
+                captureCamera.Render();
+                captureCamera.targetTexture = null;
+            }
+
+            if (overlayWasOn)
+                overlayRenderer.enabled = true;
+
+            overlayMaterial.SetTexture(AfterImageId, afterImageTarget);
+            overlayMaterial.SetFloat(AfterImageFlipId, flipAfterImage ? 1f : 0f);
+            hasAfterImage = true;
+        }
+
+        private void EnsureAfterImageTarget(Camera source)
+        {
+            int width = Mathf.Clamp(afterImageResolution, 64, 2048);
+            float aspect = source.aspect > 0.01f ? source.aspect : 1f;
+            int height = Mathf.Max(64, Mathf.RoundToInt(width / aspect));
+
+            if (afterImageTarget != null &&
+                (afterImageTarget.width != width || afterImageTarget.height != height))
+            {
+                afterImageTarget.Release();
+                Destroy(afterImageTarget);
+                afterImageTarget = null;
+            }
+
+            if (afterImageTarget == null)
+            {
+                afterImageTarget = new RenderTexture(width, height, 24)
+                {
+                    name = "FlashbangAfterImage",
+                    filterMode = FilterMode.Bilinear,
+                    wrapMode = TextureWrapMode.Clamp,
+                };
+
+                afterImageTarget.Create();
+            }
+
+            if (captureCamera == null)
+            {
+                var go = new GameObject("FlashbangCaptureCamera");
+                go.transform.SetParent(Eye, false);
+
+                captureCamera = go.AddComponent<Camera>();
+                captureCamera.enabled = false;
+            }
         }
 
         private void EnsureOverlay()

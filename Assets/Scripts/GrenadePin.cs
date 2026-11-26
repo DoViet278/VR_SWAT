@@ -3,6 +3,18 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
+/// <summary>
+/// Chốt lựu đạn: kéo ra thì lựu đạn bắt đầu cháy ngòi.
+///
+/// Chốt là một XRGrabInteractable RIÊNG, có Rigidbody riêng (kinematic lúc còn gắn trên quả lựu
+/// đạn). Chính chỗ đó sinh ra lỗi người chơi bị đẩy lùi khi cầm lựu đạn lại gần người:
+/// XRGrabInteractable.StartIgnoringCharacterCollision của quả lựu đạn chỉ tắt va chạm cho những
+/// collider có attachedRigidbody đúng bằng Rigidbody của chính nó (xem XRGrabInteractable.Awake,
+/// chỗ lọc m_RigidbodyColliders). Collider của chốt thuộc Rigidbody của chốt, nên không bao giờ
+/// được tắt — mà nó lại là Rigidbody kinematic, tức khối lượng vô hạn. Đưa quả lựu đạn vào trong
+/// capsule CharacterController là overlap recovery của CharacterController.Move() đẩy người chơi
+/// ra khỏi cái chốt đó, mỗi frame một chút.
+/// </summary>
 [RequireComponent(typeof(XRGrabInteractable))]
 public class GrenadePin : MonoBehaviour
 {
@@ -11,11 +23,24 @@ public class GrenadePin : MonoBehaviour
     [SerializeField] private float pullDistance = 0.08f;
     [SerializeField] private float droppedPinLifetime = 10f;
 
+    [Tooltip("Chốt chỉ cần GRAB được, không cần sinh va chạm: nó được tay kéo đi bằng transform " +
+             "(Movement Type = Instantaneous), và việc phát hiện đã kéo ra chỉ là đo khoảng cách. " +
+             "Bật cái này thì chốt bị loại khỏi mọi cặp va chạm trong lúc còn gắn trên quả lựu " +
+             "đạn, nên không đẩy được người chơi nữa.\n\n" +
+             "Không dùng isTrigger: SphereInteractionCaster của Near-Far Interactor bỏ qua trigger " +
+             "nên tay sẽ không kéo được chốt. Không dùng Physics.IgnoreCollision: cờ đó không chặn " +
+             "được overlap recovery của CharacterController, lại bị Unity xoá mỗi khi collider " +
+             "disable rồi enable lại — mà SetPinGrabbable bật/tắt collider này liên tục. " +
+             "excludeLayers thì PhysX không sinh contact, mà query của interactor vẫn thấy (đúng " +
+             "cách ChargingHandle làm với collider tay cò).")]
+    [SerializeField] private bool pinColliderIgnoresPhysics = true;
+
     private XRGrabInteractable pinInteractable;
     private XRGrabInteractable grenadeInteractable;
     private Rigidbody pinBody;
     private Vector3 restLocalPosition;
     private Quaternion restLocalRotation;
+    private int pinColliderExcludeLayers;
     private bool pulled;
 
     private void Awake()
@@ -29,6 +54,14 @@ public class GrenadePin : MonoBehaviour
         grenadeInteractable = grenade.GetComponent<XRGrabInteractable>();
         restLocalPosition = transform.localPosition;
         restLocalRotation = transform.localRotation;
+
+        if (pinCollider != null)
+        {
+            pinColliderExcludeLayers = pinCollider.excludeLayers;
+
+            if (pinColliderIgnoresPhysics)
+                pinCollider.excludeLayers = Physics.AllLayers;
+        }
     }
 
     private void OnEnable()
@@ -104,6 +137,12 @@ public class GrenadePin : MonoBehaviour
         pinBody.isKinematic = false;
         pinBody.useGravity = true;
         pinCollider.enabled = true;
+
+        // Chốt đã rời quả lựu đạn và thành vật rơi tự do: trả lại va chạm để nó nằm được trên
+        // sàn. Lúc này nó là Rigidbody động, khối lượng hữu hạn, nên không đẩy người chơi nữa —
+        // CharacterController đẩy nó mới đúng.
+        pinCollider.excludeLayers = pinColliderExcludeLayers;
+
         Destroy(gameObject, droppedPinLifetime);
     }
 }

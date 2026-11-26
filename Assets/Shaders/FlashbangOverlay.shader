@@ -12,6 +12,16 @@ Shader "VR SWAT/Flashbang Overlay"
     Properties
     {
         _Color ("Màu màn", Color) = (1, 1, 1, 1)
+
+        // Ảnh chụp lại khung hình ngay lúc nổ. FlashbangReceiver render một camera phụ vào
+        // RenderTexture rồi gán vào đây, nên không có ReadPixels, không kéo pixel về CPU.
+        _AfterImage ("Vệt võng mạc", 2D) = "black" {}
+
+        // Độ đậm của vệt, do script điều khiển theo thời gian.
+        _AfterImageAlpha ("Độ đậm vệt", Range(0, 1)) = 0
+
+        // 1 nếu RenderTexture bị lật dọc trên nền đồ họa đang chạy.
+        _AfterImageFlip ("Lật dọc vệt", Range(0, 1)) = 0
     }
 
     SubShader
@@ -43,7 +53,12 @@ Shader "VR SWAT/Flashbang Overlay"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _Color;
+                half _AfterImageAlpha;
+                half _AfterImageFlip;
             CBUFFER_END
+
+            TEXTURE2D(_AfterImage);
+            SAMPLER(sampler_AfterImage);
 
             struct Attributes
             {
@@ -75,7 +90,26 @@ Shader "VR SWAT/Flashbang Overlay"
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-                return _Color;
+                half aFlash = _Color.a;
+                half aAfter = _AfterImageAlpha;
+
+                if (aAfter <= 0.0001h)
+                    return half4(_Color.rgb, aFlash);
+
+                // Lấy UV theo vị trí pixel trên màn chứ không theo UV của quad: quad phủ ~174 độ
+                // còn ảnh chụp chỉ bằng đúng FOV của mắt, dán theo UV quad sẽ lệch tỉ lệ.
+                // Ở Single Pass Instanced hàm này trả về UV riêng của từng mắt, nên hai mắt cùng
+                // nhìn một vệt mono - đúng với võng mạc, vệt đọng không có thị sai.
+                float2 uv = GetNormalizedScreenSpaceUV(input.positionCS);
+                uv.y = lerp(uv.y, 1.0 - uv.y, _AfterImageFlip);
+
+                half3 ghost = SAMPLE_TEXTURE2D(_AfterImage, sampler_AfterImage, uv).rgb;
+
+                // Trộn có trọng số: màn trắng và vệt cùng góp vào một lớp phủ duy nhất.
+                half total = saturate(aFlash + aAfter);
+                half3 rgb = (aFlash * _Color.rgb + aAfter * ghost) / max(total, 0.0001h);
+
+                return half4(rgb, total);
             }
             ENDHLSL
         }

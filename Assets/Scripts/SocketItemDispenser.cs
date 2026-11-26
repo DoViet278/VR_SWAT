@@ -58,10 +58,25 @@ public class SocketItemDispenser : MonoBehaviour
 
     private void Start()
     {
-        if (interactionManager == null)
-            interactionManager = FindAnyObjectByType<XRInteractionManager>();
-
         BuildSlots();
+    }
+
+    /// <summary>
+    /// Manager của ô chứa. Để trống field interactionManager là tốt nhất: XRI tự gán đúng
+    /// manager mặc định mà tay người chơi cũng đăng ký vào.
+    ///
+    /// Đừng tự đi FindAnyObjectByType&lt;XRInteractionManager&gt;(): scene này có TỚI 2 XR Interaction
+    /// Manager (một trong prefab "XR All", một rời trong scene), mà interactor đăng ký ở manager
+    /// khác với interactable thì KHÔNG tương tác được với nhau. Rebuild/lưu scene là thứ tự
+    /// FindAnyObjectByType đảo, hộp đạn rơi sang manager còn lại và đạn nằm trong hộp nhưng
+    /// tay không lấy ra được nữa.
+    /// </summary>
+    private XRInteractionManager ResolveManager(XRSocketInteractor socket)
+    {
+        if (interactionManager != null)
+            return interactionManager;
+
+        return socket != null ? socket.interactionManager : null;
     }
 
     private void BuildSlots()
@@ -89,7 +104,12 @@ public class SocketItemDispenser : MonoBehaviour
             trigger.size = slotTriggerSize;
 
             XRSocketInteractor socket = slotObject.AddComponent<XRSocketInteractor>();
-            socket.interactionManager = interactionManager;
+
+            // Chỉ gán khi người dùng tự kéo manager vào field; để trống thì XRI tự tìm đúng
+            // manager mặc định (xem ResolveManager).
+            if (interactionManager != null)
+                socket.interactionManager = interactionManager;
+
             socket.interactionLayers = itemInteractionLayers;
             socket.showInteractableHoverMeshes = false;
             socket.recycleDelayTime = 0f;
@@ -138,7 +158,9 @@ public class SocketItemDispenser : MonoBehaviour
     {
         slot.respawnTimer = respawnDelay;
 
-        if (itemTemplate == null || interactionManager == null)
+        XRInteractionManager manager = ResolveManager(slot.socket);
+
+        if (itemTemplate == null || manager == null)
             return;
 
         Transform slotTransform = slot.socket.transform;
@@ -153,8 +175,12 @@ public class SocketItemDispenser : MonoBehaviour
         if (droppedItemLifetime > 0f)
             item.AddComponent<SpawnedMagazineCleanup>().Configure(droppedItemLifetime);
 
-        interactable.interactionManager = interactionManager;
-        interactionManager.SelectEnter((IXRSelectInteractor)slot.socket, (IXRSelectInteractable)interactable);
+        // Chỉ đổi manager của vật khi field được chỉ rõ; mặc định để nguyên cái XRI đã
+        // tự đăng ký trong OnEnable, cùng manager với socket và với tay người chơi.
+        if (interactionManager != null)
+            interactable.interactionManager = interactionManager;
+
+        manager.SelectEnter((IXRSelectInteractor)slot.socket, (IXRSelectInteractable)interactable);
 
         OnItemSpawned?.Invoke(item);
     }

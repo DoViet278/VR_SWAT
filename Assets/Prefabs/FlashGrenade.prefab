@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &360012832089725448
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 408720179000769652}
+  m_Layer: 0
+  m_Name: Attach
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &408720179000769652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360012832089725448}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.0360887, y: -0.9491166, z: -0.20188253, w: -0.23899548}
+  m_LocalPosition: {x: 0.0030702548, y: 0.0050823716, z: 0.0112348255}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2116207657764143343}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &742533614461620966
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,6 +42,7 @@ GameObject:
   - component: {fileID: 808408544099981330}
   - component: {fileID: 5935474261149016171}
   - component: {fileID: 6227302673666390238}
+  - component: {fileID: 8571211527497016276}
   m_Layer: 0
   m_Name: Object_2
   m_TagString: Untagged
@@ -90,6 +122,28 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8571211527497016276
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742533614461620966}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4787136918717088048, guid: 3688c47566b790f4eab95b045624d63c, type: 3}
 --- !u!1 &1507951700686794697
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,9 +195,9 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.44679514
   m_Center: {x: 0.38541502, y: 2.3496206, z: 0.35401472}
@@ -248,7 +302,7 @@ MonoBehaviour:
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
   m_AutoFindParentInteractableInHierarchy: 0
-  m_ParentInteractableObject: {fileID: 0}
+  m_ParentInteractableObject: {fileID: 7690136761134798779}
   m_AttachTransform: {fileID: 0}
   m_SecondaryAttachTransform: {fileID: 0}
   m_UseDynamicAttach: 0
@@ -419,7 +473,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7886542632012190569}
-  - component: {fileID: 7184470732724802493}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -435,7 +488,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1652162763168650542}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -0.0011755242, y: -0.06922491, z: -0.0076146703}
   m_LocalScale: {x: 0.04463732, y: 0.04463732, z: 0.04463732}
   m_ConstrainProportionsScale: 0
@@ -443,28 +496,7 @@ Transform:
   - {fileID: 808408544099981330}
   - {fileID: 1450448109387588556}
   m_Father: {fileID: 2116207657764143343}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &7184470732724802493
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1652162763168650542}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 1.4561805
-  m_Center: {x: 0.026335008, y: 1.5508304, z: 0.17058977}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &3246582071328384054
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,8 +599,8 @@ GameObject:
   - component: {fileID: 4762152080403116000}
   - component: {fileID: 7690136761134798779}
   - component: {fileID: 7301217664262472035}
-  - component: {fileID: 7125466526009756607}
   - component: {fileID: 5897244185478285597}
+  - component: {fileID: 3961893169903849451}
   m_Layer: 0
   m_Name: FlashGrenade
   m_TagString: Untagged
@@ -586,10 +618,11 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7886542632012190569}
+  - {fileID: 408720179000769652}
   - {fileID: 1060157066598705850}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -619,7 +652,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 0
 --- !u!114 &7690136761134798779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -634,7 +667,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable
   m_InteractionManager: {fileID: 0}
   m_Colliders:
-  - {fileID: 7125466526009756607}
+  - {fileID: 8571211527497016276}
+  - {fileID: 0}
   m_InteractionLayers:
     m_Bits: 1
   m_DistanceCalculationMode: 1
@@ -695,9 +729,9 @@ MonoBehaviour:
   m_StartingInteractionStrengthFilters: []
   m_AutoFindParentInteractableInHierarchy: 0
   m_ParentInteractableObject: {fileID: 0}
-  m_AttachTransform: {fileID: 0}
+  m_AttachTransform: {fileID: 408720179000769652}
   m_SecondaryAttachTransform: {fileID: 0}
-  m_UseDynamicAttach: 0
+  m_UseDynamicAttach: 1
   m_MatchAttachPosition: 1
   m_MatchAttachRotation: 1
   m_SnapToColliderVolume: 1
@@ -766,7 +800,7 @@ MonoBehaviour:
   fuseTime: 3
   blastRadius: 6
   blastDamage: 0
-  blastForce: 8
+  blastForce: 0
   damageFalloff:
     serializedVersion: 2
     m_Curve:
@@ -800,32 +834,10 @@ MonoBehaviour:
   flashbang: {fileID: 5897244185478285597}
   explosionEffect: {fileID: 5328499885204194500, guid: 87e99f7c55d7f774eb4a6fd3c0d74563, type: 3}
   explosionEffectLiveTime: 3
-  explosionClip: {fileID: 8300000, guid: 2eea60465fb6b6440b757102c9e991b7, type: 3}
+  explosionClip: {fileID: 0}
   landingClip: {fileID: 8300000, guid: 9b495c23d28a8eb45a9f718c4ca86f45, type: 3}
   landingMinSpeed: 1
---- !u!136 &7125466526009756607
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8828995299312858377}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.028131347
-  m_Height: 0.12999998
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  landingSoundOnlyWhenThrown: 1
 --- !u!114 &5897244185478285597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -884,3 +896,22 @@ MonoBehaviour:
   bangClip: {fileID: 0}
   bangVolume: 1
   autoCreateReceiver: 1
+--- !u!114 &3961893169903849451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8828995299312858377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36fe4640619afd244ba011ca86f99ba6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandPoseProvider
+  leftHandPose: {fileID: 0}
+  rightHandPose: {fileID: 11400000, guid: bb2f2291ffb55ee408847c5d6e094720, type: 2}
+  leftSupportPose: {fileID: 0}
+  rightSupportPose: {fileID: 0}
+  blendInTime: 0.08
+  blendOutTime: 0.08
+  interactable: {fileID: 0}

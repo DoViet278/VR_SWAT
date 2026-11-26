@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using VRSwat.Tutorial;
 
-public class Room09_Surrender : TutorialRoomBase
+public class Room07_Surrender : TutorialRoomBase
 {
     [SerializeField] GameObject suspect;   // đối tượng cầm súng (con tin không cần kéo)
 
