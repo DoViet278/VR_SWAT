@@ -7,6 +7,13 @@ using UnityEngine.Events;
 using UnityEngine.Serialization;
 using VRSwat.Tutorial;
 
+/// <summary>Phe của NPC. Suspect = địch, Police = đồng đội của người chơi.</summary>
+public enum Team
+{
+    Suspect,
+    Police,
+}
+
 /// <summary>
 /// Thành phần chính của NPC: giữ máu và đồng bộ thông số với Blackboard của Behavior Graph
 /// để Conditions / Actions đọc chung một nguồn.
@@ -19,6 +26,12 @@ using VRSwat.Tutorial;
 /// Đầu hàng (Surrender): tắt Behavior Graph, thả súng, quỳ giơ tay (anim complyXXX). Khi đã đầu hàng, NPC tự xử lý
 /// trúng đạn / chết (graph đã tắt). Restrain = bị còng. Có NPCMorale thì morale quyết định khi nào đầu hàng
 /// và cách đánh (nấp nhiều hay ít, bắn chuẩn hay không).
+///
+/// Phe (Team):
+/// - Suspect: Target là người chơi hoặc đồng đội (phe Police) đang nhìn thấy, ưu tiên người chơi
+///   (điểm = khoảng cách, người chơi trừ PlayerPriority m; ai vừa bắn / chĩa súng vào nó trong 2 s được chọn trước).
+///   Giữ mục tiêu ít nhất TargetHoldTime giây rồi mới đổi.
+/// - Police: Target là NPC phe Suspect gần nhất đang nhìn thấy, còn sống, chưa đầu hàng (không tìm tag Player).
 /// </summary>
 [RequireComponent(typeof(BehaviorGraphAgent), typeof(NavMeshAgent), typeof(NPCLocomotion))]
 public class NPC : MonoBehaviour, IDamageable
@@ -47,10 +60,19 @@ public class NPC : MonoBehaviour, IDamageable
     [SerializeField] private float _regenPerSecond;
     [SerializeField] private float _regenDelay = 5f;
 
+    [Tooltip("Hệ số nhân sát thương nhận vào (đồng đội 0.5 = chỉ nhận 50%). 0 = bất tử.")]
+    [SerializeField, Min(0f)] private float _damageTakenScale = 1f;
+
     [Header("Target")]
-    [Tooltip("Để trống: tự tìm object có tag TargetTag (vd. XR Origin của người chơi).")]
+    [Tooltip("Suspect = địch (bắn người chơi và đồng đội). Police = đồng đội (bắn NPC phe Suspect).")]
+    [SerializeField] private Team _team = Team.Suspect;
+    [Tooltip("Để trống: tự tìm object có tag TargetTag (vd. XR Origin của người chơi). Phe Police bỏ qua.")]
     [SerializeField] private GameObject _target;
     [SerializeField] private string _targetTag = "Player";
+    [Tooltip("Phe Suspect: khi chọn giữa người chơi và đồng đội đang thấy, người chơi được trừ ngần này mét.")]
+    [SerializeField] private float _playerPriority = 4f;
+    [Tooltip("Đã có mục tiêu thì giữ ít nhất ngần này giây rồi mới đổi (không quay qua quay lại).")]
+    [SerializeField] private float _targetHoldTime = 1.5f;
 
     [Header("Patrol (dùng khi WayPoints trên Blackboard rỗng)")]
     [SerializeField] private List<GameObject> _wayPoints = new();
@@ -122,6 +144,25 @@ public class NPC : MonoBehaviour, IDamageable
     private CoverSpot _cover;
     private bool _crouching;
     private bool _crouchInPlace;
+    private GameObject _player;
+    private float _targetChosenTime = float.NegativeInfinity;
+    private GameObject _lastAttacker;
+    private float _lastAttackedTime = float.NegativeInfinity;
+
+    private const float AttackerMemory = 2f;
+
+    /// <summary>Một NPC bất kỳ vừa đầu hàng / bị còng / chết (SquadController nghe để giao việc canh).</summary>
+    public static event System.Action<NPC> AnySurrendered, AnyRestrained, AnyDied;
+
+    public Team Team => _team;
+    public bool IsPolice => _team == Team.Police;
+
+    /// <summary>Hệ số nhân sát thương nhận vào. 0 = bất tử.</summary>
+    public float DamageTakenScale
+    {
+        get => _damageTakenScale;
+        set => _damageTakenScale = Mathf.Max(0f, value);
+    }
 
     public float Health => _health;
     public float MaxHealth => _maxHealth;
@@ -297,8 +338,72 @@ public class NPC : MonoBehaviour, IDamageable
         if (Time.time < _nextPerception) return;
         _nextPerception = Time.time + PerceptionInterval;
 
+        ChooseTarget();
         CanSeeTarget = _target != null && NPCConditionUtils.CanSee(gameObject, _target, _viewDistance, _viewAngle);
         if (CanSeeTarget) Alert();
+    }
+
+    // ---------- Chọn mục tiêu theo phe ----------
+
+    /// <summary>Kẻ vừa bắn / đang chĩa súng vào NPC này (đồng đội gọi mỗi frame khi ngắm, súng người chơi khi bắn trúng).</summary>
+    public void NotifyAttackedBy(GameObject attacker)
+    {
+        if (attacker == null || IsDead) return;
+        _lastAttacker = attacker;
+        _lastAttackedTime = Time.time;
+    }
+
+    private bool IsValidTarget(GameObject go)
+    {
+        if (go == null || !go.activeInHierarchy) return false;
+        if (!go.TryGetComponent(out NPC npc)) return _team == Team.Suspect; // người chơi: chỉ địch nhắm
+        return !npc.IsDead && !npc.IsSurrendered && npc._team != _team;
+    }
+
+    private void ChooseTarget()
+    {
+        bool currentValid = IsValidTarget(_target);
+        // Phe Police không có mục tiêu mặc định: mục tiêu chết / đầu hàng thì bỏ.
+        if (!currentValid && _team == Team.Police && _target != null) SwitchTarget(null);
+        if (currentValid && Time.time - _targetChosenTime < _targetHoldTime) return;
+
+        GameObject best = null;
+        float bestScore = float.PositiveInfinity;
+        if (_team == Team.Suspect)
+        {
+            if (_player == null && !string.IsNullOrEmpty(_targetTag)) _player = GameObject.FindWithTag(_targetTag);
+            if (_player != null) Consider(_player, -_playerPriority, ref best, ref bestScore);
+        }
+        foreach (NPC npc in Active)
+        {
+            if (npc == this || npc._team == _team || npc.IsDead || npc.IsSurrendered) continue;
+            Consider(npc.gameObject, 0f, ref best, ref bestScore);
+        }
+
+        if (best != null && best != _target) SwitchTarget(best);
+        // Phe Suspect: mục tiêu cũ (đồng đội) đã chết mà không thấy ai thì quay về người chơi như trước.
+        else if (best == null && !currentValid && _team == Team.Suspect && _player != null && _target != _player) SwitchTarget(_player);
+    }
+
+    private void Consider(GameObject candidate, float bonus, ref GameObject best, ref float bestScore)
+    {
+        if (!NPCConditionUtils.CanSee(gameObject, candidate, _viewDistance, _viewAngle)) return;
+        float score = FlatDistance(transform.position, candidate.transform.position) + bonus;
+        if (candidate == _lastAttacker && Time.time - _lastAttackedTime <= AttackerMemory) score -= 1000f;
+        if (score < bestScore)
+        {
+            bestScore = score;
+            best = candidate;
+        }
+    }
+
+    /// <summary>Đổi mục tiêu do tự chọn (khác SetTarget: không quên vị trí đã thấy, mục tiêu mới đang được nhìn thấy).</summary>
+    private void SwitchTarget(GameObject target)
+    {
+        _target = target;
+        _targetChosenTime = Time.time;
+        if (target == null) ForgetTarget();
+        Set(TargetVar, _target);
     }
 
     private void Alert()
@@ -324,7 +429,9 @@ public class NPC : MonoBehaviour, IDamageable
     /// <summary>Súng / lựu đạn của người chơi (IDamageable). Hướng bắn lấy từ vị trí người chơi.</summary>
     void IDamageable.ApplyDamage(float damage, RaycastHit hit)
     {
-        Vector3 from = _target != null ? _target.transform.position : hit.point + hit.normal;
+        if (_player == null && !string.IsNullOrEmpty(_targetTag)) _player = GameObject.FindWithTag(_targetTag);
+        NotifyAttackedBy(_player);
+        Vector3 from = _player != null ? _player.transform.position : _target != null ? _target.transform.position : hit.point + hit.normal;
         ApplyDamage(damage, from);
     }
 
@@ -378,6 +485,7 @@ public class NPC : MonoBehaviour, IDamageable
         }
 
         OnSurrendered?.Invoke();
+        AnySurrendered?.Invoke(this);
         TutorialSignals.Raise(Sig.NpcSurrendered, this);
         NPCMorale.ReportAllyDown(this, false);
         return true;
@@ -390,6 +498,7 @@ public class NPC : MonoBehaviour, IDamageable
         IsRestrained = true;
         if (_animator != null) _animator.SetTrigger(RestrainHash);
         OnRestrained?.Invoke();
+        AnyRestrained?.Invoke(this);
         TutorialSignals.Raise(Sig.NpcRestrained, this);
         return true;
     }
@@ -415,6 +524,7 @@ public class NPC : MonoBehaviour, IDamageable
 
     private void ApplyDamage(float amount, Vector3? hitFrom)
     {
+        amount *= _damageTakenScale;
         if (IsDead || amount <= 0f) return;
 
         _health = Mathf.Max(0f, _health - amount);
@@ -427,6 +537,7 @@ public class NPC : MonoBehaviour, IDamageable
         if (IsDead)
         {
             OnDied?.Invoke();
+            AnyDied?.Invoke(this);
             NPCMorale.ReportAllyDown(this, true);
             // Bình thường Behavior Graph (IsDead -> Die) lo phần anim và dọn dẹp. Đã đầu hàng thì graph tắt, tự gọi.
             // Animator: Surrendered = true nên trigger Die* chuyển sang anim complyDie* (chết khi đang quỳ).
@@ -486,7 +597,9 @@ public class NPC : MonoBehaviour, IDamageable
         // Target: dùng object trong scene trên Blackboard; trống (hoặc là prefab asset) thì tìm theo tag rồi ghi lại.
         if (!TryGetVariable(TargetVar, out BlackboardVariable target)) missing.Add(TargetVar);
         else if (target.ObjectValue is GameObject go && go != null && go.scene.IsValid()) _target = go;
-        if (_target == null && !string.IsNullOrEmpty(_targetTag)) _target = GameObject.FindWithTag(_targetTag);
+        // Phe Police không bắn người chơi: Target chỉ là NPC phe Suspect, tự chọn lúc chạy.
+        if (_team == Team.Police && !IsValidTarget(_target)) _target = null;
+        if (_target == null && _team == Team.Suspect && !string.IsNullOrEmpty(_targetTag)) _target = GameObject.FindWithTag(_targetTag);
         if (target != null) Set(TargetVar, _target);
 
         // Trạng thái lúc chạy: NPC là nguồn.
@@ -494,7 +607,7 @@ public class NPC : MonoBehaviour, IDamageable
 
         if (missing.Count > 0)
             Debug.LogWarning($"[NPC] {name}: Blackboard thiếu biến (hoặc sai kiểu): {string.Join(", ", missing)}", this);
-        if (_target == null)
+        if (_target == null && _team == Team.Suspect)
             Debug.LogWarning($"[NPC] {name}: chưa có Target (không tìm thấy object tag '{_targetTag}').", this);
         if (TryGetComponent(out NavMeshAgent agent) && agent.enabled && !agent.isOnNavMesh)
             Debug.LogWarning($"[NPC] {name}: không đứng trên NavMesh nên không di chuyển được. Hãy bake NavMesh cho scene.", this);
