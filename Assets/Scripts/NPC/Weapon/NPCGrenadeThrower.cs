@@ -68,6 +68,14 @@ public class NPCGrenadeThrower : MonoBehaviour
     [SerializeField] private float _rifleBlendTime = 0.25f;
     [SerializeField] private int _upperBodyLayer = 1;
 
+    [Header("Flashbang (đồng đội ném vào phòng)")]
+    [Tooltip("Prefab flashbang của người chơi (FlashGrenade, có VRGrenade + Flashbang). Dùng cho BeginThrowFlashbangAt.")]
+    [SerializeField] private VRGrenade _flashbangPrefab;
+    [Tooltip("Số flashbang mang theo. -1 = vô hạn.")]
+    [SerializeField] private int _flashbangs = -1;
+    [Tooltip("Độ cao đỉnh đường bay thêm (m) khi ném flashbang qua cửa.")]
+    [SerializeField] private float _flashbangApex = 0.4f;
+
     [Header("Decision (chỉ ném khi hết sạch đạn)")]
     [Tooltip("Khoảng cách (m) tới Target được phép ném: gần quá thì tự nổ trúng mình, xa quá thì không tới.")]
     [SerializeField] private Vector2 _throwRange = new(5f, 18f);
@@ -141,6 +149,9 @@ public class NPCGrenadeThrower : MonoBehaviour
     private float _phaseStart;
     private bool _enteredState;
     private NPCGrenade _inHand;
+    private VRGrenade _flashInHand;
+    private bool _throwingFlash;
+    private Vector3 _flashPoint;
     private bool _released;
 
     private float _nextAllowed;
@@ -554,7 +565,7 @@ public class NPCGrenadeThrower : MonoBehaviour
         // Duyệt danh sách NPC (NPC có thể không có collider nên không dùng OverlapSphere).
         foreach (NPC ally in NPC.Active)
         {
-            if (ally == null || ally == _npc || ally.IsDead) continue;
+            if (ally == null || ally == _npc || ally.IsDead || (_npc != null && ally.Team != _npc.Team)) continue;
             if (Vector3.Distance(impact, ally.transform.position) > radius + 1f) continue;
             Vector3 body = ally.transform.position + Vector3.up * 1f;
             if (_grenadePrefab.PredictDamage(impact + Vector3.up * 0.1f, body, ally.transform) > 0f) return false;
@@ -600,29 +611,52 @@ public class NPCGrenadeThrower : MonoBehaviour
 
     // ---------- Ném ----------
 
+    /// <summary>Còn flashbang, rảnh tay, còn sống.</summary>
+    public bool CanThrowFlashbang =>
+        _flashbangPrefab != null && _flashbangs != 0 && !IsBusy && (_npc == null || !_npc.IsDead) && (_holder == null || !_holder.IsReloading);
+
+    /// <summary>
+    /// Rút flashbang (cùng anim rút / ném bom) và ném vào điểm cho trước (vd. giữa phòng).
+    /// Không lập kế hoạch như bom: đường bay tính thẳng từ tay tới point. Trả false nếu không ném được lúc này.
+    /// </summary>
+    public bool BeginThrowFlashbangAt(Vector3 point)
+    {
+        if (!CanThrowFlashbang) return false;
+        _throwingFlash = true;
+        _flashPoint = point;
+        StartThrowAnim();
+        return true;
+    }
+
     /// <summary>Bắt đầu rút bom và ném. Trả false nếu không ném được lúc này.</summary>
     public bool BeginThrow()
     {
         if (!CanThrow) return false;
+        _throwingFlash = false;
 
         // Gọi thẳng (không qua WantsToThrow, vd. từ code test): lập kế hoạch ngay.
         if (!_plan.Valid && _npc != null && _npc.Target != null)
             _plan = PlanThrow(EstimatedReleasePoint(), _npc.Target, _npc.ThreatPosition);
 
+        _nextAllowed = Time.time + _cooldown;
+        if (_logDecisions) Debug.Log($"[{name}] Rút bom ném: {LastPlanReport}", this);
+        StartThrowAnim();
+        return true;
+    }
+
+    private void StartThrowAnim()
+    {
         _phase = Phase.Drawing;
         _phaseStart = Time.time;
         _enteredState = false;
         _released = false;
-        _nextAllowed = Time.time + _cooldown;
         NeedsReposition = false;
         LastNoThrowReason = "";
-        if (_logDecisions) Debug.Log($"[{name}] Rút bom ném: {LastPlanReport}", this);
 
         _animator.ResetTrigger(FireHash);
         _animator.ResetTrigger(ThrowHash);
         _animator.SetTrigger(DrawGrenadeHash);
         SlingRifle(true);
-        return true;
     }
 
     private void Update()
@@ -681,12 +715,12 @@ public class NPCGrenadeThrower : MonoBehaviour
     private void TickDraw()
     {
         float t = Progress(DrawGrenadeStateHash, _drawDuration);
-        if (_inHand == null && t >= _grabAt) Grab();
+        if (t >= _grabAt) Grab();
 
         // Anim đã sang Throw (hoặc hết anim rút bom): chuyển giai đoạn.
         if (IsInUpperState(ThrowStateHash) || t >= 1f)
         {
-            if (_inHand == null) Grab();
+            Grab();
             if (!IsInUpperState(ThrowStateHash)) _animator.SetTrigger(ThrowHash); // phòng khi controller thiếu transition
             _phase = Phase.Throwing;
             _phaseStart = Time.time;
@@ -710,6 +744,11 @@ public class NPCGrenadeThrower : MonoBehaviour
     /// <summary>Tay phải chạm túi trên hông: bom trên hông biến mất, xuất hiện trong tay.</summary>
     private void Grab()
     {
+        if (_throwingFlash)
+        {
+            GrabFlashbang();
+            return;
+        }
         if (_inHand != null || _grenadePrefab == null) return;
         _grenades = Mathf.Max(0, _grenades - 1);
         UpdateHipGrenade();
@@ -726,6 +765,11 @@ public class NPCGrenadeThrower : MonoBehaviour
     private void Release()
     {
         _released = true;
+        if (_throwingFlash)
+        {
+            ReleaseFlashbang();
+            return;
+        }
         if (_inHand == null) return;
 
         Vector3 from = _inHand.transform.position;
@@ -767,6 +811,8 @@ public class NPCGrenadeThrower : MonoBehaviour
             _inHand.Launch(Random.insideUnitSphere * 0.5f, transform, null);
             _inHand = null;
         }
+        if (_flashInHand != null) LaunchFlashbang(Random.insideUnitSphere * 0.5f);
+        _throwingFlash = false;
         _phase = Phase.None;
         _animator.ResetTrigger(DrawGrenadeHash);
         _animator.ResetTrigger(ThrowHash);
@@ -776,7 +822,59 @@ public class NPCGrenadeThrower : MonoBehaviour
 
     private void UpdateHipGrenade()
     {
-        if (_hipGrenade != null) _hipGrenade.SetActive(_grenades > 0);
+        if (_hipGrenade != null) _hipGrenade.SetActive(_grenades > 0 || (_flashbangPrefab != null && _flashbangs != 0));
+    }
+
+    // ---------- Flashbang ----------
+
+    /// <summary>Tay chạm hông: flashbang xuất hiện trong tay (kinematic, tắt collider để không vướng thân NPC).</summary>
+    private void GrabFlashbang()
+    {
+        if (_flashInHand != null || _flashbangPrefab == null) return;
+        if (_flashbangs > 0) _flashbangs--;
+        UpdateHipGrenade();
+
+        Transform grip = _handGrip != null ? _handGrip : transform;
+        _flashInHand = Instantiate(_flashbangPrefab, grip.position, grip.rotation, grip);
+        if (_flashInHand.TryGetComponent(out Rigidbody body)) body.isKinematic = true;
+        foreach (Collider c in _flashInHand.GetComponentsInChildren<Collider>()) c.enabled = false;
+    }
+
+    private void ReleaseFlashbang()
+    {
+        _throwingFlash = false;
+        if (_flashInHand == null) return;
+        Vector3 from = _flashInHand.transform.position;
+        if (!TrySolve(from, _flashPoint, _flashbangApex, out Vector3 velocity, out _, out _))
+        {
+            Vector3 dir = _flashPoint - from;
+            dir.y = 0f;
+            velocity = dir.normalized * 6f + Vector3.up * 3f;
+        }
+        LaunchFlashbang(velocity);
+    }
+
+    /// <summary>Rời tay, rút chốt, ngòi bắt đầu cháy (VRGrenade.Arm).</summary>
+    private void LaunchFlashbang(Vector3 velocity)
+    {
+        VRGrenade flash = _flashInHand;
+        _flashInHand = null;
+        flash.transform.SetParent(null, true);
+        Collider[] colliders = flash.GetComponentsInChildren<Collider>(true);
+        foreach (Collider c in colliders) c.enabled = true;
+        foreach (Collider own in GetComponentsInChildren<Collider>())
+            foreach (Collider c in colliders)
+                Physics.IgnoreCollision(own, c);
+
+        if (flash.TryGetComponent(out Rigidbody body))
+        {
+            body.isKinematic = false;
+            body.interpolation = RigidbodyInterpolation.Interpolate;
+            body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            body.linearVelocity = velocity;
+            body.angularVelocity = Random.onUnitSphere * Random.Range(4f, 9f);
+        }
+        flash.Arm();
     }
 
     // ---------- Súng: đeo lên ngực / cầm lại ----------

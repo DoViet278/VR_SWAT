@@ -234,7 +234,7 @@ public class NPCMorale : MonoBehaviour
         if (who == null) return;
         foreach (NPC npc in NPC.Active.ToArray())
         {
-            if (npc == null || npc == who || npc.IsDead || npc.IsSurrendered || !npc.TryGetComponent(out NPCMorale morale)) continue;
+            if (npc == null || npc == who || npc.Team != who.Team || npc.IsDead || npc.IsSurrendered || !npc.TryGetComponent(out NPCMorale morale)) continue;
             if (!NPCConditionUtils.IsWithin(npc.transform.position, who.transform.position, morale._allyRadius)) continue;
             morale.Pressure(killed ? morale._allyKilled : morale._allySurrendered, killed ? "đồng đội bị hạ" : "đồng đội đầu hàng");
         }

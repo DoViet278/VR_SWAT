@@ -67,6 +67,15 @@ public class VRGrenade : MonoBehaviour
         pinPulled = true;
     }
 
+    /// <summary>Rút chốt và cho ngòi cháy ngay (NPC đồng đội ném, không qua tay người chơi).</summary>
+    public void Arm()
+    {
+        pinPulled = true;
+        if (pin != null) pin.gameObject.SetActive(false);
+        if (!fuseStarted)
+            StartCoroutine(FuseRoutine());
+    }
+
     private void HandleReleased(SelectExitEventArgs args)
     {
         if (pinPulled && !fuseStarted)

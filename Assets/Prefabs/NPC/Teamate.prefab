@@ -497,7 +497,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCWeapon
   _magazineSize: 30
-  _spareMagazines: 1
+  _spareMagazines: -1
   _hipMagazine: {fileID: 1031784927318415011}
   _muzzle: {fileID: 5413805992075294297}
   _shellEject: {fileID: 8530382774726333659}
@@ -929,8 +929,8 @@ GameObject:
   - component: {fileID: 6459205415308748865}
   - component: {fileID: 5330901107825680843}
   - component: {fileID: 6714828587477597209}
-  - component: {fileID: 5597375608021971134}
-  - component: {fileID: 206442084334091059}
+  - component: {fileID: 2743206574950254080}
+  - component: {fileID: 6562117246299623213}
   m_Layer: 0
   m_Name: Teamate
   m_TagString: Teamate
@@ -990,7 +990,7 @@ NavMeshAgent:
   m_Radius: 0.5
   m_Speed: 3.5
   m_Acceleration: 8
-  avoidancePriority: 50
+  avoidancePriority: 40
   m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
@@ -1033,7 +1033,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 101894f896280b44d890c30d68cc2119, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -1054,20 +1054,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
-  m_Graph: {fileID: -3005719236331180440, guid: 85cce55a4fca255498595a8a5222c4ad, type: 2}
+  m_Graph: {fileID: -4500503284734230428, guid: 74a02599eb602b74c93b8d36c3464777, type: 2}
   m_BlackboardVariableOverridesList:
   - rid: 5428636514412396648
-  - rid: 5428636514806661608
-  - rid: 5428636514806661609
-  - rid: 5428636514806661610
-  - rid: 5428636514806661611
-  - rid: 5428636514806661612
-  - rid: 5428636514806661613
-  - rid: 5428636514806661614
-  - rid: 5428636514806661615
-  - rid: 5428636538491371535
-  - rid: 5428636538491371643
-  m_OriginalGraph: {fileID: 0}
+  m_OriginalGraph: {fileID: -4500503284734230428, guid: 74a02599eb602b74c93b8d36c3464777, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
@@ -1081,90 +1071,6 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 1439265955848960901}
-    - rid: 5428636514806661608
-      type: {class: 'BlackboardVariable`1[[System.Collections.Generic.List`1[[UnityEngine.GameObject, UnityEngine.CoreModule]], mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 5616913703079554688
-          m_Value1: 14860811925555886954
-        Name: WayPoints
-        m_Value:
-        - {fileID: 0}
-        - {fileID: 0}
-        - {fileID: 0}
-        - {fileID: 0}
-    - rid: 5428636514806661609
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 10314313286774738705
-          m_Value1: 401915457834748303
-        Name: Health
-        m_Value: 100
-    - rid: 5428636514806661610
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 3346728251249377263
-          m_Value1: 16314658249314060335
-        Name: AttackRange
-        m_Value: 5
-    - rid: 5428636514806661611
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 13861899241959425787
-          m_Value1: 15087595343455224396
-        Name: Damage
-        m_Value: 3
-    - rid: 5428636514806661612
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 5157849191048677641
-          m_Value1: 13627987930299122165
-        Name: ViewDistance
-        m_Value: 10
-    - rid: 5428636514806661613
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 1421564157946418871
-          m_Value1: 1486649379074296912
-        Name: ViewAngle
-        m_Value: 120
-    - rid: 5428636514806661614
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 7049180302555137898
-          m_Value1: 18134779822176979152
-        Name: HideThreshold
-        m_Value: 150
-    - rid: 5428636514806661615
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 5555780844107998284
-          m_Value1: 7435462504851957740
-        Name: SearchRadius
-        m_Value: 10
-    - rid: 5428636538491371535
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 11176625917549550011
-          m_Value1: 17826109577204024724
-        Name: CurrentWayPoint
-        m_Value: {fileID: 0}
-    - rid: 5428636538491371643
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 17137634376413098126
-          m_Value1: 5813195225384032449
-        Name: Target
-        m_Value: {fileID: 0}
 --- !u!114 &3407960288263268251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1177,11 +1083,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02ef7b01154b0ff4a84469752c72b915, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC
-  _maxHealth: 100
+  _maxHealth: 300
   _regenPerSecond: 0
   _regenDelay: 5
+  _damageTakenScale: 0.5
+  _team: 1
   _target: {fileID: 0}
   _targetTag: Player
+  _playerPriority: 4
+  _targetHoldTime: 1.5
   _wayPoints: []
   _attackRange: 10
   _damage: 10
@@ -1190,7 +1100,7 @@ MonoBehaviour:
   _hideThreshold: 50
   _searchRadius: 10
   _coverTag: Cover
-  _alertMemory: 8
+  _alertMemory: 2
   _coverShots: {x: 2, y: 4}
   _coverHideTime: {x: 3, y: 5}
   _crouchSettleTime: 0.6
@@ -1260,6 +1170,7 @@ MonoBehaviour:
   _ikPositionWeight: 1
   _ikRotationWeight: 1
   _ikBlendTime: 0.2
+  _aimHoldTime: 0.6
   _tacticalReloadRatio: 0.4
   _emptyReload:
     Duration: 4.083
@@ -1307,13 +1218,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89d0202916643204da3810fdef259df7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCGrenadeThrower
-  _grenades: 1
+  _grenades: 0
   _grenadePrefab: {fileID: 2815590824840598380, guid: 4cb98ca68e125dc49b87f8caa118a8c0, type: 3}
   _hipGrenade: {fileID: 8920741619226176578}
   _handGrip: {fileID: 2473628256541973331}
   _rifleSling: {fileID: 4182102085809183905}
   _rifleBlendTime: 0.25
   _upperBodyLayer: 1
+  _flashbangPrefab: {fileID: 7301217664262472035, guid: f1d1c2856b965484ba57d8e75b2420a3, type: 3}
+  _flashbangs: -1
+  _flashbangApex: 0.4
   _throwRange: {x: 5, y: 18}
   _replanInterval: 0.5
   _cooldown: 4
@@ -1350,7 +1264,104 @@ MonoBehaviour:
   _releaseAt: 0.6
   _rifleBackAt: 0.86
   _releaseOffsetFromHips: {x: 0.1, y: 0.4, z: 0.5}
---- !u!114 &5597375608021971134
+--- !u!82 &2743206574950254080
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439265955848960901}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 25
+  Pan2D: 0
+  rolloffMode: 1
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &6562117246299623213
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1359,59 +1370,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 1439265955848960901}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e44ec7d0a9aab446ae4b44f0759e84b, type: 3}
+  m_Script: {fileID: 11500000, guid: d3b6d06082d351347b196ae39f424fe8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCMorale
-  _startMorale: {x: 0.5, y: 0.9}
-  _defensiveBelow: 0.6
-  _complyBelow: 0.35
-  _complyJitter: 0.05
-  _autoSurrenderBelow: 0.1
-  _autoSurrenderDistance: 8
-  _shout: 0.1
-  _surpriseMultiplier: 2
-  _wounded: 0.12
-  _woundedPerHealth: 0.4
-  _nearMiss: 0.04
-  _nearMissRadius: 1.5
-  _explosion: 0.3
-  _allyKilled: 0.2
-  _allySurrendered: 0.12
-  _allyRadius: 20
-  _outOfAmmo: 0.3
-  _lowHealth: 0.15
-  _lowHealthRatio: 0.35
-  _hitPlayer: 0.02
-  _recoverPerSecond: 0.01
-  _calmDelay: 12
-  _logChanges: 0
-  OnMoraleChanged:
+  m_EditorClassIdentifier: Assembly-CSharp::Teammate
+  _slot: 0
+  _callSign: Alpha
+  _damageTakenScale: 0.5
+  _invulnerable: 0
+  _lowHealthRatio: 0.25
+  _followDistance: 1.5
+  _followSideOffset: 0.8
+  _runDistance: 5
+  _shoutWait: 0.5
+  _shoutCooldown: 2
+  _burst: {x: 2, y: 3}
+  _fireInterval: 0.12
+  _burstPause: {x: 0.4, y: 0.8}
+  _accuracy: 0.85
+  _damage: 35
+  _safetyRadius: 0.3
+  _sideStep: 1
+  _guardDistance: {x: 2, y: 3}
+  _voice: {fileID: 0}
+  _shoutClips: []
+  _doorLockedClips: []
+  _roomClearClips: []
+  _hitClips: []
+  _ackClips: []
+  _hitVoiceCooldown: 3
+  OnSay:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &206442084334091059
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1439265955848960901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c14a89c6326284d8529ee5c441ff1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCCuffable
-  _presentDistance: 2.2
-  _blendTime: 0.5
-  _handsForward: 0.36
-  _handsHeight: 0.8
-  _wristGap: 0.06
-  _turnSpeed: 90
-  _cuffTime: 1
-  _cuffRadius: 0.15
-  _maxHandDistance: 0.45
-  _cuffsPrefab: {fileID: 0}
-  _cuffClip: {fileID: 0}
-  _keyboardR: 1
+  OnDied:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1932291266078926935
 GameObject:
   m_ObjectHideFlags: 0
