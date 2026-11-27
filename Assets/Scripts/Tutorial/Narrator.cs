@@ -19,32 +19,86 @@ namespace VRSwat.Tutorial
         string lastKey;
         TutorialBoard lastBoard;
         float speakingUntil;
+        float holdUntil;                  // đang đọc lời giới thiệu: câu hướng dẫn mới phải xếp hàng
+        string pendingKey;                // câu hướng dẫn chờ đọc sau lời giới thiệu (chỉ giữ 1 câu)
+        TutorialLines.Line pendingLine;
+        TutorialBoard pendingBoard;
+        bool hasPending;
 
         public bool IsSpeaking => Time.time < speakingUntil;
 
         void Awake()
         {
             Instance = this;
-            foreach (var l in lines.lines)
-                if (!string.IsNullOrEmpty(l.key)) map[l.key] = l;
+            if (lines == null) Debug.LogError("[Narrator] Chưa gán TutorialLines: bảng sẽ hiện mã câu thay cho chữ", this);
+            else
+                foreach (var l in lines.lines)
+                    if (!string.IsNullOrEmpty(l.key)) map[l.key] = l;
+            // Thiếu AudioSource thì trước đây Play() lỗi NullReference và kịch bản phòng chết ngay ở câu nói đầu tiên
+            if (voiceSource == null) Debug.LogWarning("[Narrator] Chưa gán Voice Source: chỉ hiện chữ, không phát giọng", this);
         }
 
-        // Câu hướng dẫn chính: thay chữ trên bảng + phát giọng
+        // Quy tắc: chữ trên bảng luôn khớp với giọng đang đọc. Chữ của một câu chỉ hiện khi giọng câu đó bắt đầu.
+        // Câu hướng dẫn chính: đổi chữ + phát giọng cùng lúc, cắt câu đang đọc.
+        // Đang đọc lời giới thiệu thì câu hướng dẫn đầu tiên xếp hàng (bảng vẫn giữ chữ giới thiệu, người chơi vẫn đi lại được).
+        // Nếu trong lúc đó lại có câu mới (người chơi đã làm xong bước đang chờ, ví dụ tới khu vực cửa)
+        // thì ghi đè: bỏ câu chờ, cắt giới thiệu, đổi chữ + giọng câu mới ngay.
         public void Say(string key, TutorialBoard board)
         {
             lastKey = key;
             lastBoard = board;
             var line = Find(key);
+            if (Time.time < holdUntil)
+            {
+                if (!hasPending)
+                {
+                    pendingKey = key;
+                    pendingLine = line;
+                    pendingBoard = board;
+                    hasPending = true;
+                    return;
+                }
+                hasPending = false;
+                holdUntil = 0f;
+            }
+            ShowAndPlay(key, line, board);
+        }
+
+        // Lời giới thiệu đầu phòng: KHÔNG chặn người chơi, kịch bản phòng chạy tiếp ngay.
+        // Câu hướng dẫn kế tiếp chờ giới thiệu đọc xong rồi mới hiện chữ + đọc.
+        public void SayIntro(string key, TutorialBoard board)
+        {
+            hasPending = false;
+            lastKey = key;
+            lastBoard = board;
+            ShowAndPlay(key, Find(key), board);
+            holdUntil = speakingUntil;
+        }
+
+        void Update()
+        {
+            if (hasPending && Time.time >= holdUntil)
+            {
+                hasPending = false;
+                holdUntil = 0f;
+                ShowAndPlay(pendingKey, pendingLine, pendingBoard);
+            }
+        }
+
+        void ShowAndPlay(string key, TutorialLines.Line line, TutorialBoard board)
+        {
             if (board) board.SetInstruction(line != null ? line.text : key);
             Play(line);
         }
 
-        // Câu chen ngang: hiện dòng ghi chú vàng, không thay câu hướng dẫn chính
+        // Câu chen ngang (phản ứng hành động người chơi): hiện dòng ghi chú vàng + giọng ngay, không thay câu hướng dẫn chính.
+        // Nếu chen vào lúc đang giới thiệu thì cắt giới thiệu; câu hướng dẫn đang chờ sẽ đọc (kèm chữ) sau câu chen.
         public void Interject(string key, TutorialBoard board)
         {
             var line = Find(key);
             if (board) board.SetNote(line != null ? line.text : key);
             Play(line);
+            holdUntil = hasPending ? speakingUntil : 0f;
         }
 
         public void Replay()
@@ -77,9 +131,9 @@ namespace VRSwat.Tutorial
 
         void Play(TutorialLines.Line line)
         {
-            voiceSource.Stop();
+            if (voiceSource) voiceSource.Stop();
             AudioClip clip = line != null ? ClipFor(line) : null;
-            if (clip)
+            if (clip && voiceSource)
             {
                 voiceSource.clip = clip;
                 voiceSource.Play();

@@ -1,0 +1,224 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a37885208b44cf89ce7d1f51e8e7bd5, type: 3}
+  m_Name: Voice Officer
+  m_EditorClassIdentifier: Assembly-CSharp::VRSwat.VoiceLines
+  speaker: Officer
+  lines:
+  - key: b1_AnnouncedCivilianComplied
+    category: Announce/Shout
+    text: "Contact has complied!"
+    clips: []
+  - key: b1_AnnouncedClear
+    category: Announce/Shout
+    text: "Area clear!"
+    clips: []
+  - key: b1_AnnouncedDoorClosed
+    category: Announce/Shout
+    text: "Door closed."
+    clips: []
+  - key: b1_AnnouncedLostTarget
+    category: Announce/Shout
+    text: "Suspect is gone. Orders?"
+    clips: []
+  - key: b1_AnnouncedStillCovering
+    category: Announce/Shout
+    text: "Still clear."
+    clips: []
+  - key: b1_AnnouncedSuspectComplied
+    category: Announce/Shout
+    text: "Suspect complied."
+    clips: []
+  - key: b1_CompletedFallIn
+    category: Compliance
+    text: "In position."
+    clips: []
+  - key: b1_AskedLeadToRestrain
+    category: Other
+    text: "You ready to cuff, Sir?"
+    clips: []
+  - key: b1_CouldntBreachLocked
+    category: Other
+    text: "It's locked; confirm breach?"
+    clips: []
+  - key: b1_CouldntCompleteMove
+    category: Other
+    text: "Can't get there."
+    clips: []
+  - key: b1_CoveredCompliedUnrestrained
+    category: Other
+    text: "Stay down."
+    clips: []
+  - key: b1_MissionDoneSuccess
+    category: Other
+    text: "Good work, guys. Let's head to debrief."
+    clips: []
+  - key: b1_ReassuredAggressiveHostage
+    category: Other
+    text: "It's just procedure."
+    clips: []
+  - key: b1_ReassuredPassiveHostage
+    category: Other
+    text: "Easy, good guys are here."
+    clips: []
+  - key: b1_StartedClearing
+    category: Other
+    text: "Go, go, go! Time to move!"
+    clips: []
+  - key: b1_ToldPlayerBlocksDoor
+    category: Other
+    text: "You're blockin' the door."
+    clips: []
+  - key: b1_ToldPlayerToMove
+    category: Other
+    text: "You're in my way."
+    clips: []
+  - key: b1_ReactedBang
+    category: Reaction
+    text: "Blinded!"
+    clips: []
+  - key: b1_ReactedFirstShot
+    category: Reaction
+    text: "Careful!"
+    clips: []
+  - key: b1_RepliedFallIn
+    category: Reply/Ack
+    text: "Roger -- moving to you."
+    clips: []
+  - key: b1_RepliedMoveTo
+    category: Reply/Ack
+    text: "Understood -- moving."
+    clips: []
+  - key: b1_RepliedTOC
+    category: Reply/Ack
+    text: "Roger."
+    clips: []
+  - key: b1_RepliedToTOCMissionStart
+    category: Reply/Ack
+    text: "Copy. On our way."
+    clips: []
+  - key: b1_ReportedAlreadyBusy
+    category: Report
+    text: "I'm busy!"
+    clips: []
+  - key: b1_ReportedCivilianRestrained
+    category: Report
+    text: "Civilian restrained."
+    clips: []
+  - key: b1_ReportedCivilianSpotted
+    category: Report
+    text: "Gotta contact..."
+    clips: []
+  - key: b1_ReportedContinuingClear2Minus
+    category: Report
+    text: "Moving forward!"
+    clips: []
+  - key: b1_ReportedContinuingClear2Plus
+    category: Report
+    text: "Moving forward! Trailers!"
+    clips: []
+  - key: b1_ReportedDeadSuspect
+    category: Report
+    text: "Suspect down!"
+    clips: []
+  - key: b1_ReportedDeployingBreachSG
+    category: Report
+    text: "Breaching now."
+    clips: []
+  - key: b1_ReportedDeployingC2
+    category: Report
+    text: "Beginning breach."
+    clips: []
+  - key: b1_ReportedDeployingFlashbang
+    category: Report
+    text: "Droppin' bang."
+    clips: []
+  - key: b1_ReportedDeployingToolkit
+    category: Report
+    text: "Unlocking it."
+    clips: []
+  - key: b1_ReportedDoorAlreadyClosed
+    category: Report
+    text: "Already closed."
+    clips: []
+  - key: b1_ReportedDoorBlocked
+    category: Report
+    text: "Something's in the way!"
+    clips: []
+  - key: b1_ReportedDoorLocked
+    category: Report
+    text: "Door locked."
+    clips: []
+  - key: b1_ReportedDoorOpen
+    category: Report
+    text: "Door's unlocked."
+    clips: []
+  - key: b1_ReportedDoorUnlocked
+    category: Report
+    text: "It's unlocked."
+    clips: []
+  - key: b1_ReportedGenericOrderReply
+    category: Report
+    text: "Copy - on it."
+    clips: []
+  - key: b1_ReportedNoGun
+    category: Report
+    text: "Nothing there"
+    clips: []
+  - key: b1_ReportedSuspectDown
+    category: Report
+    text: "Bad guy down!"
+    clips: []
+  - key: b1_ReportedSuspectNeutralized
+    category: Report
+    text: "Suspect down!"
+    clips: []
+  - key: b1_ReportedSuspectRestrained
+    category: Report
+    text: "Suspect secured."
+    clips: []
+  - key: b1_ReportedSuspectsAndCivsSeen
+    category: Report
+    text: "We got a party... Numerous guys and guns..."
+    clips: []
+  - key: b1_ReportedSuspectSpotted
+    category: Report
+    text: "Suspect in sight!"
+    clips: []
+  - key: b1_ReportedSuspectWillNotComply
+    category: Report
+    text: "This one won't give up."
+    clips: []
+  - key: b1_ReportedTaserUnavailable
+    category: Report
+    text: "None availble!"
+    clips: []
+  - key: b1_ReportedThresholdClear
+    category: Report
+    text: "No visible threats."
+    clips: []
+  - key: b1_ReportedTrapDisabled
+    category: Report
+    text: "Trap removed."
+    clips: []
+  - key: b1_ReportedTwoCiviliansSeen
+    category: Report
+    text: "Two unarmed contacts..."
+    clips: []
+  - key: b1_ReportedTwoSuspectsSeen
+    category: Report
+    text: "Two armed suspects visible..."
+    clips: []
+  - key: b1_ReportedWeaponSecured
+    category: Report
+    text: "Weapon secured!"
+    clips: []

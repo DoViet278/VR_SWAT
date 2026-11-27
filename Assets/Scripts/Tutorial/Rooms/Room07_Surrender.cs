@@ -8,13 +8,11 @@ public class Room07_Surrender : TutorialRoomBase
 
     protected override IEnumerator Script()
     {
-        yield return SayAndWait(CONST.TutorialLine.R9_INTRO);
-
-        Say(CONST.TutorialLine.R9_SHOUT);
-        OnceOnSignal(Sig.PlayerShout, () => Note(CONST.TutorialLine.R9_SHOUT_AGAIN));
+        Say(CONST.TutorialLine.R7_SHOUT);
+        OnceOnSignal(Sig.PlayerShout, () => Note(CONST.TutorialLine.R7_SHOUT_AGAIN));
         yield return WaitSignal(Sig.NpcSurrendered, source: suspect);
 
-        Say(CONST.TutorialLine.R9_CUFF);
+        Say(CONST.TutorialLine.R7_CUFF);
         yield return WaitSignal(Sig.NpcRestrained, count: 2, label: "Đã còng");   // đối tượng + con tin
     }
 }

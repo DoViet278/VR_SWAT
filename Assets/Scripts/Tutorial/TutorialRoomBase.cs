@@ -83,15 +83,12 @@ namespace VRSwat.Tutorial
             Narrator.Instance.Say(key, board);
         }
 
-        protected IEnumerator SayAndWait(string key)
+        // Lời giới thiệu: đọc trọn nhưng không chặn. Script chạy tiếp ngay, người chơi hành động được luôn,
+        // câu hướng dẫn kế tiếp hiện lên bảng ngay và giọng đọc sau khi giới thiệu xong.
+        protected void SayIntro(string key)
         {
-            Say(key);
-            skipWait = false;
-            while (Narrator.Instance.IsSpeaking)
-            {
-                if (skipWait) { skipWait = false; break; }
-                yield return null;
-            }
+            lastKey = key;
+            Narrator.Instance.SayIntro(key, board);
         }
 
         protected void Note(string key) => Narrator.Instance.Interject(key, board);
@@ -178,6 +175,7 @@ namespace VRSwat.Tutorial
         {
             Transform head = TutorialManager.Instance.PlayerHead;
             yield return WaitFor(() => area.Contains(head.position));
+            Debug.Log("Player go to the zone: " + area.name);
         }
 
         // ===== Phản hồi phụ, không chặn kịch bản (tự hủy khi xong phòng) =====

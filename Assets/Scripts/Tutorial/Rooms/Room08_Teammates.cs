@@ -14,15 +14,13 @@ public class Room08_Teammates : TutorialRoomBase
     protected override IEnumerator Script()
     {
         teammatesIntro.Invoke();
-        yield return SayAndWait(TutorialLine.R7_INTRO);
-
-        Say(TutorialLine.R7_OPEN_MENU);
+        Say(TutorialLine.R8_OPEN_MENU);
         yield return WaitSignal(Sig.MenuOpened);
 
-        Say(TutorialLine.R7_FALLIN);
+        Say(TutorialLine.R8_FALLIN);
         yield return WaitSignal(Sig.CmdFallIn);
 
-        Say(TutorialLine.R7_STACKUP);
+        Say(TutorialLine.R8_STACKUP);
         yield return WaitSignal(Sig.SquadStacked, source: stackDoor.gameObject);
     }
 }
