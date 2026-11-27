@@ -10036,6 +10036,8 @@ MonoBehaviour:
   typeFromFirstGun: 1
   ignoreGunCollisionWhileHeld: 1
   restoreCollisionDelay: 0.5
+  separateSocketAttach: 1
+  socketAttachTransform: {fileID: 0}
 --- !u!1 &398611684588605719
 GameObject:
   m_ObjectHideFlags: 0
@@ -10648,8 +10650,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1432260059430220022}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0889299, y: -0.039676104, z: -0.7127824, w: 0.6945924}
-  m_LocalPosition: {x: 0.19, y: 0.065, z: 0.233}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.1999997, y: 1.2, z: 1.1999997}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -10681,7 +10683,7 @@ Transform:
   - {fileID: 2584630101079361688}
   - {fileID: 8871958609433434730}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -183.841, y: -190.504, z: 88.166}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6066179099942353267
 MeshFilter:
   m_ObjectHideFlags: 0

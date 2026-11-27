@@ -41,8 +41,10 @@ namespace VRSwat.Doors
         void OnGrab(SelectEnterEventArgs args)
         {
             var t = args.interactorObject.transform;
-            // chặn grab bằng tia từ xa: tay phải ở ngay tay nắm
-            if (Vector3.Distance(t.position, transform.position) > breakDistance || !door.BeginGrab(this))
+            // chặn grab bằng tia từ xa: tay phải ở ngay tay nắm.
+            // Đang mở panel chọn cách mở cửa thì cũng không cho nắm, kẻo vừa chọn vừa giật cửa.
+            if (DoorActionMenu.Open != null ||
+                Vector3.Distance(t.position, transform.position) > breakDistance || !door.BeginGrab(this))
             {
                 interactable.interactionManager.SelectExit(args.interactorObject, (IXRSelectInteractable)interactable);
                 return;

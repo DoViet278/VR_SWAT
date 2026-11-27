@@ -51,7 +51,8 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
     [SerializeField] private bool fillMagazinesOnSpawn = true;
 
     [Header("Số ô")]
-    [Tooltip("Số ô dựng quanh hông. Layout Anchors thì lấy theo số phần tử của Slot Anchors.")]
+    [Tooltip("Số ô dựng quanh hông. Layout Anchors có nhiều anchor hơn thì lấy theo số anchor, " +
+             "nhưng không bao giờ ít hơn số này.")]
     [SerializeField] private int maxSlots = 5;
 
     [Header("Nhận lại vật phẩm")]
@@ -71,6 +72,14 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
     [Tooltip("Nhét băng đạn vào túi thì nó được nạp đầy lại. Mặc định TẮT: túi này không tự sinh " +
              "đạn, nên refill ở đây là đạn vô hạn trá hình.")]
     [SerializeField] private bool refillMagazineOnStore = false;
+
+    [Header("Mỗi ô một loại")]
+    [Tooltip("Mỗi ô chỉ nhận đúng loại khai ở Slot Allowed Kinds. Tắt thì về luật chung ở trên.")]
+    [SerializeField] private bool restrictSlotsByKind = true;
+
+    [Tooltip("Loại vật phẩm từng ô nhận, theo đúng thứ tự ô. Một ô tick được nhiều loại " +
+             "(ví dụ ô súng dài: Rifle + Shotgun). Ô nào để None, hoặc thiếu phần tử, thì nhận theo luật chung.")]
+    [SerializeField] private List<PouchItemKind> slotAllowedKinds = new List<PouchItemKind>();
 
     [Header("Slot Layout")]
     [SerializeField] private SlotLayout layout = SlotLayout.Arc;
@@ -171,6 +180,46 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
 
     public int SlotCount => slots.Count;
 
+    /// <summary>Danh sách trang bị ban đầu, chỉ đọc. Editor đọc cái này để vẽ preview.</summary>
+    public IReadOnlyList<LoadoutEntry> StartingItems => startingItems;
+
+    /// <summary>Editor đọc hai cái này để preview đúng kích thước vật lúc nằm trong ô.</summary>
+    public bool ScaleStoredItems => scaleStoredItems;
+
+    public Vector3 StoredItemScale => storedItemScale;
+
+    /// <summary>
+    /// Số ô túi sẽ dựng với thông số hiện tại. Tính được cả ngoài Play.
+    ///
+    /// Layout Anchors lấy số lớn hơn giữa Max Slots và số anchor, KHÔNG lấy thẳng số anchor nữa.
+    /// Trước đó lấy thẳng, nên một mảng Slot Anchors 5 phần tử TOÀN NULL cũng âm thầm khoá túi
+    /// còn 5 ô và Max Slots bị bỏ qua không một lời cảnh báo — đồ xệp cuối danh sách không có chỗ
+    /// nào để spawn.
+    /// </summary>
+    public int ResolvedSlotCount => layout == SlotLayout.Anchors
+        ? Mathf.Max(1, Mathf.Max(maxSlots, slotAnchors.Count))
+        : Mathf.Max(1, maxSlots);
+
+    /// <summary>
+    /// Tư thế của ô thứ index, tính theo trục của túi đồ — đúng cái mà BuildSlots sẽ dùng.
+    /// Tách riêng ra để ItemPouchEditor dùng chung một phép tính với lúc chạy, khỏi vẽ preview
+    /// một chỗ mà vào Play đồ nằm một chỗ.
+    /// </summary>
+    public void GetSlotLocalPose(int index, out Vector3 localPosition, out Quaternion localRotation)
+    {
+        if (layout == SlotLayout.Anchors && index >= 0 && index < slotAnchors.Count && slotAnchors[index] != null)
+        {
+            Transform anchor = slotAnchors[index];
+            localPosition = transform.InverseTransformPoint(anchor.position);
+            localRotation = Quaternion.Inverse(transform.rotation) * anchor.rotation;
+            return;
+        }
+
+        int slotCount = ResolvedSlotCount;
+        localPosition = GetSlotLocalPosition(index, slotCount);
+        localRotation = GetSlotLocalRotation(index, slotCount);
+    }
+
     public bool IsEmpty => StoredCount == 0;
 
     public bool IsFull => slots.Count > 0 && StoredCount >= slots.Count;
@@ -208,9 +257,7 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
 
     private void BuildSlots()
     {
-        int slotCount = layout == SlotLayout.Anchors && slotAnchors.Count > 0
-            ? slotAnchors.Count
-            : Mathf.Max(1, maxSlots);
+        int slotCount = ResolvedSlotCount;
 
         for (int i = 0; i < slotCount; i++)
         {
@@ -341,11 +388,13 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
             if (entry == null || entry.prefab == null)
                 continue;
 
-            Slot slot = ResolveSlot(entry.slotIndex);
+            Slot slot = ResolveSlot(entry.slotIndex, entry.prefab.transform);
 
             if (slot == null)
             {
-                Debug.LogWarning($"{name}: het o trong cho {entry.prefab.name}.", this);
+                Debug.LogWarning($"{name}: khong co o nao nhan {entry.prefab.name} (loai " +
+                                 $"{PouchItemKinds.Classify(entry.prefab.transform)}). O da day, " +
+                                 "hay o do khong nhan loai nay?", this);
                 continue;
             }
 
@@ -353,15 +402,23 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
         }
     }
 
-    /// <summary>Ô được chỉ định nếu còn trống, không thì ô trống đầu tiên. Hết ô thì null.</summary>
-    private Slot ResolveSlot(int slotIndex)
+    /// <summary>
+    /// Ô được chỉ định nếu còn trống VÀ nhận đúng loại vật này, không thì ô trống đầu tiên
+    /// nhận được nó. Không ô nào nhận thì null.
+    ///
+    /// Phải xét loại ngay ở đây: SpawnInto gọi thẳng manager.SelectEnter, lệnh đó bỏ qua select
+    /// filter, nhưng mỗi frame XRI lại gọi lại CanSelect -> filter từ chối -> vật bị đẩy ra ngay
+    /// frame sau. Nhồi vào ô sai loại là thấy đồ rơi xuống đất chứ không nằm trong túi.
+    /// </summary>
+    private Slot ResolveSlot(int slotIndex, Transform itemTransform)
     {
-        if (slotIndex >= 0 && slotIndex < slots.Count && !IsOccupied(slots[slotIndex]))
+        if (slotIndex >= 0 && slotIndex < slots.Count && !IsOccupied(slots[slotIndex])
+            && CanStoreInSlot(slotIndex, itemTransform))
             return slots[slotIndex];
 
         for (int i = 0; i < slots.Count; i++)
         {
-            if (!IsOccupied(slots[i]))
+            if (!IsOccupied(slots[i]) && CanStoreInSlot(i, itemTransform))
                 return slots[i];
         }
 
@@ -428,14 +485,14 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
 
         XRBaseInteractable interactable = item.GetComponent<XRBaseInteractable>();
 
-        if (interactable == null || interactable.isSelected || !CanStore(item.transform))
+        if (interactable == null || interactable.isSelected)
             return false;
 
         for (int i = 0; i < slots.Count; i++)
         {
             Slot slot = slots[i];
 
-            if (IsOccupied(slot))
+            if (IsOccupied(slot) || !CanStoreInSlot(i, item.transform))
                 continue;
 
             XRInteractionManager manager = ResolveManager(slot.socket);
@@ -638,9 +695,7 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
 
     private void OnDrawGizmosSelected()
     {
-        int slotCount = layout == SlotLayout.Anchors && slotAnchors.Count > 0
-            ? slotAnchors.Count
-            : Mathf.Max(1, maxSlots);
+        int slotCount = ResolvedSlotCount;
 
         Gizmos.color = Color.cyan;
 
@@ -668,12 +723,50 @@ public class ItemPouch : MonoBehaviour, IXRSelectFilter, IXRHoverFilter
 
     public bool Process(IXRSelectInteractor interactor, IXRSelectInteractable interactable)
     {
-        return CanStore(interactable?.transform);
+        return CanStoreInSlot(IndexOfSocket(interactor), interactable?.transform);
     }
 
     public bool Process(IXRHoverInteractor interactor, IXRHoverInteractable interactable)
     {
-        return CanStore(interactable?.transform);
+        return CanStoreInSlot(IndexOfSocket(interactor), interactable?.transform);
+    }
+
+    /// <summary>Loại vật phẩm mà ô thứ slotIndex nhận. None = chưa khai, dùng luật chung.</summary>
+    public PouchItemKind GetAllowedKinds(int slotIndex)
+    {
+        return slotIndex >= 0 && slotIndex < slotAllowedKinds.Count
+            ? slotAllowedKinds[slotIndex]
+            : PouchItemKind.None;
+    }
+
+    /// <summary>Ô thứ slotIndex có nhận vật này không. Editor gọi được cả ngoài Play.</summary>
+    public bool CanStoreInSlot(int slotIndex, Transform itemTransform)
+    {
+        if (itemTransform == null)
+            return false;
+
+        if (!restrictSlotsByKind)
+            return CanStore(itemTransform);
+
+        PouchItemKind allowed = GetAllowedKinds(slotIndex);
+
+        // Ô chưa khai loại thì không khoá gì cả, cứ theo luật chung: bật Restrict Slots By Kind
+        // lên mà chưa điền xong danh sách thì túi không tự nhiên khoá sạch.
+        if (allowed == PouchItemKind.None)
+            return CanStore(itemTransform);
+
+        return (allowed & PouchItemKinds.Classify(itemTransform)) != PouchItemKind.None;
+    }
+
+    private int IndexOfSocket(object interactor)
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (ReferenceEquals(slots[i].socket, interactor))
+                return i;
+        }
+
+        return -1;
     }
 
     // --- Va chạm của đồ trong túi ---

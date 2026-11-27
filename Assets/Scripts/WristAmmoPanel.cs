@@ -18,6 +18,17 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class WristAmmoPanel : MonoBehaviour
 {
+    /// <summary>Trục cục bộ của bàn tay, dùng để chỉ ra hướng lòng bàn tay.</summary>
+    public enum HandAxis
+    {
+        Up,
+        Down,
+        Left,
+        Right,
+        Forward,
+        Back
+    }
+
     [Header("Nguồn dữ liệu")]
     [Tooltip("Bám theo khẩu súng đang nằm trên tay người chơi. Tắt đi thì panel chỉ đọc đúng khẩu " +
              "gán ở ô Ammo Manager bên dưới.")]
@@ -91,6 +102,24 @@ public class WristAmmoPanel : MonoBehaviour
 
     [Tooltip("Đầu người chơi. Để trống thì tự tìm camera của XR Origin (hoặc Camera.main) lúc chạy.")]
     [SerializeField] private Transform head;
+
+    [Tooltip("Bật: chỉ hiện khi người chơi ngửa bàn tay lên, hạ tay về tư thế cầm súng là ẩn.\n\n" +
+             "Khác với Require Wrist Flip ở chỗ điều kiện này đọc tư thế BÀN TAY chứ không đọc " +
+             "hướng mặt panel, nên panel gắn bên hông bàn tay vẫn ăn đúng động tác ngửa tay.")]
+    [SerializeField] private bool requirePalmUp = true;
+
+    [Tooltip("Gốc bàn tay (Left / Right Controller). Để trống thì lấy ngay cha của panel.")]
+    [SerializeField] private Transform handAnchor;
+
+    [Tooltip("Trục của bàn tay chĩa về phía LÒNG bàn tay. Tay cầm XR thường là Down (-Y), tức " +
+             "lòng bàn tay úp xuống khi cầm súng. Chọn sai thì panel hiện đúng lúc đáng lẽ phải " +
+             "ẩn: chọn trục ngược lại là xong. Chọn panel trong Scene view sẽ thấy tia vàng vẽ " +
+             "theo trục này.")]
+    [SerializeField] private HandAxis palmAxis = HandAxis.Down;
+
+    [Tooltip("Lòng bàn tay chếch lên trời trong khoảng bao nhiêu độ thì coi là đã ngửa tay.")]
+    [Range(10f, 90f)]
+    [SerializeField] private float palmUpAngle = 60f;
 
     [Tooltip("Góc tối đa giữa mặt panel và hướng về phía đầu thì coi là đang lật cổ tay lên xem (độ).")]
     [Range(10f, 90f)]
@@ -459,14 +488,64 @@ public class WristAmmoPanel : MonoBehaviour
 
         if (requireWristFlip && head != null)
         {
-            // Mặt panel (+Z) quay về phía đầu = đang lật cổ tay lên xem. Bật Auto Face Head thì
-            // mặt sau cũng tính, vì lát nữa panel sẽ tự quay lại cho đúng chiều.
-            float angle = Vector3.Angle(transform.forward, toHead);
+            // Mặt đọc được của Canvas là mặt -Z chứ không phải +Z: đặt một canvas xoay 0 độ trước
+            // camera mặc định thì chữ đọc xuôi, mà lúc đó +Z của nó chĩa ra xa camera. Nên "đang
+            // quay về phía người chơi" nghĩa là -Z hướng về đầu.
+            float angle = Vector3.Angle(-transform.forward, toHead);
+
+            // Bật Auto Face Head thì mặt kia cũng tính, vì lát nữa panel sẽ tự quay cho đúng chiều.
             bool facing = angle <= visibleAngle || (autoFaceHead && 180f - angle <= visibleAngle);
             target = facing ? 1f : 0f;
         }
 
+        // Chưa ngửa bàn tay thì ẩn, kể cả khi mặt panel đang chếch về phía đầu.
+        if (target > 0f && requirePalmUp && !IsPalmUp())
+            target = 0f;
+
         canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, target, fadeSpeed * Time.deltaTime);
+    }
+
+    /// <summary>
+    /// Lòng bàn tay đang chếch lên trời hay không. Đọc thẳng tư thế bàn tay chứ không đọc hướng
+    /// mặt panel, nên panel gắn kiểu gì, ở đâu trên tay cũng không ảnh hưởng tới điều kiện này.
+    /// </summary>
+    private bool IsPalmUp()
+    {
+        Transform hand = handAnchor != null ? handAnchor : transform.parent;
+
+        // Panel không nằm trong tay ai (đang test rời) thì đừng chặn, kẻo không bao giờ thấy nó.
+        if (hand == null)
+            return true;
+
+        return Vector3.Angle(PalmDirection(hand), Vector3.up) <= palmUpAngle;
+    }
+
+    private Vector3 PalmDirection(Transform hand)
+    {
+        switch (palmAxis)
+        {
+            case HandAxis.Up: return hand.up;
+            case HandAxis.Down: return -hand.up;
+            case HandAxis.Left: return -hand.right;
+            case HandAxis.Right: return hand.right;
+            case HandAxis.Forward: return hand.forward;
+            default: return -hand.forward;
+        }
+    }
+
+    // Vẽ trục lòng bàn tay trong Scene view: chọn trục cho đúng dễ hơn nhiều khi nhìn thấy nó.
+    private void OnDrawGizmosSelected()
+    {
+        if (!requirePalmUp)
+            return;
+
+        Transform hand = handAnchor != null ? handAnchor : transform.parent;
+
+        if (hand == null)
+            return;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(hand.position, PalmDirection(hand) * 0.15f);
     }
 
     /// <summary>
@@ -494,9 +573,12 @@ public class WristAmmoPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Quay panel nửa vòng khi đầu người chơi đang ở phía sau lưng nó. Canvas của Unity nhìn từ
-    /// sau lưng là chữ lộn ngược như soi gương, mà tư thế bàn tay lúc chạy do kính quyết định chứ
-    /// không phải tư thế bày sẵn trong Scene view, nên cứ để nó tự nắn cho chắc.
+    /// Quay panel nửa vòng khi người chơi đang nhìn vào mặt sau của nó, tức là chữ đang lộn ngược
+    /// như soi gương. Mặt đọc được của Canvas là mặt -Z, nên nhìn thấy mặt sau nghĩa là +Z đang
+    /// chĩa về phía đầu.
+    ///
+    /// Tư thế bàn tay lúc chạy do kính theo dõi tay thật quyết định chứ không phải tư thế bày sẵn
+    /// trong Scene view, nên cứ để nó tự nắn cho chắc.
     /// </summary>
     private void FaceHead()
     {
@@ -504,7 +586,7 @@ public class WristAmmoPanel : MonoBehaviour
             return;
 
         // Chừa một khoảng chết quanh lúc nhìn nghiêng, kẻo panel lật qua lật lại.
-        if (Vector3.Dot(transform.forward, (head.position - transform.position).normalized) > -0.1f)
+        if (Vector3.Dot(transform.forward, (head.position - transform.position).normalized) < 0.1f)
             return;
 
         transform.Rotate(0f, 180f, 0f, Space.Self);

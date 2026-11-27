@@ -31,16 +31,18 @@ public static class WristAmmoPanelSetup
     // trong Inspector cho vừa tay người chơi là chuyện bình thường.
     private static readonly Vector3 WristOffset = new Vector3(0f, 0.035f, -0.07f);
 
-    // Canvas của Unity chỉ đọc xuôi khi NHÌN TỪ PHÍA +Z của nó; nhìn từ sau lưng là chữ lộn
-    // ngược như soi gương. Nên trục +Z bắt buộc phải ngửa ra khỏi mu bàn tay, về phía mặt người
-    // chơi khi lật cổ tay lên.
+    // Mặt ĐỌC ĐƯỢC của Canvas là mặt -Z, không phải +Z: đặt một canvas xoay 0 độ trước camera
+    // mặc định thì chữ đọc xuôi, mà lúc đó +Z của nó đang chĩa ra xa camera. Nhìn từ phía +Z mới
+    // là nhìn vào lưng canvas, chữ lộn ngược như soi gương.
     //
-    // -90 quanh X: mặt panel (+Z) ngửa lên trời, đúng kiểu đồng hồ đeo tay.
-    // 180 quanh Z: đầu chữ quay về phía bàn tay, lật cổ tay lên là đọc xuôi.
+    // Nên trục +Z phải chúi XUỐNG mu bàn tay, để mặt -Z ngửa lên về phía mặt người chơi.
+    //
+    // 90 quanh X: +Z chúi xuống (-Y của tay cầm), -Z ngửa lên trời, đúng kiểu đồng hồ đeo tay.
+    // Trục Y của panel thành +Z của tay cầm, tức đầu chữ quay về phía các ngón tay.
     //
     // Hai tay dùng chung số đo: trục +Y của tay cầm đều chĩa ra khỏi mu bàn tay, trái phải chỉ
     // khác nhau ở hướng lật cổ tay chứ không khác hệ trục.
-    private static readonly Vector3 WristEuler = new Vector3(-90f, 0f, 180f);
+    private static readonly Vector3 WristEuler = new Vector3(90f, 0f, 0f);
 
     [MenuItem("Tools/VR SWAT/Create Wrist Ammo Panel (Right Hand)")]
     private static void CreateRight()
@@ -52,6 +54,44 @@ public static class WristAmmoPanelSetup
     private static void CreateLeft()
     {
         Create(false);
+    }
+
+    /// <summary>
+    /// Quay panel đang chọn nửa vòng quanh trục đứng của chính nó: panel vẫn nằm đúng chỗ cũ,
+    /// đúng mặt phẳng cũ, chỉ đổi mặt quay ra ngoài.
+    ///
+    /// Dùng khi chỗ đặt đã vừa ý rồi mà chữ lại lộn ngược như soi gương: nghĩa là đang nhìn vào
+    /// lưng canvas (mặt +Z), lật một cái là xong, không phải canh lại góc từ đầu.
+    /// </summary>
+    [MenuItem("Tools/VR SWAT/Flip Wrist Ammo Panel Face")]
+    private static void FlipFace()
+    {
+        Transform root = SelectedPanel();
+
+        if (root == null)
+            return;
+
+        Undo.RecordObject(root, "Flip Wrist Ammo Panel Face");
+        root.Rotate(0f, 180f, 0f, Space.Self);
+        EditorUtility.SetDirty(root);
+
+        Debug.Log($"Đã lật mặt WristAmmoPanel, rotation giờ là {root.localEulerAngles}. Vị trí và " +
+                  "mặt phẳng giữ nguyên, chỉ đổi mặt quay ra ngoài.", root.gameObject);
+    }
+
+    /// <summary>Panel đang chọn trong Hierarchy, kèm báo lỗi khi chọn nhầm thứ khác.</summary>
+    private static Transform SelectedPanel()
+    {
+        GameObject selected = Selection.activeGameObject;
+        WristAmmoPanel panel = selected != null ? selected.GetComponentInParent<WristAmmoPanel>() : null;
+
+        if (panel != null)
+            return panel.transform;
+
+        EditorUtility.DisplayDialog("Wrist Ammo Panel",
+            "Chọn WristAmmoPanel trong Hierarchy trước đã.", "OK");
+
+        return null;
     }
 
     /// <summary>
@@ -96,8 +136,8 @@ public static class WristAmmoPanelSetup
         root.localEulerAngles = WristEuler;
         EditorUtility.SetDirty(root);
 
-        Debug.Log($"Đã nắn lại WristAmmoPanel trên \"{hand.name}\": mặt panel (+Z) ngửa ra khỏi mu " +
-                  "bàn tay nên chữ đọc xuôi. Scale giữ nguyên.", root.gameObject);
+        Debug.Log($"Đã nắn lại WristAmmoPanel trên \"{hand.name}\": mặt đọc được (-Z) ngửa ra " +
+                  "khỏi mu bàn tay nên chữ đọc xuôi. Scale giữ nguyên.", root.gameObject);
     }
 
     private static void Create(bool rightHand)
@@ -245,7 +285,8 @@ public static class WristAmmoPanelSetup
               "mu bàn tay, nhưng ĐỪNG xoay lung tung: xoay quá nửa vòng là nhìn vào mặt sau canvas, " +
               "chữ lộn ngược. Lỡ xoay hỏng thì chạy Tools > VR SWAT > Fix Wrist Ammo Panel Orientation."
             : $"Đã tạo WristAmmoPanel nhưng chưa thấy {(rightHand ? "Right" : "Left")} Controller " +
-              "trong scene: tự kéo panel vào tay, xoay mặt panel (+Z) ngửa ra khỏi mu bàn tay, rồi " +
+              "trong scene: tự kéo panel vào tay, xoay cho trục +Z chúi xuống mu bàn tay (mặt đọc " +
+              "được là mặt -Z), rồi " +
               "gán Head = Main Camera.", root);
     }
 
