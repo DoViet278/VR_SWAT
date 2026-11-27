@@ -11,7 +11,7 @@ public class Room01_Start : TutorialRoomBase
 
     protected override IEnumerator Script()
     {
-        yield return SayAndWait(CONST.TutorialLine.R1_WELCOME);
+        SayIntro(CONST.TutorialLine.R1_WELCOME);
 
         // Highlight(floorArrows);
         Say(CONST.TutorialLine.R1_MOVE);

@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a37885208b44cf89ce7d1f51e8e7bd5, type: 3}
+  m_Name: Voice SuspectAK
+  m_EditorClassIdentifier: Assembly-CSharp::VRSwat.VoiceLines
+  speaker: SuspectAK
+  lines:
+  - key: ak_AnnouncedCompliant
+    category: Announce/Shout
+    text: "I dropped it! Don't shoot!"
+    clips: []
+  - key: ak_AnnouncedFlee
+    category: Announce/Shout
+    text: "Get back!"
+    clips: []
+  - key: ak_AnnouncedInvestigate
+    category: Announce/Shout
+    text: "What's that noise?"
+    clips: []
+  - key: ak_AnnouncedNonCompliant
+    category: Announce/Shout
+    text: "Goddamn it!"
+    clips: []
+  - key: ak_AnnouncedRestrained
+    category: Announce/Shout
+    text: "You got a warrant?"
+    clips: []
+  - key: ak_AnnouncedSpottedOfficer
+    category: Announce/Shout
+    text: "Raid! Cops!"
+    clips: []
+  - key: ak_AnnouncedSpottedOfficerScared
+    category: Announce/Shout
+    text: "Move! Cops!"
+    clips: []
+  - key: ak_AnnouncedSpottedOfficerSurprised
+    category: Announce/Shout
+    text: "What the hell!"
+    clips: []
+  - key: ak_CalledforHelp
+    category: Conversation
+    text: "Get over here!"
+    clips: []
+  - key: ak_TalkedToHostage
+    category: Conversation
+    text: "Don't move, and you'll be fine..."
+    clips: []
+  - key: ak_DoorBlocked
+    category: Other
+    text: "Shit! It won't budge!"
+    clips: []
+  - key: ak_ShotAFriend
+    category: Other
+    text: "Goddamn it!"
+    clips: []
+  - key: ak_ShotAtBreachedDoor
+    category: Other
+    text: "You ain't gettin' in!"
+    clips: []
+  - key: ak_ReactedBreach
+    category: Reaction
+    text: "The door! Watch out!"
+    clips: []
+  - key: ak_ReactedDownOfficer
+    category: Reaction
+    text: "Next.."
+    clips: []
+  - key: ak_ReactedDownSuspect
+    category: Reaction
+    text: "Hang in there.."
+    clips: []
+  - key: ak_ReactedHitByDoor
+    category: Reaction
+    text: "What!?"
+    clips: []
+  - key: ak_ReactedInjuryNormal
+    category: Reaction
+    text: "Damn it!"
+    clips: []
+  - key: ak_RepliedToHostage
+    category: Reply/Ack
+    text: "Don't get smart."
+    clips: []
+  - key: ak_ThreatenedHostage
+    category: Threat
+    text: "Stop there, or else!"
+    clips: []

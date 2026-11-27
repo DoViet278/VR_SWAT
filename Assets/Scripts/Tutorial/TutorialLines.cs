@@ -37,6 +37,24 @@ namespace VRSwat.Tutorial
             lines = list.ToArray();
             UnityEditor.EditorUtility.SetDirty(this);
         }
+        // Chuột phải > Tìm clip theo tên file. Gán AudioClip có tên đúng bằng key cho các dòng chưa có clip.
+        [ContextMenu("Tìm clip theo tên file")]
+        void FindClips()
+        {
+            if (lines == null) return;
+            int found = 0;
+            foreach (var l in lines)
+            {
+                if (string.IsNullOrEmpty(l.key) || l.clip) continue;
+                foreach (var guid in UnityEditor.AssetDatabase.FindAssets(l.key + " t:AudioClip"))
+                {
+                    var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
+                    if (clip && string.Equals(clip.name, l.key, System.StringComparison.OrdinalIgnoreCase)) { l.clip = clip; found++; break; }
+                }
+            }
+            Debug.Log($"[TutorialLines] Gán clip cho {found} câu");
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
 #endif
     }
 }

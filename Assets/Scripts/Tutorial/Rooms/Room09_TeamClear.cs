@@ -11,13 +11,13 @@ public class Room09_TeamClear : TutorialRoomBase
 
     protected override IEnumerator Script()
     {
-        Say(TutorialLine.R8_OPEN_CLEAR_A);
+        Say(TutorialLine.R9_OPEN_CLEAR_A);
         yield return WaitSignal(Sig.SquadRoomClear, source: doorA.gameObject);
 
-        Say(TutorialLine.R8_TRY_B);
+        Say(TutorialLine.R9_TRY_B);
         yield return WaitSignal(Sig.SquadDoorLocked, source: doorB.gameObject);
 
-        Say(TutorialLine.R8_BREACH_B);
+        Say(TutorialLine.R9_BREACH_B);
         yield return WaitSignal(Sig.SquadRoomClear, source: doorB.gameObject);
     }
 }

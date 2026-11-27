@@ -15,7 +15,6 @@ public class Room03_PopUp : TutorialRoomBase
 
     protected override IEnumerator Script()
     {
-        yield return SayAndWait(TutorialLine.R3_INTRO);
         OnSignal(Sig.CivilianHit, () => Note(TutorialLine.R3_CIVILIAN));
 
         if (spawner == null)

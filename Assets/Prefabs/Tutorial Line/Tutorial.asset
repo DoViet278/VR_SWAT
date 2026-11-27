@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca570dad82ffb3043aef507544233dd2, type: 3}
+  m_Name: Tutorial
+  m_EditorClassIdentifier: Assembly-CSharp::VRSwat.Tutorial.TutorialLines
+  lines:
+  - key: common_room_done
+    text: "T\u1ED1t l\u1EAFm! \u0110i ti\u1EBFp sang ph\xF2ng sau."
+    clip: {fileID: 0}
+  - key: r1_welcome
+    text: "Ch\xE0o m\u1EEBng b\u1EA1n \u0111\u1EBFn v\u1EDBi \u1EE9ng d\u1EE5ng m\xF4
+      ph\u1ECFng SWAT VR. \u0110\xE2y l\xE0 m\xE0n ch\u01A1i h\u01B0\u1EDBng d\u1EABn
+      gi\xFAp c\xE1c b\u1EA1n nh\u1EADp m\xF4n \u0111\xFAng c\xE1ch tr\u01B0\u1EDBc
+      khi tr\u1EDF th\xE0nh m\u1ED9t \u0111\u1EB7c nhi\u1EC7m."
+    clip: {fileID: 0}
+  - key: r1_move
+    text: "D\xF9ng c\u1EA7n \u0111i\u1EC1u khi\u1EC3n \u0111\u1EC3 \u0111i t\u1EDBi
+      v\u1EA1ch tr\u01B0\u1EDBc c\u1EEDa."
+    clip: {fileID: 0}
+  - key: r1_open_door
+    text: "N\u1EAFm tay n\u1EAFm v\xE0 k\xE9o c\u1EEDa \u0111\u1EC3 m\u1EDF."
+    clip: {fileID: 0}
+  - key: r2_grab_pistol
+    text: "C\u1EA7m kh\u1EA9u s\xFAng ng\u1EAFn tr\xEAn b\xE0n."
+    clip: {fileID: 0}
+  - key: r2_grab_rifle
+    text: "C\u1EA7m kh\u1EA9u s\xFAng tr\u01B0\u1EDDng tr\xEAn b\xE0n."
+    clip: {fileID: 0}
+  - key: r2_grab_shotgun
+    text: "C\u1EA7m kh\u1EA9u shotgun tr\xEAn b\xE0n."
+    clip: {fileID: 0}
+  - key: r2_shoot3
+    text: "B\u1EAFn v\xE0o bia c\u1EE7a kh\u1EA9u n\xE0y cho t\u1EDBi khi s\xE1ng
+      h\u1EBFt \u0111\xE8n."
+    clip: {fileID: 0}
+  - key: r3_shoot
+    text: "Bia s\u1EBD b\u1EADt l\xEAn v\xE0i gi\xE2y, b\u1EAFn tr\xFAng tr\u01B0\u1EDBc
+      khi bia h\u1EA1 xu\u1ED1ng."
+    clip: {fileID: 0}
+  - key: r3_civilian
+    text: "C\u1EA9n th\u1EADn! \u0110\xF3 l\xE0 d\xE2n th\u01B0\u1EDDng, \u0111\u1EEBng
+      b\u1EAFn."
+    clip: {fileID: 0}
+  - key: r4_flash
+    text: "R\xFAt ch\u1ED1t v\xE0 n\xE9m l\u1EF1u \u0111\u1EA1n cho\xE1ng v\xE0o
+      v\xF2ng c\u1EE7a n\xF3."
+    clip: {fileID: 0}
+  - key: r4_frag
+    text: "R\xFAt ch\u1ED1t v\xE0 n\xE9m l\u1EF1u \u0111\u1EA1n n\u1ED5 v\xE0o v\xF2ng
+      c\u1EE7a n\xF3."
+    clip: {fileID: 0}
+  - key: r5_try_handle
+    text: "Th\u1EED v\u1EB7n tay n\u1EAFm c\u1EEDa."
+    clip: {fileID: 0}
+  - key: r5_grab_lockpick
+    text: "C\u1EEDa b\u1ECB kh\xF3a. C\u1EA7m b\u1ED9 d\u1EE5ng c\u1EE5 m\u1EDF kh\xF3a."
+    clip: {fileID: 0}
+  - key: r5_pick_lock
+    text: "\u0110\u01B0a d\u1EE5ng c\u1EE5 v\xE0o \u1ED5 kh\xF3a v\xE0 gi\u1EEF t\u1EDBi
+      khi m\u1EDF \u0111\u01B0\u1EE3c."
+    clip: {fileID: 0}
+  - key: r6_try_handle
+    text: "Th\u1EED v\u1EB7n tay n\u1EAFm c\u1EEDa."
+    clip: {fileID: 0}
+  - key: r6_place_c4
+    text: "C\u1EEDa b\u1ECB kh\xF3a. C\u1EA7m kh\u1ED1i C4 v\xE0 d\xE1n l\xEAn c\u1EEDa."
+    clip: {fileID: 0}
+  - key: r6_detonate
+    text: "L\xF9i l\u1EA1i, c\u1EA7m k\xEDp n\u1ED5 v\xE0 b\xF3p c\xF2 \u0111\u1EC3
+      ph\xE1 c\u1EEDa."
+    clip: {fileID: 0}
+  - key: r7_shout
+    text: "H\xF4 l\u1EDBn \u0111\u1EC3 \u0111\u1ED1i t\u01B0\u1EE3ng \u0111\u1EA7u
+      h\xE0ng."
+    clip: {fileID: 0}
+  - key: r7_shout_again
+    text: "H\u1EAFn ch\u01B0a ch\u1ECBu. H\xF4 l\u1EA1i l\u1EA7n n\u1EEFa."
+    clip: {fileID: 0}
+  - key: r7_cuff
+    text: "C\xF2ng tay \u0111\u1ED1i t\u01B0\u1EE3ng v\xE0 con tin."
+    clip: {fileID: 0}
+  - key: r8_open_menu
+    text: "M\u1EDF menu ra l\u1EC7nh cho \u0111\u1ED3ng \u0111\u1ED9i."
+    clip: {fileID: 0}
+  - key: r8_fallin
+    text: "Ch\u1ECDn l\u1EC7nh \"Theo t\xF4i\" \u0111\u1EC3 \u0111\u1ED3ng \u0111\u1ED9i
+      \u0111i theo."
+    clip: {fileID: 0}
+  - key: r8_stackup
+    text: "Ra l\u1EC7nh \u0111\u1ED3ng \u0111\u1ED9i \xE1p s\xE1t c\u1EEDa."
+    clip: {fileID: 0}
+  - key: r9_open_clear_a
+    text: "Ra l\u1EC7nh \u0111\u1ED9i m\u1EDF c\u1EEDa A v\xE0 d\u1ECDn ph\xF2ng."
+    clip: {fileID: 0}
+  - key: r9_try_b
+    text: "Ra l\u1EC7nh \u0111\u1ED9i ki\u1EC3m tra c\u1EEDa B."
+    clip: {fileID: 0}
+  - key: r9_breach_b
+    text: "C\u1EEDa B b\u1ECB kh\xF3a. Ra l\u1EC7nh \u0111\u1ED9i ph\xE1 c\u1EEDa
+      v\xE0 d\u1ECDn ph\xF2ng."
+    clip: {fileID: 0}

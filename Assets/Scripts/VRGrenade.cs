@@ -134,6 +134,11 @@ public class VRGrenade : MonoBehaviour
         if (flashbang != null)
             flashbang.Detonate(center);
 
+        // Báo cho tutorial phòng 4 (Room04_Grenades) biết quả nào nổ ở đâu.
+        // Có component Flashbang = lựu đạn choáng, không có = lựu đạn nổ.
+        VRSwat.Tutorial.TutorialSignals.Raise(
+            flashbang != null ? VRSwat.Tutorial.Sig.FlashbangBang : VRSwat.Tutorial.Sig.FragBang, this, center);
+
         Destroy(gameObject);
     }
 

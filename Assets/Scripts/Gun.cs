@@ -275,7 +275,7 @@ public class Gun : MonoBehaviour
 
             // Báo cho LightTarget / PopUpTarget biết bia nào bị trúng, bởi súng nào
             ObserverManager.InvokeEvent(CONST.PLAYER_SHOOT_TARGET, this, hit.collider.gameObject, hit);
-
+            Debug.Log(this.weaponType + " " + hit.collider.gameObject.name);
             PlayImpactEffect(hit, !singleImpactSoundPerShot || !impactSoundPlayed);
             impactSoundPlayed = true;
         }

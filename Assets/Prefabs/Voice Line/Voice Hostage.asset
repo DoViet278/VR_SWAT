@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a37885208b44cf89ce7d1f51e8e7bd5, type: 3}
+  m_Name: Voice Hostage
+  m_EditorClassIdentifier: Assembly-CSharp::VRSwat.VoiceLines
+  speaker: Hostage
+  lines:
+  - key: mh1_AnnouncedCompliant
+    category: Announce/Shout
+    text: "My hands're up! Don't shoot!"
+    clips: []
+  - key: mh1_AnnouncedCompliant_m01
+    category: Announce/Shout
+    text: "You're busting the Foodwall? What the hell?"
+    clips: []
+  - key: mh1_AnnouncedCompliant_m04
+    category: Announce/Shout
+    text: "Don't shoot! Oh, I think I'm gonna puke..."
+    clips: []
+  - key: mh1_AnnouncedCompliant_m06
+    category: Announce/Shout
+    text: "Feels like I'm in a cop show."
+    clips: []
+  - key: mh1_AnnouncedCompliant_m07
+    category: Announce/Shout
+    text: "Oh my god... you can't tell my wife..."
+    clips: []
+  - key: mh1_AnnouncedCompliant_m09
+    category: Announce/Shout
+    text: "The answer won't be found with violence."
+    clips: []
+  - key: mh1_AnnouncedCompliant_m10
+    category: Announce/Shout
+    text: "Ok, Ok, I'm down...quit shoving guns in my face!"
+    clips: []
+  - key: mh1_AnnouncedCompliant_m11
+    category: Announce/Shout
+    text: "Don't shoot! You're freakin' me out!"
+    clips: []
+  - key: mh1_AnnouncedCompliant_m12
+    category: Announce/Shout
+    text: "Course, ain't nobody gonna try an' take me hostage..."
+    clips: []
+  - key: mh1_AnnouncedCompliant_m13
+    category: Announce/Shout
+    text: "Don't shoot! You might break something!"
+    clips: []
+  - key: mh1_AnnouncedEnemy
+    category: Announce/Shout
+    text: "Hey, I'm not lookin' for trouble.."
+    clips: []
+  - key: mh1_AnnouncedEnemy_m04
+    category: Announce/Shout
+    text: "Over there!"
+    clips: []
+  - key: mh1_AnnouncedEnemy_m07
+    category: Announce/Shout
+    text: "Get back!"
+    clips: []
+  - key: mh1_AnnouncedEnemy_m09
+    category: Announce/Shout
+    text: "You carry a terrible burden..."
+    clips: []
+  - key: mh1_AnnouncedEnemy_m11
+    category: Announce/Shout
+    text: "I'll just stay outta yer way, OK?"
+    clips: []
+  - key: mh1_AnnouncedFlee
+    category: Announce/Shout
+    text: "Run!"
+    clips: []
+  - key: mh1_AnnouncedFlee_m07
+    category: Announce/Shout
+    text: "Lemme out!"
+    clips: []
+  - key: mh1_AnnouncedFlee_m09
+    category: Announce/Shout
+    text: "Run!"
+    clips: []
+  - key: mh1_AnnouncedFlee_m11
+    category: Announce/Shout
+    text: "Oh man, I'm outta here!"
+    clips: []
+  - key: mh1_AnnouncedFlee_m13
+    category: Announce/Shout
+    text: "You can have the damn samples!"
+    clips: []
+  - key: mh1_AnnouncedRestrained_m04
+    category: Announce/Shout
+    text: "Uhh... I think I'm gonna be sick..."
+    clips: []
+  - key: mh1_AnnouncedRestrained_m08
+    category: Announce/Shout
+    text: "Do you have to do this? I don't have any weapons."
+    clips: []
+  - key: mh1_CalledForHelp
+    category: Conversation
+    text: "Over here! Help!"
+    clips: []
+  - key: mh1_CalledForHelp_m09
+    category: Conversation
+    text: "Help me! Brothers!"
+    clips: []
+  - key: mh1_CalledForHelp_m11
+    category: Conversation
+    text: "Help!"
+    clips: []

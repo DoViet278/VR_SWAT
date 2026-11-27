@@ -38,6 +38,12 @@ public class PlayerCuffInput : MonoBehaviour
 
     private static PlayerCuffInput _instance;
 
+    /// <summary>
+    /// Nút còng giả lập (tay 0 = trái, 1 = phải). SimulatorTestHelper gán vào để còng được trên
+    /// XR Device Simulator, vì simulator không báo nút qua UnityEngine.XR.InputDevice. Null = bỏ qua.
+    /// </summary>
+    public static System.Func<int, bool> SimulatedButtonHeld;
+
     private static readonly CuffButton[] AllButtons = (CuffButton[])System.Enum.GetValues(typeof(CuffButton));
     private static readonly XRNode[] Hands = { XRNode.LeftHand, XRNode.RightHand };
 
@@ -128,6 +134,7 @@ public class PlayerCuffInput : MonoBehaviour
             {
                 int b = (int)button;
                 bool pressed = device.isValid && device.TryGetFeatureValue(Usage(button), out bool v) && v;
+                if (!pressed && SimulatedButtonHeld != null && SimulatedButtonHeld(h)) pressed = true;
                 _down[h, b] = pressed && !_held[h, b] && !first;
                 _held[h, b] = pressed;
             }

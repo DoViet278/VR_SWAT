@@ -28,7 +28,18 @@ namespace VRSwat.Tutorial
         int index = -1;
         bool loading;
 
-        void Awake() => Instance = this;
+        void Awake()
+        {
+            Instance = this;
+            // Ô XR Origin bị trống (ví dụ đổi XR Rig mới) thì PlayerHead lỗi NullReference,
+            // mọi bước chờ người chơi vào vùng (WaitZone, vào phòng mới, vùng bắn phòng 3) đều đứng im.
+            if (xrOrigin == null)
+            {
+                xrOrigin = FindFirstObjectByType<XROrigin>();
+                if (xrOrigin) Debug.LogWarning($"[TutorialManager] Chưa gán XR Origin, tự lấy '{xrOrigin.name}'. Nên kéo vào Inspector.", this);
+                else Debug.LogError("[TutorialManager] Không tìm thấy XR Origin trong scene", this);
+            }
+        }
 
         void Start()
         {
@@ -46,6 +57,7 @@ namespace VRSwat.Tutorial
         void EnterRoom(int i)
         {
             index = i;
+            Debug.Log($"[TutorialManager] Bắt đầu phòng {i + 1}: {rooms[i].name}", rooms[i]);
             RefreshActiveRooms();
             rooms[i].Completed += OnRoomCompleted;
             rooms[i].StartRoom();
@@ -54,6 +66,7 @@ namespace VRSwat.Tutorial
         void OnRoomCompleted(TutorialRoomBase room)
         {
             room.Completed -= OnRoomCompleted;
+            Debug.Log($"[TutorialManager] Xong phòng {index + 1}: {room.name}", room);
             if (index + 1 < rooms.Length) StartCoroutine(WaitForEntry(index + 1));
             else LoadMainScene();   // phòng cuối xong = vào màn chính
         }
@@ -61,6 +74,7 @@ namespace VRSwat.Tutorial
         IEnumerator WaitForEntry(int next)
         {
             var area = rooms[next].entryArea;
+            Debug.Log($"[TutorialManager] Chờ người chơi bước vào Entry Area của phòng {next + 1}", area ? (Object)area : rooms[next]);
             while (area && !area.Contains(PlayerHead.position)) yield return null;
             EnterRoom(next);
         }

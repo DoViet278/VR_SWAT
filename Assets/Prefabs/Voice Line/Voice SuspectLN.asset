@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a37885208b44cf89ce7d1f51e8e7bd5, type: 3}
+  m_Name: Voice SuspectLN
+  m_EditorClassIdentifier: Assembly-CSharp::VRSwat.VoiceLines
+  speaker: SuspectLN
+  lines:
+  - key: ln_AnnouncedCompliant
+    category: Announce/Shout
+    text: "I give up! Don't shoot!"
+    clips: []
+  - key: ln_AnnouncedFlee
+    category: Announce/Shout
+    text: "Run!"
+    clips: []
+  - key: ln_AnnouncedInvestigate
+    category: Announce/Shout
+    text: "Is somethin' wrong?"
+    clips: []
+  - key: ln_AnnouncedNonCompliant
+    category: Announce/Shout
+    text: "Get away!"
+    clips: []
+  - key: ln_AnnouncedRestrained
+    category: Announce/Shout
+    text: "You got this all wrong..it's just a little hobby, you know?"
+    clips: []
+  - key: ln_AnnouncedSpottedOfficer
+    category: Announce/Shout
+    text: "Cops!"
+    clips: []
+  - key: ln_AnnouncedSpottedOfficerScared
+    category: Announce/Shout
+    text: "Oh, shit! Police!"
+    clips: []
+  - key: ln_AnnouncedSpottedOfficerSurprised
+    category: Announce/Shout
+    text: "What? Cops?"
+    clips: []
+  - key: ln_TalkedToHostage
+    category: Conversation
+    text: "Don't move!"
+    clips: []
+  - key: ln_DoorBlocked
+    category: Other
+    text: "Stupid door... open up!"
+    clips: []
+  - key: ln_ShotAFriend
+    category: Other
+    text: "Sorry, sorry...sorry"
+    clips: []
+  - key: ln_ShotAtBreachedDoor
+    category: Other
+    text: "Stop them!"
+    clips: []
+  - key: ln_ReactedBreach
+    category: Reaction
+    text: "The door!"
+    clips: []
+  - key: ln_ReactedDownOfficer
+    category: Reaction
+    text: "One down..."
+    clips: []
+  - key: ln_ReactedDownSuspect
+    category: Reaction
+    text: "Oh, shit..."
+    clips: []
+  - key: ln_ReactedHitByDoor
+    category: Reaction
+    text: "Hey!"
+    clips: []
+  - key: ln_RepliedToHostage
+    category: Reply/Ack
+    text: "Shut up!"
+    clips: []

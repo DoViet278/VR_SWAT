@@ -117,6 +117,16 @@ public class GrenadePin : MonoBehaviour
             pinCollider.enabled = grabbable;
     }
 
+    /// <summary>
+    /// Rút chốt bằng code, không cần tay kéo (dùng cho SimulatorTestHelper khi test trên XR Device
+    /// Simulator). Đi đúng đường Pull() như khi kéo tay: báo lựu đạn, thả chốt rơi xuống.
+    /// </summary>
+    public void ForcePull()
+    {
+        if (!pulled)
+            Pull();
+    }
+
     private void Pull()
     {
         pulled = true;

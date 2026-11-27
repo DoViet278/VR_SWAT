@@ -15,18 +15,18 @@ public class Room05_Breach1 : TutorialRoomBase
 
     protected override IEnumerator Script()
     {
-        Say(TutorialLine.R6_TRY_HANDLE);
+        Say(TutorialLine.R5_TRY_HANDLE);
         yield return WaitDoor(lockedDoor, DoorGoal.Rattled);
 
         if (lockpickKit && !lockpickKit.IsHeld)
         {
             Highlight(kitGlow);
-            Say(TutorialLine.R6_GRAB_LOCKPICK);
+            Say(TutorialLine.R5_GRAB_LOCKPICK);
             yield return WaitFor(() => lockpickKit.IsHeld || !Locked);
         }
 
         Highlight(lockGlow);
-        Say(TutorialLine.R6_PICK_LOCK);
+        Say(TutorialLine.R5_PICK_LOCK);
         // Kit gọi door.Unlock() khi đầy thanh -> Locked thành Closed.
         // Cửa bị phá bằng đường khác (thuốc nổ...) cũng cho qua để phòng không kẹt.
         yield return WaitFor(() => !Locked);

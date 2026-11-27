@@ -28,6 +28,11 @@ public class LightTarget : MonoBehaviour
     public int HitsRequired => LightCount > 0 ? LightCount : hitsRequired;
     public bool IsCompleted { get; private set; }
 
+    // Bia có đang nhận đạn không. Mặc định true (dùng độc lập, ví dụ ShootingChallenge).
+    // Room02 tắt hết lúc đầu rồi chỉ Arm() bia của bước hiện tại.
+    public bool IsArmed { get; private set; } = true;
+    private WeaponType? allowedType;   // != null: chỉ đếm phát bắn từ đúng loại súng này (khẩu nào cùng loại cũng được, kể cả bản Clone)
+
     private int LightCount => hitLights != null ? hitLights.Length : 0;
 
     private void Start()
@@ -47,10 +52,25 @@ public class LightTarget : MonoBehaviour
 
     private void OnPlayerShoot(Gun gun, GameObject hitObject, RaycastHit hit)
     {
-        if (IsCompleted || gun == null || hitObject == null) return;
+        if (gun == null || hitObject == null) return;
 
         // Mọi phát bắn đều phát sự kiện, nên mỗi bia tự lọc xem có phải mình bị trúng không
         if (hitObject != gameObject && !hitObject.transform.IsChildOf(transform)) return;
+
+        // [DEBUG] Bia này bị trúng: in trạng thái để xem dừng ở đâu
+        Debug.Log($"[LightTarget] {name} trúng bởi '{gun.name}' (collider '{hitObject.name}') | armed={IsArmed} completed={IsCompleted} " +
+                  $"loại súng bắn={gun.Type} loại được phép={(allowedType.HasValue ? allowedType.Value.ToString() : "bất kỳ")} hits={Hits}/{HitsRequired}", this);
+
+        if (!IsArmed)
+        {
+            Debug.LogWarning($"[LightTarget] {name}: BỎ QUA vì bia chưa được Arm (Room02 chưa chạy Script hoặc đã Disarm)", this);
+            return;
+        }
+        if (IsCompleted)
+        {
+            Debug.Log($"[LightTarget] {name}: BỎ QUA vì bia đã xong", this);
+            return;
+        }
 
         // if (gun.Type != requiredWeapon)
         // {
@@ -58,7 +78,17 @@ public class LightTarget : MonoBehaviour
         //     return;
         // }
 
+        // Room02 đã chỉ định loại súng: bắn bằng loại khác thì không tính
+        if (allowedType.HasValue && gun.Type != allowedType.Value)
+        {
+            Debug.LogWarning($"[LightTarget] {name}: BỎ QUA vì sai loại súng. Bắn bằng '{gun.name}' loại {gun.Type} (path {GetPath(gun.transform)}), " +
+                             $"bia chỉ nhận loại {allowedType.Value}. Nếu khẩu này đúng là {allowedType.Value} thì kiểm tra Weapon Type trên component Gun", this);
+            onWrongWeapon?.Invoke();
+            return;
+        }
+
         Hits++;
+        Debug.Log($"[LightTarget] {name}: TÍNH phát {Hits}/{HitsRequired}, bật đèn {Hits - 1}", this);
         SetHitLight(Hits - 1, true);   // phát 1 -> đèn 0, phát 2 -> đèn 1...
         onCorrectHit?.Invoke(Hits);
 
@@ -68,6 +98,21 @@ public class LightTarget : MonoBehaviour
             onCompleted?.Invoke();
             ObserverManager.InvokeEvent(TARGET_COMPLETED, this);
         }
+    }
+
+    // Script phòng gọi: bia bắt đầu nhận đạn (type = loại súng được phép, null = loại nào cũng được)
+    public void Arm(WeaponType? type = null)
+    {
+        allowedType = type;
+        IsArmed = true;
+        Debug.Log($"[LightTarget] {name}: Arm, loại súng được phép = {(type.HasValue ? type.Value.ToString() : "bất kỳ")}", this);
+    }
+
+    // Ngừng nhận đạn, đèn giữ nguyên
+    public void Disarm()
+    {
+        IsArmed = false;
+        Debug.Log($"[LightTarget] {name}: Disarm", this);
     }
 
     public void ResetTarget()
@@ -80,9 +125,23 @@ public class LightTarget : MonoBehaviour
 
     private void SetHitLight(int index, bool on)
     {
-        if (index < 0 || index >= LightCount || hitLights[index] == null) return;
+        if (index < 0 || index >= LightCount || hitLights[index] == null)
+        {
+            if (on) Debug.LogWarning($"[LightTarget] {name}: không có đèn ở ô {index} (hitLights chưa gán?)", this);
+            return;
+        }
         Material m = on ? lightOnMaterial : lightOffMaterial;
         if (m != null)
             hitLights[index].sharedMaterial = m;
+        else if (on)
+            Debug.LogWarning($"[LightTarget] {name}: lightOnMaterial chưa gán", this);
+        if (on) Debug.Log($"[LightTarget] {name}: đèn '{hitLights[index].name}' -> '{(m ? m.name : "null")}'", this);
+    }
+
+    static string GetPath(Transform t)
+    {
+        string p = t.name;
+        while (t.parent != null) { t = t.parent; p = t.name + "/" + p; }
+        return p;
     }
 }

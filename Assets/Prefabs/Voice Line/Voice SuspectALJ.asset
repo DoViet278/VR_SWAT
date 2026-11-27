@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a37885208b44cf89ce7d1f51e8e7bd5, type: 3}
+  m_Name: Voice SuspectALJ
+  m_EditorClassIdentifier: Assembly-CSharp::VRSwat.VoiceLines
+  speaker: SuspectALJ
+  lines:
+  - key: alj_AnnouncedCompliant
+    category: Announce/Shout
+    text: "All right, all right..."
+    clips: []
+  - key: alj_AnnouncedFlee
+    category: Announce/Shout
+    text: "Run!"
+    clips: []
+  - key: alj_AnnouncedInvestigate
+    category: Announce/Shout
+    text: "Who was that!"
+    clips: []
+  - key: alj_AnnouncedNonCompliant
+    category: Announce/Shout
+    text: "I don't think so!!"
+    clips: []
+  - key: alj_AnnouncedRestrained
+    category: Announce/Shout
+    text: "I ain't sayin' nothing to you!"
+    clips: []
+  - key: alj_AnnouncedSpottedOfficer
+    category: Announce/Shout
+    text: "I'm not going back!"
+    clips: []
+  - key: alj_AnnouncedSpottedOfficerScared
+    category: Announce/Shout
+    text: "Shit! Cops!"
+    clips: []
+  - key: alj_AnnouncedSpottedOfficerSurprised
+    category: Announce/Shout
+    text: "Watch out!"
+    clips: []
+  - key: alj_CalledforHelp
+    category: Conversation
+    text: "Over here!"
+    clips: []
+  - key: alj_TalkedToHostage
+    category: Conversation
+    text: "Quit your whinin!"
+    clips: []
+  - key: alj_DoorBlocked
+    category: Other
+    text: "Open up! Now!"
+    clips: []
+  - key: alj_ShotAFriend
+    category: Other
+    text: "Oh damn it!!"
+    clips: []
+  - key: alj_ShotAtBreachedDoor
+    category: Other
+    text: "Don't wait! Shoot!"
+    clips: []
+  - key: alj_ReactedBang
+    category: Reaction
+    text: "Oh God, God!!"
+    clips: []
+  - key: alj_ReactedBreach
+    category: Reaction
+    text: "They're comin' in!"
+    clips: []
+  - key: alj_ReactedDownOfficer
+    category: Reaction
+    text: "That's it. Stay down."
+    clips: []
+  - key: alj_ReactedDownSuspect
+    category: Reaction
+    text: "Get up, you ass!"
+    clips: []
+  - key: alj_ReactedHitByDoor
+    category: Reaction
+    text: "Hey!"
+    clips: []
+  - key: alj_ReactedPepper
+    category: Reaction
+    text: "Shit! You blinded me you stupid fuck!"
+    clips: []
+  - key: alj_RepliedToHostage
+    category: Reply/Ack
+    text: "This is your fault!"
+    clips: []
+  - key: alj_ThreatenedHostage
+    category: Threat
+    text: "I'll shoot! I will!"
+    clips: []

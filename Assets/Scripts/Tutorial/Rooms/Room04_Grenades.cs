@@ -17,12 +17,10 @@ public class Room04_Grenades : TutorialRoomBase
         flashZone.ResetZone();
         fragZone.ResetZone();
 
-        yield return SayAndWait(TutorialLine.R5_INTRO);
+        OnSignal(Sig.FlashbangBang, s => TryHit(flashZone, s.position, fragZone, TutorialLine.R4_FRAG));
+        OnSignal(Sig.FragBang,      s => TryHit(fragZone,  s.position, flashZone, TutorialLine.R4_FLASH));
 
-        OnSignal(Sig.FlashbangBang, s => TryHit(flashZone, s.position, fragZone, TutorialLine.R5_FRAG));
-        OnSignal(Sig.FragBang,      s => TryHit(fragZone,  s.position, flashZone, TutorialLine.R5_FLASH));
-
-        Say(TutorialLine.R5_FLASH);
+        Say(TutorialLine.R4_FLASH);
         yield return WaitFor(() => flashZone.IsDone && fragZone.IsDone,
                              () => (flashZone.IsDone ? 1 : 0) + (fragZone.IsDone ? 1 : 0),
                              2, "Trúng vòng");

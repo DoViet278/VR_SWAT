@@ -1,0 +1,360 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a37885208b44cf89ce7d1f51e8e7bd5, type: 3}
+  m_Name: Voice Suspect
+  m_EditorClassIdentifier: Assembly-CSharp::VRSwat.VoiceLines
+  speaker: Suspect
+  lines:
+  - key: ms1_AnnouncedCompliant
+    category: Announce/Shout
+    text: "I give up! Don't shoot!"
+    clips: []
+  - key: ms1_AnnouncedCompliant_m01
+    category: Announce/Shout
+    text: "Hey, I was just lookin' for dinner, man...."
+    clips: []
+  - key: ms1_AnnouncedCompliant_m05
+    category: Announce/Shout
+    text: "I don't give a damn about the fucking car!"
+    clips: []
+  - key: ms1_AnnouncedCompliant_m07
+    category: Announce/Shout
+    text: "How the hell did we get busted?"
+    clips: []
+  - key: ms1_AnnouncedCompliant_m09
+    category: Announce/Shout
+    text: "No! Don't shoot! The darkness... is coming..."
+    clips: []
+  - key: ms1_AnnouncedCompliant_m10
+    category: Announce/Shout
+    text: "This isn't over."
+    clips: []
+  - key: ms1_AnnouncedCompliant_m11
+    category: Announce/Shout
+    text: "Nothin' here! Leave me alone!"
+    clips: []
+  - key: ms1_AnnouncedCompliant_m12
+    category: Announce/Shout
+    text: "You think you've won, don't you?"
+    clips: []
+  - key: ms1_AnnouncedFlee
+    category: Announce/Shout
+    text: "Run!"
+    clips: []
+  - key: ms1_AnnouncedFlee_m01
+    category: Announce/Shout
+    text: "I ain't facin' the cops..."
+    clips: []
+  - key: ms1_AnnouncedFlee_m07
+    category: Announce/Shout
+    text: "There's a raid comin' thru!"
+    clips: []
+  - key: ms1_AnnouncedFlee_m08
+    category: Announce/Shout
+    text: "Pull back!"
+    clips: []
+  - key: ms1_AnnouncedFlee_m09
+    category: Announce/Shout
+    text: "Better to run than to fall!"
+    clips: []
+  - key: ms1_AnnouncedInvestigate
+    category: Announce/Shout
+    text: "Take a look..."
+    clips: []
+  - key: ms1_AnnouncedInvestigate_m04
+    category: Announce/Shout
+    text: "That's no clubbie!"
+    clips: []
+  - key: ms1_AnnouncedInvestigate_m05
+    category: Announce/Shout
+    text: "You hear that?"
+    clips: []
+  - key: ms1_AnnouncedInvestigate_m07
+    category: Announce/Shout
+    text: "Something's weird here?"
+    clips: []
+  - key: ms1_AnnouncedInvestigate_m09
+    category: Announce/Shout
+    text: "That's not the steps of our brothers!"
+    clips: []
+  - key: ms1_AnnouncedInvestigate_m10
+    category: Announce/Shout
+    text: "That bastard's around here somewhere!"
+    clips: []
+  - key: ms1_AnnouncedInvestigate_m13
+    category: Announce/Shout
+    text: "Too many stupid goddamned scientists..."
+    clips: []
+  - key: ms1_AnnouncedNonCompliant
+    category: Announce/Shout
+    text: "You won't stop us!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m01
+    category: Announce/Shout
+    text: "Not again, damn it!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m03
+    category: Announce/Shout
+    text: "Not this time, coppers!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m04
+    category: Announce/Shout
+    text: "Stay outta this!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m08
+    category: Announce/Shout
+    text: "I don't think so, not today!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m09
+    category: Announce/Shout
+    text: "I will die defending Taronne, whose words are Truth!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m10
+    category: Announce/Shout
+    text: "No mercy!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m11
+    category: Announce/Shout
+    text: "You won't get us all!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m12
+    category: Announce/Shout
+    text: "Die, for America!"
+    clips: []
+  - key: ms1_AnnouncedNonCompliant_m13
+    category: Announce/Shout
+    text: "No! There's a higher law!"
+    clips: []
+  - key: ms1_AnnouncedRestrained
+    category: Announce/Shout
+    text: "Goddamn cops."
+    clips: []
+  - key: ms1_AnnouncedRestrained_m01
+    category: Announce/Shout
+    text: "Damn it, I'm clean, didn't do anything..."
+    clips: []
+  - key: ms1_AnnouncedRestrained_m04
+    category: Announce/Shout
+    text: "Oh shit, my old man's gonna be pissed..."
+    clips: []
+  - key: ms1_AnnouncedRestrained_m06
+    category: Announce/Shout
+    text: "Didn't mean t'hurt anyone..."
+    clips: []
+  - key: ms1_AnnouncedRestrained_m07
+    category: Announce/Shout
+    text: "Goddamn cops, sticking their noses where they don't belong..."
+    clips: []
+  - key: ms1_AnnouncedRestrained_m09
+    category: Announce/Shout
+    text: "Forgive me, Taronne... my fear made me weak...."
+    clips: []
+  - key: ms1_AnnouncedRestrained_m10
+    category: Announce/Shout
+    text: "You've got me... but we'll get that bastard yet!"
+    clips: []
+  - key: ms1_AnnouncedRestrained_m11
+    category: Announce/Shout
+    text: "This better not be a double cross!"
+    clips: []
+  - key: ms1_AnnouncedRestrained_m12
+    category: Announce/Shout
+    text: "We ain't done yet! You won't get us all!"
+    clips: []
+  - key: ms1_AnnouncedRestrained_m13
+    category: Announce/Shout
+    text: "You should be arresting the scientists who work here, not us!"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficer
+    category: Announce/Shout
+    text: "I see the cops!"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficer_m09
+    category: Announce/Shout
+    text: "The time is upon us!"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficer_m11
+    category: Announce/Shout
+    text: "Five-0h! Five-Oh!"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficerScared
+    category: Announce/Shout
+    text: "Where'd they come from?"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficerScared_m08
+    category: Announce/Shout
+    text: "Nothin' is goin' right today!"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficerScared_m09
+    category: Announce/Shout
+    text: "Not even for Him can I face them..."
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficerScared_m10
+    category: Announce/Shout
+    text: "Move, move, we got trouble!"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficerSurprised
+    category: Announce/Shout
+    text: "Hey! The cops'r'here!"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficerSurprised_m07
+    category: Announce/Shout
+    text: "Damn it! What happened to the alarm?"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficerSurprised_m09
+    category: Announce/Shout
+    text: "The Time has come too soon!"
+    clips: []
+  - key: ms1_AnnouncedSpottedOfficerSurprised_m10
+    category: Announce/Shout
+    text: "Cops incoming..."
+    clips: []
+  - key: ms1_CalledForHelp
+    category: Conversation
+    text: "Somebody get over here!"
+    clips: []
+  - key: ms1_CalledForHelp_m05
+    category: Conversation
+    text: "Forget the garage, help me!"
+    clips: []
+  - key: ms1_CalledForHelp_m07
+    category: Conversation
+    text: "It's some kinda sting! Al!"
+    clips: []
+  - key: ms1_CalledForHelp_m09
+    category: Conversation
+    text: "Help me, my Brothers!"
+    clips: []
+  - key: ms1_TalkedToHostage
+    category: Conversation
+    text: "Don't give me any trouble!"
+    clips: []
+  - key: ms1_TalkedToHostage_m09
+    category: Conversation
+    text: "Do you remember the Words of Taronne?"
+    clips: []
+  - key: ms1_DoorBlocked
+    category: Other
+    text: "Don't tell me this is locked!"
+    clips: []
+  - key: ms1_DoorBlocked_m12
+    category: Other
+    text: "Goddamn hotel doors..."
+    clips: []
+  - key: ms1_DoorBlocked_m13
+    category: Other
+    text: "Locked..."
+    clips: []
+  - key: ms1_ShotAFriend_m09
+    category: Other
+    text: "The darkness has claimed you."
+    clips: []
+  - key: ms1_ShotAtBreachedDoor
+    category: Other
+    text: "Start shooting!"
+    clips: []
+  - key: ms1_ShotAtBreachedDoor_m09
+    category: Other
+    text: "Don't let them stop the the Plan!"
+    clips: []
+  - key: ms1_ShotAtBreachedDoor_m13
+    category: Other
+    text: "Hold the line... fire!"
+    clips: []
+  - key: ms1_ReactedBang
+    category: Reaction
+    text: "Huh? What!?"
+    clips: []
+  - key: ms1_ReactedBreach
+    category: Reaction
+    text: "The door!"
+    clips: []
+  - key: ms1_ReactedDownOfficer
+    category: Reaction
+    text: "One less cop!"
+    clips: []
+  - key: ms1_ReactedDownOfficer_m09
+    category: Reaction
+    text: "Out of the Darkness you came, to darkness you go."
+    clips: []
+  - key: ms1_ReactedDownOfficer_m10
+    category: Reaction
+    text: "Goddamned cops should'a stayed out of it!"
+    clips: []
+  - key: ms1_ReactedDownOfficer_m13
+    category: Reaction
+    text: "You can't stop the truth, or those who defend it!"
+    clips: []
+  - key: ms1_ReactedDownSuspect
+    category: Reaction
+    text: "Hang in there.."
+    clips: []
+  - key: ms1_ReactedDownSuspect_m09
+    category: Reaction
+    text: "Your next breath will be with Taronne."
+    clips: []
+  - key: ms1_ReactedDownSuspect_m13
+    category: Reaction
+    text: "At least you fell a Martyr!"
+    clips: []
+  - key: ms1_ReactedHitByDoor
+    category: Reaction
+    text: "The door!"
+    clips: []
+  - key: ms1_ReactedHitByDoor_m05
+    category: Reaction
+    text: "What the fuck... the door!"
+    clips: []
+  - key: ms1_ReactedInjuryIntense
+    category: Reaction
+    text: "They hit me!"
+    clips: []
+  - key: ms1_ReactedInjuryNormal
+    category: Reaction
+    text: "Damn it!"
+    clips: []
+  - key: ms1_RepliedToHostage
+    category: Reply/Ack
+    text: "Just do what I say!"
+    clips: []
+  - key: ms1_RepliedToHostage_m09
+    category: Reply/Ack
+    text: "We will be together, in Taronne's Name."
+    clips: []
+  - key: ms1_RepliedToHostage_m13
+    category: Reply/Ack
+    text: "I'd be happy to kill you, so shut up!"
+    clips: []
+  - key: ms1_ThreatenedHostage
+    category: Threat
+    text: "Just keep comin' and see what happens..."
+    clips: []
+  - key: ms1_ThreatenedHostage_m06
+    category: Threat
+    text: "Keep goin' and there's one less corporate tool!"
+    clips: []
+  - key: ms1_ThreatenedHostage_m08
+    category: Threat
+    text: "You're disposable!"
+    clips: []
+  - key: ms1_ThreatenedHostage_m09
+    category: Threat
+    text: "I will save you from these evils!"
+    clips: []
+  - key: ms1_ThreatenedHostage_m12
+    category: Threat
+    text: "One more step and I'm wasting this French bastard!"
+    clips: []
+  - key: ms1_ThreatenedHostage_m13
+    category: Threat
+    text: "This stinking scientist is dead if you take another step!"
+    clips: []
