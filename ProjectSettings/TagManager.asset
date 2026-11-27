@@ -7,6 +7,9 @@ TagManager:
   - Anchor
   - NPC
   - Cover
+  - Teamate
+  - Enemy
+  - Hostage
   layers:
   - Default
   - TransparentFX
