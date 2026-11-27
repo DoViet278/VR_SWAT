@@ -1,10 +1,5 @@
-using System.Collections.Generic;
-using Unity.XR.CoreUtils;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
-using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 
 namespace VRSwat.Doors
 {
@@ -30,12 +25,11 @@ namespace VRSwat.Doors
     /// vừa thả bom nên đang rảnh. Nếu tay đó đã cầm món khác thì lấy tay rảnh còn lại; hai tay
     /// đều đầy thì chờ, frame nào có tay rảnh là đưa kíp vào tay đó.
     ///
-    /// Lúc kíp hiện ra, bàn tay được quặp lại như đang bóp grip (xem <see cref="CloseHand"/>),
-    /// nên trông đúng là đang nắm kíp chứ không phải kíp dính vào một bàn tay xòe.
-    ///
-    /// Kíp DÍNH tay chứ không thả ra được (lý do ở <see cref="TrySpawn"/>): bóp grip hay mở tay
-    /// đều không rơi, phải bấm nổ hoặc gỡ bom xuống thì kíp mới tự biến mất. Đổi lại người chơi
-    /// khỏi phải với tay mò kíp ở túi. Muốn thu kíp sớm thì gọi <see cref="Despawn"/>.
+    /// Phần "nhét vật vào tay" nằm ở <see cref="HandItemSpawner"/> vì panel chọn cách mở cửa
+    /// cũng dùng (kit phá khóa, bom C4). Kíp nổ dùng chế độ
+    /// <see cref="HandItemGrip.HoldMode.StickUntilReleased"/>: bóp grip hay mở tay đều không
+    /// rơi, phải bấm nổ hoặc gỡ bom xuống thì kíp mới tự biến mất. Đổi lại người chơi khỏi phải
+    /// với tay mò kíp ở túi. Muốn thu kíp sớm thì gọi <see cref="Despawn"/>.
     /// </summary>
     [AddComponentMenu("VR SWAT/Detonator Spawner")]
     [DisallowMultipleComponent]
@@ -74,19 +68,25 @@ namespace VRSwat.Doors
         /// <summary>Kíp do script này sinh ra. Null nếu chưa sinh hoặc đã dọn.</summary>
         public Detonator Spawned { get; private set; }
 
-        private readonly List<XRBaseInteractor> handInteractors = new List<XRBaseInteractor>();
+        /// <summary>
+        /// Tay đang cầm kíp. Giữ riêng ngoài <see cref="Spawned"/> vì kíp có thể bị thứ khác hủy
+        /// mất, lúc đó vẫn cần biết tay nào để gỡ cờ manual interaction ra.
+        /// </summary>
+        private XRBaseInteractor holdingHand;
 
-        private XRBaseInteractor manualHand;
-        private XRBaseInteractable spawnedInteractable;
-        private HandPoseDriver grippedHand;
+        private GameObject spawnedInstance;
         private float despawnAt = -1f;
 
         private void Update()
         {
             // Kíp mất mà tay vẫn ở chế độ manual thì phải trả tay về bình thường, nếu không
             // isSelectActive của tay đó cứ true và tay sẽ tự hít mọi vật đi ngang qua.
-            if (manualHand != null && Spawned == null)
-                EndManualHold();
+            if (holdingHand != null && Spawned == null)
+            {
+                HandItemSpawner.ForceEndManual(holdingHand);
+                holdingHand = null;
+                spawnedInstance = null;
+            }
 
             if (AnyChargePlaced())
             {
@@ -114,8 +114,14 @@ namespace VRSwat.Doors
         {
             // Nhả tay nhưng KHÔNG hủy kíp: script này tắt giữa màn thì kíp rơi xuống đất, còn
             // hơn là bàn tay mắc cờ manual và từ đó hít mọi thứ đi ngang qua.
-            EndManualHold();
-            handInteractors.Clear();
+            HandItemGrip grip = HandItemGrip.Of(spawnedInstance);
+
+            if (grip != null)
+                grip.Release();
+            else
+                HandItemSpawner.ForceEndManual(holdingHand);
+
+            holdingHand = null;
             despawnAt = -1f;
         }
 
@@ -126,82 +132,13 @@ namespace VRSwat.Doors
         {
             despawnAt = -1f;
 
-            // Nhả tay TRƯỚC khi hủy: EndManualInteraction gọi SelectExit với chính object này,
-            // hủy trước thì nó thao tác trên object đã chết.
-            EndManualHold();
+            // DespawnFromHand nhả tay TRƯỚC rồi mới hủy: hủy trước thì EndManualInteraction thao
+            // tác trên object đã chết.
+            HandItemSpawner.DespawnFromHand(spawnedInstance);
 
-            if (Spawned == null)
-                return;
-
-            Destroy(Spawned.gameObject);
+            spawnedInstance = null;
+            holdingHand = null;
             Spawned = null;
-        }
-
-        /// <summary>
-        /// Quặp bàn tay lại quanh kíp.
-        ///
-        /// Cần làm tay riêng vì cái "đang cầm" của XRI chỉ là quan hệ interactor ↔ interactable:
-        /// ngón tay của model lại chạy theo nút grip qua <see cref="AnimateHandOnInput"/>, mà kíp
-        /// này tự hiện ra chứ không ai bóp grip. Không ép thì vật nằm trong một bàn tay xòe.
-        ///
-        /// Prefab kíp có <see cref="HandPoseProvider"/> kèm dáng tạo sẵn thì dáng đó vẫn ăn (nó
-        /// nghe select của chính interactable) và đè lên cái này — đẹp hơn, nên ép grip chỉ là
-        /// mức tối thiểu cho prefab chưa có dáng.
-        /// </summary>
-        private void CloseHand(XRBaseInteractor hand)
-        {
-            if (!closeHandWhileHolding)
-                return;
-
-            HandSide side;
-
-            switch (hand.handedness)
-            {
-                case InteractorHandedness.Left:
-                    side = HandSide.Left;
-                    break;
-
-                case InteractorHandedness.Right:
-                    side = HandSide.Right;
-                    break;
-
-                default:
-                    return;     // interactor không khai bên tay nào thì không biết quặp tay nào
-            }
-
-            grippedHand = HandPoseDriver.Find(side);
-
-            if (grippedHand != null)
-                grippedHand.SetGripOverride(1f);
-        }
-
-        /// <summary>Trả bàn tay về chế độ cầm bình thường (xem <see cref="TrySpawn"/>).</summary>
-        private void EndManualHold()
-        {
-            XRBaseInteractor hand = manualHand;
-            XRBaseInteractable held = spawnedInteractable;
-
-            if (grippedHand != null)
-            {
-                grippedHand.ClearGripOverride();
-                grippedHand = null;
-            }
-
-            manualHand = null;
-            spawnedInteractable = null;
-
-            if (hand == null || !hand.isPerformingManualInteraction)
-                return;
-
-            // Chỉ nhả khi tay THẬT SỰ còn đang cầm đúng cái kíp đó: EndManualInteraction chạy
-            // thẳng SelectExit lên interactable mà XRI không kiểm tra gì, nên gọi lúc kíp đã bị
-            // hủy là đụng vào object chết.
-            if (held != null && hand.IsSelecting((IXRSelectInteractable)held))
-                hand.EndManualInteraction();
-            else
-                Debug.LogWarning(
-                    $"{name}: kíp nổ bị hủy trước khi nhả tay nên không gọi được " +
-                    "EndManualInteraction. Dọn kíp bằng Despawn() thay vì Destroy().", this);
         }
 
         private static bool AnyChargePlaced()
@@ -228,84 +165,40 @@ namespace VRSwat.Doors
                 return;
             }
 
-            XRBaseInteractor hand = PickHand();
+            XRBaseInteractor hand = HandItemSpawner.PickFreeHand(handsRoot, LastHandThatPlaced());
 
             if (hand == null)
                 return;     // hai tay đang đầy, frame sau thử lại
 
-            Transform attach = hand.GetAttachTransform(null);
-            Vector3 position = attach != null ? attach.position : hand.transform.position;
-            Quaternion rotation = attach != null ? attach.rotation : hand.transform.rotation;
+            GameObject instance = HandItemSpawner.SpawnIntoHand(
+                detonatorPrefab, hand, HandItemGrip.HoldMode.StickUntilReleased,
+                spawnClip, hapticAmplitude, hapticDuration, closeHandWhileHolding);
 
-            GameObject instance = Instantiate(detonatorPrefab, position, rotation);
-            instance.SetActive(true);
+            if (instance == null)
+            {
+                // SpawnIntoHand đã log lý do (thiếu interactable, hoặc Interaction Layer sai).
+                enabled = false;
+                return;
+            }
 
             Detonator detonator = instance.GetComponent<Detonator>();
-            XRBaseInteractable component = instance.GetComponent<XRBaseInteractable>();
-            var interactable = component as IXRSelectInteractable;
 
-            if (detonator == null || interactable == null)
+            if (detonator == null)
             {
                 Debug.LogWarning(
-                    $"{name}: {detonatorPrefab.name} thiếu Detonator hoặc XR Grab Interactable ở " +
-                    "object gốc nên không nhét vào tay được. Kiểm tra lại prefab.", this);
-                Destroy(instance);
+                    $"{name}: {detonatorPrefab.name} thiếu component Detonator nên bấm không nổ. " +
+                    "Kiểm tra lại prefab.", this);
+                HandItemSpawner.DespawnFromHand(instance);
                 enabled = false;
                 return;
             }
 
-            // StartManualInteraction chứ không phải XRInteractionManager.SelectEnter: SelectEnter
-            // thường chỉ giữ được một frame. Mỗi frame XRI xét lại vật đang cầm qua
-            // XRInteractionManager.CanSelect, mà hàm đó đòi interactor.isSelectActive — tức là
-            // người chơi phải đang bóp nút grip. Kíp này tự hiện ra chứ không ai bóp grip, nên nó
-            // sẽ rơi ngay frame sau. Manual interaction bật isSelectActive của bàn tay cho tới
-            // khi EndManualInteraction, nên kíp dính tay cho tới lúc bị dọn.
-            hand.StartManualInteraction(interactable);
-
-            if (!hand.IsSelecting(interactable))
-            {
-                // StartManualInteraction đã log lý do. Hay gặp nhất: Interaction Layer của kíp
-                // không trùng với Interaction Layer của bàn tay.
-                Debug.LogWarning(
-                    $"{name}: tay không nhận được {instance.name}. Kiểm tra Interaction Layer Mask " +
-                    "của XR Grab Interactable trên prefab kíp.", this);
-                Destroy(instance);
-                enabled = false;
-                return;
-            }
-
-            manualHand = hand;
-            spawnedInteractable = component;
+            spawnedInstance = instance;
+            holdingHand = hand;
             Spawned = detonator;
-            CloseHand(hand);
-
-            if (spawnClip != null)
-                AudioSource.PlayClipAtPoint(spawnClip, position);
-
-            SendHaptic(hand);
         }
 
-        /// <summary>
-        /// Tay rảnh để nhận kíp: ưu tiên tay vừa dán bom, không thì tay rảnh nào cũng được.
-        /// </summary>
-        private XRBaseInteractor PickHand()
-        {
-            CacheHandInteractors();
-
-            XRBaseInteractor preferred = LastHandThatPlaced();
-
-            if (IsFree(preferred))
-                return preferred;
-
-            for (int i = 0; i < handInteractors.Count; i++)
-            {
-                if (IsFree(handInteractors[i]))
-                    return handInteractors[i];
-            }
-
-            return null;
-        }
-
+        /// <summary>Tay vừa dán quả bom gần nhất — tay đó vừa thả bom nên đang rảnh.</summary>
         private static XRBaseInteractor LastHandThatPlaced()
         {
             var charges = BreachCharge.All;
@@ -319,72 +212,6 @@ namespace VRSwat.Doors
             }
 
             return null;
-        }
-
-        private static bool IsFree(XRBaseInteractor hand)
-        {
-            return hand != null &&
-                   hand.isActiveAndEnabled &&
-                   !hand.hasSelection;
-        }
-
-        private void CacheHandInteractors()
-        {
-            // Lọc rụng cái đã bị hủy (model tay đổi theo chế độ nhập liệu) rồi mới quyết định có
-            // phải quét lại scene không.
-            for (int i = handInteractors.Count - 1; i >= 0; i--)
-            {
-                if (handInteractors[i] == null)
-                    handInteractors.RemoveAt(i);
-            }
-
-            if (handInteractors.Count > 0)
-                return;
-
-            Transform root = handsRoot;
-
-            if (root == null)
-            {
-                XROrigin origin = FindFirstObjectByType<XROrigin>();
-                root = origin != null ? origin.transform : null;
-            }
-
-            if (root == null)
-            {
-                Debug.LogWarning(
-                    $"{name}: không tìm thấy XR Origin nên không biết tay người chơi ở đâu. Gán " +
-                    "ô Hands Root.", this);
-                enabled = false;
-                return;
-            }
-
-            foreach (XRBaseInteractor interactor in root.GetComponentsInChildren<XRBaseInteractor>(true))
-            {
-                if (!(interactor is IXRSelectInteractor))
-                    continue;
-
-                // Socket (túi đồ, ổ dán bom, giá treo) cũng select vật nhưng không phải bàn tay.
-                if (interactor is XRSocketInteractor)
-                    continue;
-
-                handInteractors.Add(interactor);
-            }
-
-            if (handInteractors.Count == 0)
-                Debug.LogWarning(
-                    $"{name}: không có interactor nào của bàn tay dưới {root.name}, kíp sẽ không " +
-                    "bao giờ hiện ra. Kiểm tra lại ô Hands Root.", this);
-        }
-
-        private void SendHaptic(XRBaseInteractor hand)
-        {
-            if (hapticAmplitude <= 0f || hand == null)
-                return;
-
-            HapticImpulsePlayer player = hand.transform.GetComponentInParent<HapticImpulsePlayer>();
-
-            if (player != null)
-                player.SendHapticImpulse(hapticAmplitude, hapticDuration);
         }
     }
 }

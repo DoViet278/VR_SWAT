@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class GunAmmoManager : MonoBehaviour
@@ -45,6 +47,34 @@ public class GunAmmoManager : MonoBehaviour
     private Magazine currentMagazine;
     private ChamberState chamber;
 
+    private XRGrabInteractable grab;
+
+    // Danh sách súng đang sống trong scene, để panel cổ tay khỏi phải quét FindObjectsByType mỗi
+    // frame tìm khẩu đang cầm. Cùng kiểu với Magazine.ActiveMagazines.
+    private static readonly List<GunAmmoManager> activeGuns = new List<GunAmmoManager>();
+
+    public static IReadOnlyList<GunAmmoManager> ActiveGuns => activeGuns;
+
+    /// <summary>Khẩu này đang nằm trên tay người chơi (không tính socket của giá súng, túi đồ).</summary>
+    public bool IsHeldByHand
+    {
+        get
+        {
+            if (grab == null)
+                return false;
+
+            List<IXRSelectInteractor> interactors = grab.interactorsSelecting;
+
+            for (int i = 0; i < interactors.Count; i++)
+            {
+                if (!(interactors[i] is XRSocketInteractor))
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
     public ChamberState ChamberStatus => chamber;
     public bool IsChambered => chamber == ChamberState.Live;
     public bool HasSpentCase => chamber == ChamberState.Spent;
@@ -58,6 +88,8 @@ public class GunAmmoManager : MonoBehaviour
 
     private void Awake()
     {
+        grab = GetComponentInParent<XRGrabInteractable>();
+
         // Ống đạn cố định: không có hộp tiếp đạn rời để tháo ra cắm vào.
         if (builtInMagazine != null)
             currentMagazine = builtInMagazine;
@@ -79,6 +111,9 @@ public class GunAmmoManager : MonoBehaviour
 
     private void OnEnable()
     {
+        if (!activeGuns.Contains(this))
+            activeGuns.Add(this);
+
         if (magazineSocket == null)
             return;
 
@@ -88,6 +123,8 @@ public class GunAmmoManager : MonoBehaviour
 
     private void OnDisable()
     {
+        activeGuns.Remove(this);
+
         if (magazineSocket == null)
             return;
 

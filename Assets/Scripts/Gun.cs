@@ -20,6 +20,7 @@ public class Gun : MonoBehaviour
     [SerializeField] private FireMode fireMode = FireMode.Single;
     [Tooltip("Tốc độ bắn ở chế độ Auto (viên/phút).")]
     [SerializeField] private float roundsPerMinute = 700f;
+    public FireMode Mode => fireMode;
 
     [Header("Gun Shot Effect")]
     [SerializeField] private GameObject gunShotEffect;
