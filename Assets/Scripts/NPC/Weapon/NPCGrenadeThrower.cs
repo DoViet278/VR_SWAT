@@ -874,7 +874,27 @@ public class NPCGrenadeThrower : MonoBehaviour
             body.linearVelocity = velocity;
             body.angularVelocity = Random.onUnitSphere * Random.Range(4f, 9f);
         }
-        flash.Arm();
+        ArmFlashbang(flash);
+    }
+
+    // VRGrenade chỉ châm ngòi khi tay người chơi nhả ra (selectExited, private). NPC không đi qua XRI,
+    // nên rút chốt bằng API public rồi tự khởi động coroutine ngòi nổ của nó.
+    private static readonly System.Reflection.MethodInfo FuseRoutineMethod =
+        typeof(VRGrenade).GetMethod("FuseRoutine", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+    private static readonly System.Reflection.FieldInfo ThrownByHandField =
+        typeof(VRGrenade).GetField("thrownByHand", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+    private void ArmFlashbang(VRGrenade flash)
+    {
+        flash.OnPinPulled();
+        ThrownByHandField?.SetValue(flash, true); // để vẫn phát tiếng rơi khi chạm đất
+
+        if (FuseRoutineMethod == null)
+        {
+            Debug.LogWarning($"[{name}] Không tìm thấy VRGrenade.FuseRoutine, flashbang NPC ném sẽ không nổ.", this);
+            return;
+        }
+        flash.StartCoroutine((System.Collections.IEnumerator)FuseRoutineMethod.Invoke(flash, null));
     }
 
     // ---------- Súng: đeo lên ngực / cầm lại ----------
