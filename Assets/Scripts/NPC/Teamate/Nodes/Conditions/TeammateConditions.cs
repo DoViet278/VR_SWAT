@@ -78,10 +78,18 @@ public partial class OrderIsOpenDoorCondition : TeammateOrderIsCondition
 }
 
 [Serializable, GeneratePropertyBag]
-[Condition(name: "Order Is BreachDoor", story: "[Self] order is BreachDoor", category: "Teammate", id: "5b131508683c420394cf519bf4fa8019")]
+// Giữ tên lớp / id cũ (BreachDoor) để graph đã dựng vẫn trỏ đúng; lệnh nay là PickLock (phá khóa).
+[Condition(name: "Order Is PickLock", story: "[Self] order is PickLock", category: "Teammate", id: "5b131508683c420394cf519bf4fa8019")]
 public partial class OrderIsBreachDoorCondition : TeammateOrderIsCondition
 {
-    protected override TeammateOrder Order => TeammateOrder.BreachDoor;
+    protected override TeammateOrder Order => TeammateOrder.PickLock;
+}
+
+[Serializable, GeneratePropertyBag]
+[Condition(name: "Order Is ClearRoom", story: "[Self] order is ClearRoom", category: "Teammate", id: "e8d24b6f0a7c4c91b35f6a2d9c1e7b40")]
+public partial class OrderIsClearRoomCondition : TeammateOrderIsCondition
+{
+    protected override TeammateOrder Order => TeammateOrder.ClearRoom;
 }
 
 [Serializable, GeneratePropertyBag]

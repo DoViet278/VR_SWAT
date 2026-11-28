@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e83b3971ba740478567950d1d7eeb8, type: 3}
+  m_Name: Enemy_Male_B_Voice
+  m_EditorClassIdentifier: Assembly-CSharp::NPCVoiceSet
+  _role: 1
+  _gender: 0
+  _basePitch: 0.92
+  _entries:
+  - Line: 13
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 0
+    InterruptSamePriority: 0
+    Cooldown: 6
+  - Line: 7
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 1
+    InterruptSamePriority: 0
+    Cooldown: 5
+  - Line: 6
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 1
+    InterruptSamePriority: 0
+    Cooldown: 8
+  - Line: 10
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 1
+    InterruptSamePriority: 0
+    Cooldown: 4
+  - Line: 8
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 2
+    InterruptSamePriority: 0
+    Cooldown: 4
+  - Line: 9
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 2
+    InterruptSamePriority: 0
+    Cooldown: 5
+  - Line: 11
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 2
+    InterruptSamePriority: 0
+    Cooldown: 3
+  - Line: 2
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 2
+    InterruptSamePriority: 0
+    Cooldown: 1.5
+  - Line: 12
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 3
+    InterruptSamePriority: 0
+    Cooldown: 2
+  - Line: 4
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.94, y: 1.06}
+    Priority: 3
+    InterruptSamePriority: 1
+    Cooldown: 0.35
+  - Line: 5
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.97, y: 1.03}
+    Priority: 4
+    InterruptSamePriority: 0
+    Cooldown: 0

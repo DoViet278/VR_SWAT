@@ -52,6 +52,8 @@ namespace VRSwat.Doors
         float? autoTarget;
         float breachTarget;
         float rattleCooldown;
+        // +1: góc dương đưa cánh cửa về -Z (cánh nằm phía +X của bản lề). -1: ngược lại (cánh nằm phía -X).
+        float swingSign = 1f;
         
         // Danh sách cửa đang sống trong scene, để LockpickKit tìm ổ khóa gần nhất mà không
         // phải quét toàn scene mỗi frame.
@@ -72,6 +74,7 @@ namespace VRSwat.Doors
         {
             State = startLocked ? DoorState.Locked : DoorState.Closed;
             Angle = 0f;
+            swingSign = ComputeSwingSign();
             ApplyAngle();
             ApplyNavigation();
         }
@@ -205,16 +208,42 @@ namespace VRSwat.Doors
         public void Lock()   { if (State == DoorState.Closed) SetState(DoorState.Locked); }
         public void Unlock() { if (State == DoorState.Locked) SetState(DoorState.Closed); }
 
+        /// <summary>Cánh cửa nằm phía nào của bản lề theo trục X local của cửa (+1 / -1).</summary>
+        public float LeafAxisSign => swingSign;
+
+        /// <summary>
+        /// Phía (local Z của cửa) mà cánh cửa đang quay sang: -1 = về -Z, +1 = về +Z, 0 = đang đóng.
+        /// Đã tính chiều cánh cửa so với bản lề, nên đúng với cả cửa bản lề trái lẫn phải.
+        /// </summary>
+        public int LeafSide => Mathf.Abs(Angle) < 0.01f ? 0 : (Angle * swingSign > 0f ? -1 : 1);
+
         // ===== nội bộ =====
-        // Người đứng phía +Z → góc dương (cửa đi về -Z, ra xa họ), và ngược lại.
+        // Mở ra XA người đứng ở worldPos (đẩy vào trong): người phía +Z → cánh đi về -Z, và ngược lại.
         // Nếu phía đó bị tường chặn (min/max = 0) thì mở về phía còn lại.
         float AwayAngle(Vector3 worldPos, float amount)
         {
             bool fromFront = transform.InverseTransformPoint(worldPos).z >= 0f;
-            float wanted = fromFront ? Mathf.Min(amount, maxAngle) : Mathf.Max(-amount, minAngle);
+            // Góc dấu swingSign đưa cánh về -Z.
+            bool positive = fromFront ? swingSign > 0f : swingSign < 0f;
+            float wanted = positive ? Mathf.Min(amount, maxAngle) : Mathf.Max(-amount, minAngle);
             if (Mathf.Abs(wanted) < openThreshold)
-                wanted = fromFront ? Mathf.Max(-amount, minAngle) : Mathf.Min(amount, maxAngle);
+                wanted = positive ? Mathf.Max(-amount, minAngle) : Mathf.Min(amount, maxAngle);
             return wanted;
+        }
+
+        /// <summary>
+        /// Cánh cửa (renderer con của hinge) nằm phía nào của bản lề theo trục X của cửa.
+        /// Quay +Y: +X đi về -Z, -X đi về +Z, nên cánh nằm phía -X thì phải đảo dấu góc.
+        /// </summary>
+        float ComputeSwingSign()
+        {
+            if (hinge == null) return 1f;
+            Renderer[] renderers = hinge.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0) return 1f;
+            Bounds b = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length; i++) b.Encapsulate(renderers[i].bounds);
+            float dx = transform.InverseTransformPoint(b.center).x - transform.InverseTransformPoint(hinge.position).x;
+            return dx >= 0f ? 1f : -1f;
         }
 
         void StartAuto(float target, UnityEngine.Object actor)

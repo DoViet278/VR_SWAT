@@ -30,6 +30,48 @@ public partial class HostageShouldSurrenderCondition : Condition
     }
 }
 
+/// <summary>Đang bị nghi phạm khống chế (EnemyTactics / Hostage.SetHeld).</summary>
+[Serializable, GeneratePropertyBag]
+[Condition(name: "Hostage Is Held", story: "[Self] is held by a suspect", category: "Hostage", id: "4c8e1a7d2b9f46e3a5d0c7b1e8f2a906")]
+public partial class HostageIsHeldCondition : Condition
+{
+    [SerializeReference] public BlackboardVariable<GameObject> Self;
+
+    public override bool IsTrue()
+    {
+        Hostage h = HostageNodeUtils.Of(Self, GameObject);
+        return h != null && !h.IsDead && h.IsHeld;
+    }
+}
+
+/// <summary>Nghe súng / nổ (không quá gần) mà chưa thấy cảnh sát: bỏ chạy.</summary>
+[Serializable, GeneratePropertyBag]
+[Condition(name: "Hostage Should Flee", story: "[Self] should flee from gunfire", category: "Hostage", id: "9a2f6c3e8d1b47a5b6e9c2d4f1a8e307")]
+public partial class HostageShouldFleeCondition : Condition
+{
+    [SerializeReference] public BlackboardVariable<GameObject> Self;
+
+    public override bool IsTrue()
+    {
+        Hostage h = HostageNodeUtils.Of(Self, GameObject);
+        return h != null && h.ShouldFlee;
+    }
+}
+
+/// <summary>Súng nổ sát bên / nổ gần: ngồi ôm đầu.</summary>
+[Serializable, GeneratePropertyBag]
+[Condition(name: "Hostage Should Cower", story: "[Self] should cower from gunfire", category: "Hostage", id: "d7b3e9a1c6f2485e9a1b4c8d3e7f2a08")]
+public partial class HostageShouldCowerCondition : Condition
+{
+    [SerializeReference] public BlackboardVariable<GameObject> Self;
+
+    public override bool IsTrue()
+    {
+        Hostage h = HostageNodeUtils.Of(Self, GameObject);
+        return h != null && h.ShouldCower;
+    }
+}
+
 [Serializable, GeneratePropertyBag]
 [Condition(name: "Hostage Is Scared", story: "[Self] is scared of [Target]", category: "Hostage", id: "b5d8e2f1a9c64e7d8b3a2c1e0f9d7a03")]
 public partial class HostageIsScaredCondition : Condition

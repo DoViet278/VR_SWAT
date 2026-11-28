@@ -54,6 +54,49 @@ public class HostageCuffable : MonoBehaviour
 
     private bool Cuffable => _hostage.IsSurrendered && !_hostage.IsRestrained && !_hostage.IsDead;
 
+    // ---------- Đồng đội AI còng (lệnh Restrain) ----------
+
+    private Object _aiCuffer;
+    private float _aiProgress;
+
+    /// <summary>Điểm giữa 2 cổ tay (đồng đội đưa tay tới đây khi còng).</summary>
+    public Transform CuffPoint => _cuffPoint;
+
+    /// <summary>Đã đầu hàng, chưa bị còng, còn sống.</summary>
+    public bool IsCuffable => _hostage != null && Cuffable;
+
+    /// <summary>Đang bị một đồng đội AI còng.</summary>
+    public bool IsAICuffing => _aiCuffer != null;
+
+    /// <summary>Đồng đội bắt đầu còng: người chơi không còng chen được, con tin không đưa tay về phía người chơi.</summary>
+    public bool BeginAICuff(Object cuffer)
+    {
+        if (!IsCuffable || (_aiCuffer != null && _aiCuffer != cuffer)) return false;
+        if (_aiCuffer != cuffer) _aiProgress = 0f;
+        _aiCuffer = cuffer;
+        CancelCuffing();
+        return true;
+    }
+
+    /// <summary>Tiếp tục còng; đủ duration giây thì còng xong (Hostage.Restrain) và trả true.</summary>
+    public bool TickAICuff(Object cuffer, float deltaTime, float duration)
+    {
+        if (_aiCuffer != cuffer || !IsCuffable) return false;
+        _aiProgress += deltaTime;
+        if (_aiProgress < duration) return false;
+        _aiCuffer = null;
+        _aiProgress = 0f;
+        CompleteCuff(null);
+        return _hostage.IsRestrained;
+    }
+
+    public void CancelAICuff(Object cuffer)
+    {
+        if (_aiCuffer != cuffer) return;
+        _aiCuffer = null;
+        _aiProgress = 0f;
+    }
+
     private void Awake()
     {
         _hostage = GetComponent<Hostage>();
@@ -78,7 +121,7 @@ public class HostageCuffable : MonoBehaviour
         if (UpdateTest()) return;
 
         Transform player = PlayerHead();
-        bool want = Cuffable && player != null && FlatDistance(transform.position, player.position) <= _presentDistance;
+        bool want = Cuffable && _aiCuffer == null && player != null && FlatDistance(transform.position, player.position) <= _presentDistance;
         if (_vrCuffing || _keyboardCuffing) want |= Cuffable; // đang còng dở thì giữ tay ra
 
         float step = _blendTime <= 0f ? 1f : Time.deltaTime / _blendTime;
@@ -87,7 +130,7 @@ public class HostageCuffable : MonoBehaviour
         if (want && player != null) FacePlayer(player.position);
         UpdateIK(player);
 
-        if (!CanBeCuffed) { CancelCuffing(); return; }
+        if (!CanBeCuffed || _aiCuffer != null) { CancelCuffing(); return; } // đồng đội đang còng: người chơi không chen
 
         UpdateVRInput();
         UpdateKeyboard();

@@ -73,8 +73,13 @@ public class NPCGrenadeThrower : MonoBehaviour
     [SerializeField] private VRGrenade _flashbangPrefab;
     [Tooltip("Số flashbang mang theo. -1 = vô hạn.")]
     [SerializeField] private int _flashbangs = -1;
-    [Tooltip("Độ cao đỉnh đường bay thêm (m) khi ném flashbang qua cửa.")]
+    [Tooltip("Độ cao đỉnh đường bay thêm (m) khi ném flashbang vào điểm cho trước (BeginThrowFlashbangAt, không qua cửa).")]
     [SerializeField] private float _flashbangApex = 0.4f;
+    [Tooltip("Ném qua cửa: các độ cao đỉnh (m, so với điểm cao hơn giữa tay và điểm rơi) được thử, thấp trước. " +
+             "Phải thấp để lọt dưới khung cửa (~2 m): tay ~1.4 m + 0.6 = 2 m.")]
+    [SerializeField] private float[] _flashApexOptions = { 0.1f, 0.25f, 0.4f, 0.6f };
+    [Tooltip("Ném qua cửa: flashbang phải rơi vào sâu trong phòng ít nhất ngần này (m) tính từ mặt cửa.")]
+    [SerializeField] private float _flashMinDepth = 1f;
 
     [Header("Decision (chỉ ném khi hết sạch đạn)")]
     [Tooltip("Khoảng cách (m) tới Target được phép ném: gần quá thì tự nổ trúng mình, xa quá thì không tới.")]
@@ -152,6 +157,9 @@ public class NPCGrenadeThrower : MonoBehaviour
     private VRGrenade _flashInHand;
     private bool _throwingFlash;
     private Vector3 _flashPoint;
+    private bool _flashThroughDoor;
+    private Vector3 _flashDoorPoint;
+    private Vector3 _flashIntoRoom;
     private bool _released;
 
     private float _nextAllowed;
@@ -611,6 +619,12 @@ public class NPCGrenadeThrower : MonoBehaviour
 
     // ---------- Ném ----------
 
+    /// <summary>Đã gán Flashbang Prefab.</summary>
+    public bool FlashbangPrefabAssigned => _flashbangPrefab != null;
+
+    /// <summary>Số flashbang còn lại (-1 = vô hạn).</summary>
+    public int Flashbangs => _flashbangs;
+
     /// <summary>Còn flashbang, rảnh tay, còn sống.</summary>
     public bool CanThrowFlashbang =>
         _flashbangPrefab != null && _flashbangs != 0 && !IsBusy && (_npc == null || !_npc.IsDead) && (_holder == null || !_holder.IsReloading);
@@ -623,9 +637,127 @@ public class NPCGrenadeThrower : MonoBehaviour
     {
         if (!CanThrowFlashbang) return false;
         _throwingFlash = true;
+        _flashThroughDoor = false;
         _flashPoint = point;
         StartThrowAnim();
         return true;
+    }
+
+    /// <summary>
+    /// Rút flashbang và ném QUA CỬA vào phòng: lúc bom rời tay lập lại kế hoạch từ vị trí tay thật
+    /// (TryPlanFlashbang: đường bay thấp lọt dưới khung cửa, không chạm tường, rơi sâu trong phòng).
+    /// doorPoint: một điểm trên mặt cửa. intoRoom: hướng từ cửa vào trong phòng.
+    /// </summary>
+    public bool BeginThrowFlashbangThrough(Vector3 point, Vector3 doorPoint, Vector3 intoRoom)
+    {
+        if (!CanThrowFlashbang) return false;
+        _throwingFlash = true;
+        _flashThroughDoor = true;
+        _flashPoint = point;
+        _flashDoorPoint = doorPoint;
+        _flashIntoRoom = intoRoom;
+        StartThrowAnim();
+        return true;
+    }
+
+    /// <summary>Vị trí tay lúc bom rời tay nếu NPC đứng ở feet, quay mặt theo forward (để chọn chỗ đứng ném).</summary>
+    public Vector3 EstimateReleasePoint(Vector3 feet, Vector3 forward)
+    {
+        forward.y = 0f;
+        forward = forward.sqrMagnitude > 0.0001f ? forward.normalized : transform.forward;
+        Vector3 right = Vector3.Cross(Vector3.up, forward);
+        Vector3 o = _releaseOffsetFromHips;
+        return feet + Vector3.up * (_standingHipHeight + o.y) + right * o.x + forward * o.z;
+    }
+
+    /// <summary>
+    /// Kế hoạch ném flashbang từ tay (from) qua cửa vào gần point: thử vài điểm rơi quanh point x các độ cao đỉnh thấp
+    /// (FlashApexOptions), mô phỏng đường bay bằng SphereCast. Loại phương án chạm tường / khung cửa / cánh cửa / người
+    /// trước khi chạm sàn, hoặc rơi chưa vào sâu FlashMinDepth trong phòng. Chọn phương án rơi gần point nhất, bay thấp nhất.
+    /// </summary>
+    public bool TryPlanFlashbang(Vector3 from, Vector3 point, Vector3 doorPoint, Vector3 intoRoom, out ThrowPlan plan) =>
+        TryPlanFlashbang(from, transform.position + Vector3.up * (_standingHipHeight + _releaseOffsetFromHips.y), point, doorPoint, intoRoom, out plan);
+
+    /// <summary>
+    /// body: điểm giữa thân (ngang vai) của chỗ đứng ném. Tay (from) bị kẹt trong tường, hoặc đường từ thân ra tay xuyên tường
+    /// (đứng sát tường) thì không tin mô phỏng: SphereCast xuất phát bên trong collider không thấy collider đó.
+    /// </summary>
+    public bool TryPlanFlashbang(Vector3 from, Vector3 body, Vector3 point, Vector3 doorPoint, Vector3 intoRoom, out ThrowPlan plan)
+    {
+        plan = default;
+        if (!IsHandClear(body, from)) return false;
+        intoRoom.y = 0f;
+        if (intoRoom.sqrMagnitude < 0.0001f) return false;
+        intoRoom.Normalize();
+        Vector3 lateral = Vector3.Cross(Vector3.up, intoRoom);
+        Vector3[] offsets =
+        {
+            Vector3.zero, -intoRoom * 0.8f, lateral * 0.8f, -lateral * 0.8f, intoRoom * 0.8f, -intoRoom * 1.4f,
+        };
+
+        float bestScore = float.NegativeInfinity;
+        foreach (Vector3 offset in offsets)
+        {
+            Vector3 aim = SnapToGround(point + offset);
+            if (Vector3.Dot(aim - doorPoint, intoRoom) < _flashMinDepth) continue;
+            foreach (float extra in _flashApexOptions)
+            {
+                if (!TrySolveLow(from, aim, extra, out Vector3 velocity, out float time)) continue;
+                if (!Simulate(from, velocity, null, out Vector3 impact, out bool hitWall) || hitWall) continue;
+                if (Vector3.Dot(impact - doorPoint, intoRoom) < _flashMinDepth) continue;
+                float score = -FlatDistance(impact, point) - extra * 0.5f - time;
+                if (score <= bestScore) continue;
+                bestScore = score;
+                plan = new ThrowPlan
+                {
+                    Valid = true, Aim = aim, Impact = impact, Velocity = velocity,
+                    Apex = Mathf.Max(0f, aim.y - from.y) + extra, FlightTime = time,
+                };
+            }
+        }
+
+        if (_drawPlanGizmos)
+        {
+            _debugValid = plan.Valid;
+            _debugImpact = plan.Valid ? plan.Impact : point;
+            _debugPath.Clear();
+            if (plan.Valid) Simulate(from, plan.Velocity, null, out _, out _, _debugPath);
+        }
+        return plan.Valid;
+    }
+
+    private static readonly Collider[] s_Overlap = new Collider[8];
+
+    /// <summary>Tay không nằm trong collider nào (trừ thân mình) và đường thân -> tay không xuyên vật cản.</summary>
+    private bool IsHandClear(Vector3 body, Vector3 hand)
+    {
+        float radius = _grenadePrefab != null ? _grenadePrefab.BodyRadius : 0.035f;
+        int count = Physics.OverlapSphereNonAlloc(hand, radius + 0.02f, s_Overlap, _trajectoryMask, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < count; i++)
+            if (!s_Overlap[i].transform.IsChildOf(transform)) return false;
+
+        Vector3 delta = hand - body;
+        float length = delta.magnitude;
+        if (length < 0.01f) return true;
+        int hits = Physics.RaycastNonAlloc(body, delta / length, s_Hits, length, _trajectoryMask, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < hits; i++)
+            if (!s_Hits[i].transform.IsChildOf(transform)) return false;
+        return true;
+    }
+
+    /// <summary>Vận tốc để rơi đúng to với đỉnh chỉ cao hơn điểm cao hơn (tay / điểm rơi) extraApex m: đường bay thấp, căng.</summary>
+    private bool TrySolveLow(Vector3 from, Vector3 to, float extraApex, out Vector3 velocity, out float time)
+    {
+        float g = Mathf.Max(0.1f, -Physics.gravity.y);
+        Vector3 flat = to - from;
+        flat.y = 0f;
+        float dy = to.y - from.y;
+        float apex = Mathf.Max(0f, dy) + Mathf.Max(0.01f, extraApex); // so với tay
+        float vy = Mathf.Sqrt(2f * g * apex);
+        float disc = vy * vy - 2f * g * dy;
+        time = disc >= 0f ? (vy + Mathf.Sqrt(disc)) / g : 0f;
+        velocity = time > 0.05f ? flat / time + Vector3.up * vy : Vector3.zero;
+        return time > 0.05f && velocity.magnitude <= _maxThrowSpeed;
     }
 
     /// <summary>Bắt đầu rút bom và ném. Trả false nếu không ném được lúc này.</summary>
@@ -640,6 +772,7 @@ public class NPCGrenadeThrower : MonoBehaviour
 
         _nextAllowed = Time.time + _cooldown;
         if (_logDecisions) Debug.Log($"[{name}] Rút bom ném: {LastPlanReport}", this);
+        if (_npc != null) _npc.Say(NPCVoiceLine.GrenadeOut); // "Grenade!"
         StartThrowAnim();
         return true;
     }
@@ -813,6 +946,7 @@ public class NPCGrenadeThrower : MonoBehaviour
         }
         if (_flashInHand != null) LaunchFlashbang(Random.insideUnitSphere * 0.5f);
         _throwingFlash = false;
+        _flashThroughDoor = false;
         _phase = Phase.None;
         _animator.ResetTrigger(DrawGrenadeHash);
         _animator.ResetTrigger(ThrowHash);
@@ -845,6 +979,32 @@ public class NPCGrenadeThrower : MonoBehaviour
         _throwingFlash = false;
         if (_flashInHand == null) return;
         Vector3 from = _flashInHand.transform.position;
+
+        // Qua cửa: lập lại kế hoạch từ vị trí tay thật lúc vung (lệch vài cm so với ước lượng là đủ đập khung cửa).
+        if (_flashThroughDoor)
+        {
+            _flashThroughDoor = false;
+            if (TryPlanFlashbang(from, _flashPoint, _flashDoorPoint, _flashIntoRoom, out ThrowPlan plan))
+            {
+                LaunchFlashbang(plan.Velocity);
+                return;
+            }
+            // Tay thật lệch vào tường (anim vung sát tường): phóng từ điểm tay ước lượng lúc chọn chỗ đứng (đã kiểm tra thông).
+            Vector3 estimated = EstimateReleasePoint(transform.position, transform.forward);
+            if (TryPlanFlashbang(estimated, _flashPoint, _flashDoorPoint, _flashIntoRoom, out plan))
+            {
+                _flashInHand.transform.position = estimated;
+                LaunchFlashbang(plan.Velocity);
+                return;
+            }
+            Debug.LogWarning($"[{name}] Flashbang: từ tay ({from}) không có đường bay lọt qua cửa, ném thấp thẳng vào điểm đích.", this);
+            if (TrySolveLow(from, SnapToGround(_flashPoint), _flashApexOptions.Length > 0 ? _flashApexOptions[0] : 0.2f, out Vector3 low, out _))
+            {
+                LaunchFlashbang(low);
+                return;
+            }
+        }
+
         if (!TrySolve(from, _flashPoint, _flashbangApex, out Vector3 velocity, out _, out _))
         {
             Vector3 dir = _flashPoint - from;
