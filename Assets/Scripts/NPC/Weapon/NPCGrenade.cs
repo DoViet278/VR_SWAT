@@ -8,8 +8,8 @@ using UnityEngine;
 /// gây sát thương giảm dần theo khoảng cách cho mọi thứ trong Radius không bị tường chắn,
 /// và đẩy văng các Rigidbody xung quanh.
 ///
-/// Sát thương: NPC nhận qua NPC.TakeDamageFrom (để chọn anim trúng đòn / chết đúng hướng),
-/// object khác (Player) nhận qua SendMessage("TakeDamage", float) giống phát bắn của AttackAction.
+/// Sát thương: Damage.Apply với DamageInfo.Explosion (tâm nổ = hướng trúng đòn / chết; giáp thân chặn một nửa so với đạn)
+/// tới NPC / con tin / SwatPlayerHealth; object khác nhận SendMessage("TakeDamage", float) như cũ. Mỗi người nhận một lần.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class NPCGrenade : MonoBehaviour
@@ -186,6 +186,7 @@ public class NPCGrenade : MonoBehaviour
 
         ApplyDamage(center);
         ApplyForce(center);
+        NPCHearing.Report(center, 40f, NoiseType.Explosion, gameObject);
         Destroy(gameObject);
     }
 
@@ -198,8 +199,7 @@ public class NPCGrenade : MonoBehaviour
             Collider col = s_Hits[i];
             if (col == null || col.transform.IsChildOf(transform)) continue;
 
-            NPC npc = col.GetComponentInParent<NPC>();
-            Object key = npc != null ? npc : col.transform.root;
+            Object key = ReceiverKey(col.gameObject);
             if (damaged.Contains(key)) continue;
 
             Vector3 point = col.bounds.center;
@@ -208,33 +208,62 @@ public class NPCGrenade : MonoBehaviour
             float amount = DamageAt(Vector3.Distance(center, col.bounds.ClosestPoint(center)));
             if (amount <= 0f) continue;
             damaged.Add(key);
-
-            if (npc != null) npc.TakeDamageFrom(amount, center);
-            else col.SendMessageUpwards("TakeDamage", amount, SendMessageOptions.DontRequireReceiver);
+            global::Damage.Apply(col.gameObject, DamageInfo.Explosion(amount, center, gameObject));
         }
 
-        // NPC có thể không có collider: tính theo danh sách NPC, tâm thân cao 1m.
+        // NPC / con tin có thể không có collider: tính theo danh sách, tâm thân cao 1 m.
         foreach (NPC npc in NPC.Active.ToArray())
         {
             if (npc == null || npc.IsDead || damaged.Contains(npc)) continue;
-            Vector3 body = npc.transform.position + Vector3.up;
-            float amount = PredictDamage(center, body, npc.transform);
+            float amount = PredictDamage(center, npc.transform.position + Vector3.up, npc.transform);
             if (amount <= 0f) continue;
             damaged.Add(npc);
-            npc.TakeDamageFrom(amount, center);
+            npc.ApplyDamage(DamageInfo.Explosion(amount, center, gameObject));
+        }
+        foreach (Hostage h in Hostage.Active.ToArray())
+        {
+            if (h == null || h.IsDead || damaged.Contains(h)) continue;
+            float amount = PredictDamage(center, h.transform.position + Vector3.up, h.transform);
+            if (amount <= 0f) continue;
+            damaged.Add(h);
+            h.ApplyDamage(DamageInfo.Explosion(amount, center, gameObject));
         }
 
-        // Target (Player) có thể không có collider trong bán kính (vd. XR Origin): tính riêng theo tâm thân.
-        if (_target != null && !damaged.Contains(_target.transform.root))
+        // Người chơi có thể không có collider trong bán kính (vd. XR Origin): tính riêng theo tâm thân (đầu - 0.6 m).
+        SwatPlayerHealth player = SwatPlayerHealth.Instance != null ? SwatPlayerHealth.Instance : (_target != null ? SwatPlayerHealth.Of(_target) : null);
+        if (player != null && !damaged.Contains(player))
+        {
+            Transform head = Teammate.PlayerHead;
+            Vector3 body = head != null ? head.position - Vector3.up * 0.6f : NPCConditionUtils.CenterOf(player.gameObject);
+            float distance = Vector3.Distance(center, body);
+            if (distance <= _radius && InSight(center, body, player.transform.root))
+            {
+                float amount = DamageAt(distance);
+                if (amount > 0f) player.ApplyDamage(DamageInfo.Explosion(amount, center, gameObject));
+            }
+        }
+        else if (player == null && _target != null && !damaged.Contains(_target.transform.root))
         {
             Vector3 body = NPCConditionUtils.CenterOf(_target);
             float distance = Vector3.Distance(center, body);
             if (distance <= _radius && InSight(center, body, _target.transform.root))
             {
                 float amount = DamageAt(distance);
-                if (amount > 0f) _target.SendMessage("TakeDamage", amount, SendMessageOptions.DontRequireReceiver);
+                if (amount > 0f) global::Damage.Apply(_target, DamageInfo.Explosion(amount, center, gameObject));
             }
         }
+    }
+
+    /// <summary>Mỗi người nhận chỉ trúng một lần: NPC / con tin / người chơi, vật khác theo root.</summary>
+    private static Object ReceiverKey(GameObject go)
+    {
+        NPC npc = go.GetComponentInParent<NPC>();
+        if (npc != null) return npc;
+        Hostage h = go.GetComponentInParent<Hostage>();
+        if (h != null) return h;
+        SwatPlayerHealth p = SwatPlayerHealth.Of(go);
+        if (p != null) return p;
+        return go.transform.root;
     }
 
     private void ApplyForce(Vector3 center)

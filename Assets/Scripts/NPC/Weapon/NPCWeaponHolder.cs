@@ -66,6 +66,10 @@ public class NPCWeaponHolder : MonoBehaviour
     [Tooltip("Thời gian (giây) bật/tắt IK tay trái.")]
     [SerializeField] private float _ikBlendTime = 0.2f;
 
+    [Header("Vươn tay trái (mở cửa...)")]
+    [Tooltip("Thời gian (giây) đưa tay trái từ súng tới điểm vươn và ngược lại.")]
+    [SerializeField] private float _reachBlendTime = 0.3f;
+
     [Header("Aim")]
     [Tooltip("Ngừng gọi KeepAiming() quá thời gian này (giây) thì hạ súng về tư thế thường. " +
              "Giữ súng ngắm giữa các phát bắn để chỉ còn độ giật gốc của anim sFire_M4A1auto.")]
@@ -106,7 +110,38 @@ public class NPCWeaponHolder : MonoBehaviour
     private Quaternion _magInHandRot;
     private bool _hasMagInHandPose;
 
+    private Vector3 _reachPos;
+    private float _reachWeight;
+    private bool _reachWanted;
+
     public NPCWeapon Weapon => _weapon;
+
+    /// <summary>Xương vai trái (gốc IK tay trái), không phải rig người thì null.</summary>
+    public Transform LeftShoulder => _upperArm;
+
+    /// <summary>Chiều dài tay trái (vai - khuỷu - cổ tay), mét.</summary>
+    public float LeftArmLength => _upperArm != null && _foreArm != null && _hand != null
+        ? Vector3.Distance(_upperArm.position, _foreArm.position) + Vector3.Distance(_foreArm.position, _hand.position)
+        : 0.6f;
+
+    /// <summary>Tay trái đang rời súng để vươn tới điểm khác (hoặc đang quay về súng).</summary>
+    public bool IsReaching => _reachWanted || _reachWeight > 0f;
+
+    /// <summary>Mức tay trái đã tới điểm vươn (0 = ở súng, 1 = tới nơi).</summary>
+    public float ReachWeight => _reachWeight;
+
+    /// <summary>
+    /// Đưa tay trái tới worldPos (gọi mỗi frame để bám điểm đang chuyển động, vd. tay nắm cửa đang quay).
+    /// Trong lúc vươn: súng hạ, không bắn, tay trái thôi bám súng.
+    /// </summary>
+    public void ReachLeftHand(Vector3 worldPos)
+    {
+        _reachPos = worldPos;
+        _reachWanted = true;
+    }
+
+    /// <summary>Thu tay trái về súng.</summary>
+    public void ReleaseLeftHand() => _reachWanted = false;
     public bool HasWeapon => _weapon != null;
     public bool IsReloading => _reloading;
     /// <summary>Đang rút / ném bom: không bắn, không thay đạn, tay trái không bám súng.</summary>
@@ -122,7 +157,7 @@ public class NPCWeaponHolder : MonoBehaviour
                                        && _weapon.Ammo < _weapon.MagazineSize * _tacticalReloadRatio;
 
     /// <summary>Còn đạn và không đang thay đạn.</summary>
-    public bool CanFire => _weapon != null && !_reloading && !IsThrowing &&!_weapon.IsEmpty && (_npc == null || !_npc.IsDead);
+    public bool CanFire => _weapon != null && !_reloading && !IsThrowing && !IsReaching && !_weapon.IsEmpty && (_npc == null || !_npc.IsDead);
 
     private void Awake()
     {
@@ -150,8 +185,14 @@ public class NPCWeaponHolder : MonoBehaviour
     /// <summary>Hạ súng ngay (ngồi nấp, di chuyển...).</summary>
     public void StopAiming() => _aimUntil = 0f;
 
+    /// <summary>Đang giơ súng ngắm (KeepAiming còn hiệu lực). Đồng đội dùng để đánh giá mức đe dọa.</summary>
+    public bool IsAiming => _weapon != null && Time.time < _aimUntil;
+
+    /// <summary>Lúc bắn phát gần nhất (Time.time). Chưa bắn thì âm vô cùng.</summary>
+    public float LastFireTime { get; private set; } = float.NegativeInfinity;
+
     private bool ShouldAim(bool dead) =>
-        !dead && _weapon != null && !_reloading && !IsThrowing && Time.time < _aimUntil;
+        !dead && _weapon != null && !_reloading && !IsThrowing && !IsReaching && Time.time < _aimUntil;
 
     /// <summary>
     /// Bắn 1 phát vào target. Anim Fire, chớp lửa, tiếng súng, vỏ đạn chạy cùng một frame.
@@ -162,7 +203,10 @@ public class NPCWeaponHolder : MonoBehaviour
         if (!CanFire || target == null) return false;
         if (!_weapon.Fire(NPCConditionUtils.CenterOf(target), hit)) return false;
         _animator.SetTrigger(FireHash);
+        LastFireTime = Time.time;
         KeepAiming();
+        Vector3 muzzle = _weapon.Muzzle != null ? _weapon.Muzzle.position : transform.position;
+        NPCHearing.Report(muzzle, NPCWorldListener.GunshotRadius, NoiseType.Gunshot, transform.root.gameObject);
         return true;
     }
 
@@ -172,7 +216,7 @@ public class NPCWeaponHolder : MonoBehaviour
     /// </summary>
     public bool Reload(bool tactical = false)
     {
-        if (_weapon == null || _reloading || IsThrowing || !_weapon.CanReload ||(_npc != null && _npc.IsDead)) return false;
+        if (_weapon == null || _reloading || IsThrowing || IsReaching || !_weapon.CanReload || (_npc != null && _npc.IsDead)) return false;
         tactical &= !_weapon.IsEmpty;
 
         _reloading = true;
@@ -185,6 +229,7 @@ public class NPCWeaponHolder : MonoBehaviour
 
         _animator.ResetTrigger(FireHash);
         _animator.SetTrigger(tactical ? ReloadTacticalHash : ReloadHash);
+        if (_npc != null && !tactical) _npc.Say(NPCVoiceLine.Reloading); // hết băng giữa giao chiến: "Reloading!"
         return true;
     }
 
@@ -245,6 +290,9 @@ public class NPCWeaponHolder : MonoBehaviour
         if (_reloading) TickReload();
         if (_hasAimingParam) _animator.SetBool(AimingHash, ShouldAim(dead));
 
+        if (dead || _reloading || IsThrowing) _reachWanted = false;
+        _reachWeight = Mathf.MoveTowards(_reachWeight, _reachWanted ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, _reachBlendTime));
+
         float targetIk = !dead && _leftHandIK && WantsLeftHandIK() ? 1f : 0f;
         _ikWeight = Mathf.MoveTowards(_ikWeight, targetIk, Time.deltaTime / Mathf.Max(0.01f, _ikBlendTime));
     }
@@ -252,12 +300,21 @@ public class NPCWeaponHolder : MonoBehaviour
     // Chạy sau Animator: tay phải (và súng) đã ở tư thế của frame này.
     private void LateUpdate()
     {
-        if (_ikWeight <= 0f || _weapon == null || _weapon.LeftHandGrip == null || _hand == null) return;
-        Transform grip = _weapon.LeftHandGrip;
-        Vector3 targetPos = Vector3.Lerp(_hand.position, grip.position, _ikWeight * _ikPositionWeight);
-        Quaternion targetRot = Quaternion.Slerp(_hand.rotation, grip.rotation, _ikWeight * _ikRotationWeight);
-        SolveTwoBone(_upperArm, _foreArm, _hand, targetPos);
-        _hand.rotation = targetRot;
+        if (_hand == null) return;
+        if (_ikWeight > 0f && _weapon != null && _weapon.LeftHandGrip != null)
+        {
+            Transform grip = _weapon.LeftHandGrip;
+            Vector3 targetPos = Vector3.Lerp(_hand.position, grip.position, _ikWeight * _ikPositionWeight);
+            Quaternion targetRot = Quaternion.Slerp(_hand.rotation, grip.rotation, _ikWeight * _ikRotationWeight);
+            SolveTwoBone(_upperArm, _foreArm, _hand, targetPos);
+            _hand.rotation = targetRot;
+        }
+        if (_reachWeight > 0f)
+        {
+            // Vươn tay (mở cửa): chỉ đặt vị trí, giữ hướng cổ tay của anim (không phụ thuộc trục xương của rig).
+            float w = Mathf.SmoothStep(0f, 1f, _reachWeight);
+            SolveTwoBone(_upperArm, _foreArm, _hand, Vector3.Lerp(_hand.position, _reachPos, w));
+        }
     }
 
     private bool WantsLeftHandIK()

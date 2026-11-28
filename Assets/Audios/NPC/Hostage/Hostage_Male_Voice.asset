@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e83b3971ba740478567950d1d7eeb8, type: 3}
+  m_Name: Hostage_Male_Voice
+  m_EditorClassIdentifier: Assembly-CSharp::NPCVoiceSet
+  _role: 0
+  _gender: 0
+  _basePitch: 1
+  _entries:
+  - Line: 0
+    Clips:
+    - {fileID: 8300000, guid: 40033756e5653404c9f4924ab7da3d4a, type: 3}
+    - {fileID: 8300000, guid: b4c6a46009f5e034faeed02565589a02, type: 3}
+    - {fileID: 8300000, guid: 412279843035e834a8ce0834238c350a, type: 3}
+    Volume: 0.9
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 0
+    InterruptSamePriority: 0
+    Cooldown: 3
+  - Line: 1
+    Clips:
+    - {fileID: 8300000, guid: d457257217555504ca1f07fa83ef8fa4, type: 3}
+    - {fileID: 8300000, guid: 09577f83240f25044a6198edaee751b9, type: 3}
+    - {fileID: 8300000, guid: abb726153cc56d14c817c4c196ec90b9, type: 3}
+    - {fileID: 8300000, guid: 3b581dd2beae718479fd74af0dddadce, type: 3}
+    - {fileID: 8300000, guid: 33912fafe46ed764e886ecb84c8d3c59, type: 3}
+    - {fileID: 8300000, guid: 5ca79ca26c22bf341a918fbfde005e91, type: 3}
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 1
+    InterruptSamePriority: 0
+    Cooldown: 2.5
+  - Line: 2
+    Clips:
+    - {fileID: 8300000, guid: 5d247bf474379ee4780e91c45a46b92f, type: 3}
+    - {fileID: 8300000, guid: 1a1680b56f39353429f6a5adca9152d3, type: 3}
+    - {fileID: 8300000, guid: 4dabe087de1670d4a83b5f2b4e12f4e6, type: 3}
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 2
+    InterruptSamePriority: 0
+    Cooldown: 1.5
+  - Line: 3
+    Clips:
+    - {fileID: 8300000, guid: 200a5ac0eae30334480673699acf959b, type: 3}
+    - {fileID: 8300000, guid: eedfd78c0e519d94d82cb04d65af8e14, type: 3}
+    - {fileID: 8300000, guid: a259d52a5c1b7f148ab1151a03c4d86a, type: 3}
+    Volume: 0.85
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 2
+    InterruptSamePriority: 0
+    Cooldown: 1.5
+  - Line: 4
+    Clips:
+    - {fileID: 8300000, guid: 68cd5b59a91105d408d5a91957e4f707, type: 3}
+    - {fileID: 8300000, guid: b967dbee47c1d0b47b826456ad1e198f, type: 3}
+    - {fileID: 8300000, guid: f547459f7b217c34ebb72ee6701dcf54, type: 3}
+    Volume: 1
+    Pitch: {x: 0.94, y: 1.06}
+    Priority: 3
+    InterruptSamePriority: 1
+    Cooldown: 0.35
+  - Line: 5
+    Clips:
+    - {fileID: 8300000, guid: fadc36f10f22855429f6d4049fb13534, type: 3}
+    - {fileID: 8300000, guid: 0cfa44656a611ce4180ec5db2aeb7692, type: 3}
+    - {fileID: 8300000, guid: cbcc91bc2be2f394b8b1d659eb32d3f4, type: 3}
+    - {fileID: 8300000, guid: 52d22e155ee5aec4d9d4157acaa47d70, type: 3}
+    - {fileID: 8300000, guid: a18acdb691f13094d83c6cd68d590f78, type: 3}
+    - {fileID: 8300000, guid: f4b6053f83c3b804884d1f0742b09e79, type: 3}
+    - {fileID: 8300000, guid: 6c0a0a4072d3e5e4180b3e547dd6c22f, type: 3}
+    Volume: 1
+    Pitch: {x: 0.97, y: 1.03}
+    Priority: 4
+    InterruptSamePriority: 0
+    Cooldown: 0
+  - Line: 33
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 1
+    InterruptSamePriority: 0
+    Cooldown: 2
+  - Line: 32
+    Clips: []
+    Volume: 1
+    Pitch: {x: 0.96, y: 1.04}
+    Priority: 2
+    InterruptSamePriority: 0
+    Cooldown: 5

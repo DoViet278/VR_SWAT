@@ -14,7 +14,9 @@ using UnityEngine.AI;
 ///  2. Build Animator Controller: Animators/Hostage/Hostage.controller.
 ///  3. Build Behavior Graph    : Behaviour Graphs/Hostage/Hostage.asset (tham khảo graph của NPC).
 ///  4. Setup Prefab            : thêm component cho Prefabs/Hostage/Hostage.prefab và gán controller + graph.
-/// "Build All" chạy cả 4 bước. Chạy lại được nhiều lần (ghi đè kết quả cũ).
+/// "Build All" chạy cả 4 bước. Chạy lại được nhiều lần (ghi đè kết quả cũ; clip chết gán tay trong controller được giữ).
+/// Graph (SWAT 4): Restrained > Surrender > Held > Flee (tiếng súng) > Cower (súng sát bên) > Scared > CallForHelp >
+/// WayPoint > Idle.
 /// </summary>
 public static class HostageSetupTool
 {
@@ -23,10 +25,11 @@ public static class HostageSetupTool
     private const string Movement = RefRoot + "SWATMovement/SWATMovement.fbx";
     private const string Idles = RefRoot + "SwatWithGunAnim/SwatWithGunAnim.fbx";
 
-    private const string ClipRoot = "Assets/Animation Clips/Hostage";
-    private const string ControllerPath = "Assets/Animators/Hostage/Hostage.controller";
-    private const string GraphPath = "Assets/Behaviour Graphs/Hostage/Hostage.asset";
-    private const string PrefabPath = "Assets/Prefabs/Hostage/Hostage.prefab";
+    private const string ClipRoot = "Assets/Animation Clips/NPC/Hostage";
+    private const string ControllerPath = "Assets/Animators/NPC/Hostage.controller";
+    private const string GraphPath = "Assets/Behaviour Graphs/NPC/Hostage.asset";
+    private const string PrefabPath = "Assets/Prefabs/NPC/Hostage.prefab";
+    private const string VoiceSetPath = "Assets/Audios/NPC/Hostage/Hostage_Male_Voice.asset";
 
     // (thư mục con, FBX nguồn, tên clip, loop)
     private static readonly (string folder, string fbx, string clip, bool loop)[] Clips =
@@ -108,6 +111,13 @@ public static class HostageSetupTool
         AnimatorController ctrl = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath)
                                   ?? AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
 
+        // Clip chết đã gán tay trong controller (vd. HostageDeath) thì giữ lại khi dựng lại.
+        var keepMotions = new Dictionary<string, Motion>();
+        if (ctrl.layers.Length > 0)
+            foreach (ChildAnimatorState cs in ctrl.layers[0].stateMachine.states)
+                if (cs.state.name.Contains("Die") && cs.state.motion is AnimationClip kept && AssetDatabase.GetAssetPath(kept) != ControllerPath)
+                    keepMotions[cs.state.name] = kept;
+
         // Xóa sạch nội dung cũ (giữ asset để không mất tham chiếu GUID).
         foreach (var p in ctrl.parameters.ToArray()) ctrl.RemoveParameter(p);
         while (ctrl.layers.Length > 0) ctrl.RemoveLayer(0);
@@ -152,7 +162,7 @@ public static class HostageSetupTool
         AnimatorState State(string name, Motion motion, Vector2 pos, float speed = 1f)
         {
             AnimatorState s = sm.AddState(name, pos);
-            s.motion = motion;
+            s.motion = keepMotions.TryGetValue(name, out Motion kept) ? kept : motion;
             s.speed = speed;
             s.writeDefaultValues = true;
             return s;
@@ -267,6 +277,9 @@ public static class HostageSetupTool
         {
             (typeof(HostageIsRestrainedCondition), typeof(HostageRestrainedAction)),
             (typeof(HostageShouldSurrenderCondition), typeof(HostageSurrenderAction)),
+            (typeof(HostageIsHeldCondition), typeof(HostageHeldAction)),
+            (typeof(HostageShouldFleeCondition), typeof(HostageFleeAction)),
+            (typeof(HostageShouldCowerCondition), typeof(HostageCowerGunfireAction)),
             (typeof(HostageIsScaredCondition), typeof(HostageCowerAction)),
             (typeof(HostageShouldCallForHelpCondition), typeof(HostageCallForHelpAction)),
             (typeof(HostageGetNextWayPointCondition), typeof(HostageMoveToWayPointAction)),
@@ -321,7 +334,10 @@ public static class HostageSetupTool
 
     private static void Connect(BehaviorAuthoringGraph graph, NodeModel parent, NodeModel child)
     {
-        if (!parent.TryDefaultOutputPortModel(out PortModel output) || !child.TryDefaultInputPortModel(out PortModel input))
+        // Node nạp từ asset (On Start) có thể chưa dựng lại cache port mặc định: lấy port đầu tiên.
+        if (!parent.TryDefaultOutputPortModel(out PortModel output)) output = parent.OutputPortModels.FirstOrDefault();
+        if (!child.TryDefaultInputPortModel(out PortModel input)) input = child.InputPortModels.FirstOrDefault();
+        if (output == null || input == null)
             throw new Exception($"[Hostage] Không nối được {parent} -> {child}");
         graph.ConnectEdge(output, input);
     }
@@ -388,12 +404,23 @@ public static class HostageSetupTool
             body.height = 1.8f;
             body.center = new Vector3(0f, 0.9f, 0f);
 
-            var voice = GetOrAdd<AudioSource>(root);
-            voice.playOnAwake = false;
-            voice.spatialBlend = 1f;
-            voice.rolloffMode = AudioRolloffMode.Linear;
-            voice.minDistance = 1f;
-            voice.maxDistance = 25f;
+            // Giọng nói: NPCVoice + AudioSource "Voice" ở xương đầu (âm 3D phát ra từ miệng), bộ giọng nam mặc định.
+            var voice = new SerializedObject(GetOrAdd<NPCVoice>(root));
+            if (voice.FindProperty("_source").objectReferenceValue == null)
+            {
+                Transform head = animator.isHuman ? animator.GetBoneTransform(HumanBodyBones.Head) : null;
+                var voiceGo = new GameObject("Voice");
+                voiceGo.transform.SetParent(head != null ? head : root.transform, false);
+                var source = voiceGo.AddComponent<AudioSource>();
+                source.playOnAwake = false;
+                voice.FindProperty("_source").objectReferenceValue = source;
+            }
+            if (voice.FindProperty("_voiceSet").objectReferenceValue == null)
+                voice.FindProperty("_voiceSet").objectReferenceValue = AssetDatabase.LoadAssetAtPath<NPCVoiceSet>(VoiceSetPath);
+            voice.ApplyModifiedPropertiesWithoutUndo();
+            // AudioSource cũ trên gốc (hệ thống trước) không còn dùng.
+            if (root.TryGetComponent(out AudioSource oldSource) && oldSource != voice.FindProperty("_source").objectReferenceValue)
+                UnityEngine.Object.DestroyImmediate(oldSource, true);
 
             var behavior = GetOrAdd<BehaviorGraphAgent>(root);
             var graph = AssetDatabase.LoadAssetAtPath<BehaviorAuthoringGraph>(GraphPath);

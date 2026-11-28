@@ -113,6 +113,7 @@ public static class TeammateSetupTool
         Var<GameObject>(graph, Teammate.OrderDoorVar);
         Var<int>(graph, Teammate.OrderIdVar);
         Var<GameObject>(graph, Teammate.GuardTargetVar);
+        Var<GameObject>(graph, Teammate.OrderTargetVar);
 
         NodeModel selector = CreateNode(graph, typeof(SelectorComposite), new Vector2(0, 140));
         Connect(graph, start, selector);
@@ -129,6 +130,9 @@ public static class TeammateSetupTool
             (typeof(OrderIsOpenDoorCondition), new[] { typeof(TeammateOpenDoorAction), typeof(TeammateReportDoneAction) }),
             (typeof(OrderIsBreachDoorCondition), new[] { typeof(TeammateBreachDoorAction), typeof(TeammateReportDoneAction) }),
             (typeof(OrderIsThrowFlashCondition), new[] { typeof(TeammateThrowFlashAction), typeof(TeammateReportDoneAction) }),
+            (typeof(OrderIsClearRoomCondition), new[] { typeof(TeammateClearRoomAction), typeof(TeammateReportDoneAction) }),
+            (typeof(OrderIsRestrainCondition), new[] { typeof(TeammateRestrainAction), typeof(TeammateReportDoneAction) }),
+            (typeof(OrderIsMirrorCondition), new[] { typeof(TeammateMirrorAction), typeof(TeammateReportDoneAction) }),
         };
 
         const float spacing = 420f;
@@ -184,7 +188,10 @@ public static class TeammateSetupTool
 
     private static void Connect(BehaviorAuthoringGraph graph, NodeModel parent, NodeModel child)
     {
-        if (!parent.TryDefaultOutputPortModel(out PortModel output) || !child.TryDefaultInputPortModel(out PortModel input))
+        // Node nạp từ asset (On Start) có thể chưa dựng lại cache port mặc định: lấy port đầu tiên.
+        if (!parent.TryDefaultOutputPortModel(out PortModel output)) output = parent.OutputPortModels.FirstOrDefault();
+        if (!child.TryDefaultInputPortModel(out PortModel input)) input = child.InputPortModels.FirstOrDefault();
+        if (output == null || input == null)
             throw new Exception($"[Teammate] Không nối được {parent} -> {child}");
         graph.ConnectEdge(output, input);
     }
@@ -341,6 +348,9 @@ public static class TeammateSetupTool
             squad = new GameObject("Squad").AddComponent<SquadController>();
             Undo.RegisterCreatedObjectUndo(squad.gameObject, "Add SquadController");
         }
+        // Menu lệnh VR (giữ B): thêm sẵn để chỉnh trong Inspector (không có thì Squad tự thêm lúc chạy).
+        if (UnityEngine.Object.FindAnyObjectByType<TeammateCommandMenu>() == null)
+            Undo.AddComponent<TeammateCommandMenu>(squad.gameObject);
         Selection.activeObject = squad.gameObject;
     }
 

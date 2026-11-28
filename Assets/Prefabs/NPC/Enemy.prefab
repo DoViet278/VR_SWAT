@@ -1296,6 +1296,10 @@ GameObject:
   - component: {fileID: 6714828587477597209}
   - component: {fileID: 5597375608021971134}
   - component: {fileID: 206442084334091059}
+  - component: {fileID: 7263774588314834402}
+  - component: {fileID: 495827848370153472}
+  - component: {fileID: 569526028726449468}
+  - component: {fileID: 4866251632865346261}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -1481,7 +1485,7 @@ MonoBehaviour:
           m_Value0: 13861899241959425787
           m_Value1: 15087595343455224396
         Name: Damage
-        m_Value: 3
+        m_Value: 25
     - rid: 5428636514806661612
       type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -1545,11 +1549,15 @@ MonoBehaviour:
   _maxHealth: 100
   _regenPerSecond: 0
   _regenDelay: 5
+  _damageTakenScale: 1
+  _team: 0
   _target: {fileID: 0}
   _targetTag: Player
+  _playerPriority: 4
+  _targetHoldTime: 1.5
   _wayPoints: []
   _attackRange: 10
-  _damage: 10
+  _damage: 25
   _viewDistance: 15
   _viewAngle: 120
   _hideThreshold: 50
@@ -1625,6 +1633,8 @@ MonoBehaviour:
   _ikPositionWeight: 1
   _ikRotationWeight: 1
   _ikBlendTime: 0.2
+  _reachBlendTime: 0.3
+  _aimHoldTime: 0.6
   _tacticalReloadRatio: 0.4
   _emptyReload:
     Duration: 4.083
@@ -1679,6 +1689,15 @@ MonoBehaviour:
   _rifleSling: {fileID: 4182102085809183905}
   _rifleBlendTime: 0.25
   _upperBodyLayer: 1
+  _flashbangPrefab: {fileID: 0}
+  _flashbangs: -1
+  _flashbangApex: 0.4
+  _flashApexOptions:
+  - 0.1
+  - 0.25
+  - 0.4
+  - 0.6
+  _flashMinDepth: 1
   _throwRange: {x: 5, y: 18}
   _replanInterval: 0.5
   _cooldown: 4
@@ -1746,6 +1765,8 @@ MonoBehaviour:
   _outOfAmmo: 0.3
   _lowHealth: 0.15
   _lowHealthRatio: 0.35
+  _woundedComplyBonus: 0.15
+  _firingIgnoreTime: 1
   _hitPlayer: 0.02
   _recoverPerSecond: 0.01
   _calmDelay: 12
@@ -1772,11 +1793,95 @@ MonoBehaviour:
   _wristGap: 0.06
   _turnSpeed: 90
   _cuffTime: 1
-  _cuffRadius: 0.15
   _maxHandDistance: 0.45
   _cuffsPrefab: {fileID: 0}
   _cuffClip: {fileID: 0}
   _keyboardR: 1
+  _testCuffedAnim: 0
+  _testRestrainDelay: 2
+--- !u!114 &7263774588314834402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2481275863493460924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fc8d4d1f2753454a99dbdb873afb9c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCVoice
+  _voiceSet: {fileID: 11400000, guid: 3e6eab8d4f36fde40aac63b21f14aac6, type: 2}
+  _source: {fileID: 6334735445276922336}
+  _mixerGroup: {fileID: 0}
+  _configureSource: 1
+  _minDistance: 1.5
+  _maxDistance: 25
+  _spatialize: 1
+  OnLine:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &495827848370153472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2481275863493460924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5292f0d52af291b4ba53ed45ff6228ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCStun
+  _duration: {x: 3, y: 8}
+  _minIntensity: 0.15
+  _resistance: 0
+  _moralePressure: 0.35
+  _complyBonus: 0.5
+  _log: 1
+--- !u!114 &569526028726449468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2481275863493460924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e33ded4393a77241951facac5b9fe1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCHearing
+  _sensitivity: 1
+  _log: 0
+--- !u!114 &4866251632865346261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2481275863493460924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31948e9346a6015489c95fa721c1cc9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTactics
+  _investigate: 1
+  _noiseMemory: 8
+  _lookAroundTime: {x: 3, y: 5}
+  _investigateTimeout: 15
+  _barricaded: 0
+  _barricadeDoor: {fileID: 0}
+  _barricadeDoorRange: 12
+  _barricadeCrouch: 0
+  _canFlee: 1
+  _fleeTriggerDistance: 10
+  _fleeDistance: 12
+  _fleeCooldown: 15
+  _canTakeHostage: 0
+  _hostageGrabDistance: 3
+  _releaseAfterShouts: 2
+  _threatenInterval: 4
+  _regrabCooldown: 30
 --- !u!1 &2590647719417865304
 GameObject:
   m_ObjectHideFlags: 0
@@ -2793,6 +2898,135 @@ Transform:
   - {fileID: 7389850881305118016}
   m_Father: {fileID: 7808874409521997031}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5960911045738926652
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4018873195221293553}
+  - component: {fileID: 6334735445276922336}
+  m_Layer: 0
+  m_Name: Voice
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4018873195221293553
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5960911045738926652}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6389341251712724346}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &6334735445276922336
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5960911045738926652}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &6081188269555284219
 GameObject:
   m_ObjectHideFlags: 0
@@ -2855,6 +3089,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3554153225608721706}
+  - {fileID: 4018873195221293553}
   m_Father: {fileID: 7565697511094514321}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6239911346169964672
