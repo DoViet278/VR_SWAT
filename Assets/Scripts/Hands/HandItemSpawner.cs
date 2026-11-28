@@ -139,6 +139,13 @@ public static class HandItemSpawner
     /// <summary>
     /// Interactor của hai bàn tay dưới <paramref name="handsRoot"/>. Để trống thì tự tìm
     /// <see cref="XROrigin"/> trong scene.
+    ///
+    /// Mỗi bàn tay của rig XRI có NHIỀU interactor select được: Near-Far (nắm đồ), Poke (đầu
+    /// ngón tay, để bấm nút), Teleport (tia dịch chuyển). Trả về hết là hỏng: Poke nằm ở đầu
+    /// ngón nên thường là cái gần cửa nhất, panel sẽ nhét kit vào NÓ, mà Poke không phải
+    /// <see cref="XRBaseInputInteractor"/> nên không đọc được grip lẫn cò — đồ dính đầu ngón
+    /// tay, bóp cò không ăn gì, và dev tool cũng báo "Đang cầm: -". Nên mỗi bên tay chỉ lấy
+    /// đúng MỘT interactor, ưu tiên Near-Far rồi Direct rồi Ray.
     /// </summary>
     public static IReadOnlyList<XRBaseInteractor> Hands(Transform handsRoot)
     {
@@ -166,6 +173,9 @@ public static class HandItemSpawner
         hands.Clear();
         cachedRoot = root;
 
+        XRBaseInputInteractor left = null, right = null, unsided = null;
+        int leftScore = -1, rightScore = -1, unsidedScore = -1;
+
         foreach (XRBaseInteractor interactor in root.GetComponentsInChildren<XRBaseInteractor>(true))
         {
             if (!(interactor is IXRSelectInteractor))
@@ -175,10 +185,55 @@ public static class HandItemSpawner
             if (interactor is XRSocketInteractor)
                 continue;
 
-            hands.Add(interactor);
+            // Không đọc được nút (Poke) thì không cầm đồ được, chỉ bấm nút.
+            if (!(interactor is XRBaseInputInteractor input))
+                continue;
+
+            int score = HandScore(input);
+
+            switch (input.handedness)
+            {
+                case InteractorHandedness.Left:
+                    if (score > leftScore) { left = input; leftScore = score; }
+                    break;
+
+                case InteractorHandedness.Right:
+                    if (score > rightScore) { right = input; rightScore = score; }
+                    break;
+
+                default:
+                    if (score > unsidedScore) { unsided = input; unsidedScore = score; }
+                    break;
+            }
         }
 
+        if (left != null)
+            hands.Add(left);
+
+        if (right != null)
+            hands.Add(right);
+
+        // Rig không khai bên tay nào thì còn hơn không có gì.
+        if (hands.Count == 0 && unsided != null)
+            hands.Add(unsided);
+
         return hands;
+    }
+
+    /// <summary>Interactor nào đáng coi là "bàn tay cầm đồ" hơn. Giống thang điểm của dev tool.</summary>
+    private static int HandScore(XRBaseInputInteractor interactor)
+    {
+        if (interactor is NearFarInteractor)
+            return 3;
+
+        if (interactor is XRDirectInteractor)
+            return 2;
+
+        // Tia: thường chỉ để dịch chuyển, lấy khi không còn gì khác.
+        if (interactor is XRRayInteractor)
+            return 1;
+
+        return 0;
     }
 
     /// <summary>Rung tay, để người chơi biết tay mình vừa có đồ.</summary>

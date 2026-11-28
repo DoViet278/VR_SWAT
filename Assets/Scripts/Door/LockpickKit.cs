@@ -103,6 +103,20 @@ namespace VRSwat.Doors
                 Debug.LogWarning(
                     $"{name}: thiếu XR Grab Interactable nên không đọc được cò. Thêm Hand Posed " +
                     "Grab Interactable (hoặc XR Grab Interactable) vào object này.", this);
+
+            // Kit do panel chọn cách mở cửa (hoặc dev tool) sinh ra thì ô này LUÔN trống: prefab
+            // không thể trỏ sẵn vào một object trong scene. Không tự tìm thì phá khóa vẫn chạy
+            // nhưng người chơi không thấy thanh tiến trình nào, tưởng là hỏng.
+            if (progressBar == null)
+            {
+                progressBar = UnlockProgressBar.Shared;
+
+                if (progressBar == null)
+                    Debug.LogWarning(
+                        $"{name}: không có UnlockProgressBar nào trong scene nên phá khóa sẽ " +
+                        "không hiện thanh tiến trình. Dựng một cái bằng Tools > VR SWAT > " +
+                        "Create Unlock Progress Bar.", this);
+            }
         }
 
         private void OnEnable()
